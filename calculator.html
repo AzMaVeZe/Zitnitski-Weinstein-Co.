@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Israel Real Estate Tax — Step 1</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:       #1a4b8c;
+      --blue-mid:   #2563b0;
+      --blue-light: #e8f0fb;
+      --text:       #1e2330;
+      --muted:      #5a6275;
+      --border:     #d4dae6;
+      --white:      #ffffff;
+      --bg:         #f7f9fc;
+      --radius:     10px;
+      --shadow:     0 4px 24px rgba(26,75,140,.10);
+      --shadow-sm:  0 2px 8px  rgba(26,75,140,.08);
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.7; font-size: 16px;
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
+
+    /* NAV */
+    nav {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 100;
+    }
+    .nav-inner {
+      max-width: 960px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .9rem 1.5rem;
+    }
+    .nav-brand {
+      font-weight: 700; font-size: 1.05rem; color: var(--blue);
+      text-decoration: none;
+    }
+    .back-link {
+      text-decoration: none; color: var(--muted); font-size: .875rem;
+      padding: .4rem .75rem; border-radius: 6px;
+      border: 1px solid var(--border); transition: all .2s;
+    }
+    .back-link:hover { color: var(--blue); background: var(--blue-light); border-color: var(--blue-mid); }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--blue) 0%, #0d2d5e 100%);
+      color: var(--white); padding: 3rem 1.5rem 2.5rem; text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+      border-radius: 50px; padding: .3rem .95rem;
+      font-size: .78rem; letter-spacing: .06em; text-transform: uppercase;
+      margin-bottom: 1rem; color: rgba(255,255,255,.9);
+    }
+    .hero h1 {
+      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+      font-weight: 800; line-height: 1.2; margin-bottom: .5rem;
+    }
+    .hero p { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 480px; margin: 0 auto; }
+
+    /* STEPS */
+    .steps-bar {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      padding: .85rem 1.5rem;
+    }
+    .steps-inner {
+      max-width: 960px; margin: 0 auto;
+      display: flex; align-items: center; gap: .5rem;
+      font-size: .82rem;
+    }
+    .step {
+      display: flex; align-items: center; gap: .4rem;
+      padding: .3rem .7rem; border-radius: 20px;
+      font-weight: 600;
+    }
+    .step.active { background: var(--blue); color: var(--white); }
+    .step.pending { color: var(--muted); }
+    .step-num {
+      width: 18px; height: 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 800;
+    }
+    .step.active  .step-num { background: rgba(255,255,255,.25); }
+    .step.pending .step-num { background: var(--border); color: var(--muted); }
+    .step-sep { color: var(--border); font-size: 1rem; }
+
+    /* PAGE */
+    .page { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; flex: 1; }
+
+    /* CARD */
+    .card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 2.25rem 2.5rem;
+    }
+    @media (max-width: 580px) { .card { padding: 1.5rem 1.25rem; } }
+    .card-header { padding-bottom: 1.25rem; margin-bottom: 1.75rem; border-bottom: 1px solid var(--border); }
+    .card-header h2 { font-size: 1.15rem; font-weight: 700; color: var(--blue); margin-bottom: .25rem; }
+    .card-header p  { font-size: .87rem; color: var(--muted); }
+
+    /* GRID */
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 2rem; }
+    @media (max-width: 560px) { .fields { grid-template-columns: 1fr; } }
+
+    /* FIELD */
+    .field { display: flex; flex-direction: column; gap: .4rem; }
+    .field label { font-size: .84rem; font-weight: 600; color: var(--text); }
+    .field select {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 7px;
+      padding: .65rem .9rem; font-size: .94rem; color: var(--text);
+      background: var(--white); outline: none; cursor: pointer;
+      appearance: none; -webkit-appearance: none; padding-right: 2.4rem;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%235a6275' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right .85rem center;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field select:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(37,99,176,.12); }
+    .field select.filled { border-color: #86efac; background-color: #f0fdf4; }
+
+    /* conditional slide-in */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .field[data-conditional] { animation: slideIn .18s ease; }
+
+    /* NEXT BUTTON */
+    .btn-row { display: flex; justify-content: center; margin-top: 2rem; }
+    .btn-next {
+      padding: .8rem 3rem; font-size: 1rem; font-weight: 700;
+      border: none; border-radius: 8px;
+      background: var(--border); color: var(--muted);
+      cursor: not-allowed;
+      transition: background .2s, color .2s, box-shadow .2s, transform .15s;
+    }
+    .btn-next:not(:disabled) {
+      background: var(--blue); color: var(--white);
+      cursor: pointer; box-shadow: 0 4px 16px rgba(26,75,140,.28);
+    }
+    .btn-next:not(:disabled):hover  { background: var(--blue-mid); transform: translateY(-1px); }
+    .btn-next:not(:disabled):active { transform: none; box-shadow: none; }
+
+    /* FOOTER */
+    footer {
+      background: var(--blue); color: rgba(255,255,255,.6);
+      text-align: center; padding: 1.75rem 1.5rem; font-size: .84rem;
+    }
+    footer strong { color: var(--white); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">🇮🇱 Israel Tax Guide</a>
+    <a href="index.html" class="back-link">← Back to Guide</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-badge">🏠 Real Estate Tax</div>
+  <h1>Israel Real Estate Tax Calculator</h1>
+  <p>Answer two quick questions to see the tax rules that apply to your situation.</p>
+</header>
+
+<div class="steps-bar">
+  <div class="steps-inner">
+    <div class="step active"><span class="step-num">1</span> Classification</div>
+    <span class="step-sep">›</span>
+    <div class="step pending"><span class="step-num">2</span> Calculations</div>
+  </div>
+</div>
+
+<main class="page">
+  <div class="card">
+    <div class="card-header">
+      <h2>Entity &amp; Property Classification</h2>
+      <p>All visible fields are required before you can proceed.</p>
+    </div>
+
+    <div class="fields" id="fieldsGrid">
+
+      <div class="field">
+        <label for="entityType">Entity Type</label>
+        <select id="entityType">
+          <option value="">— Select entity type —</option>
+          <option value="individual">Individual</option>
+          <option value="company">Company (LTD)</option>
+        </select>
+      </div>
+
+      <div class="field">
+        <label for="assetType">Asset Type</label>
+        <select id="assetType">
+          <option value="">— Select asset type —</option>
+          <option value="real_estate">Real Estate</option>
+          <option value="shares">Shares</option>
+        </select>
+      </div>
+
+      <!-- Conditional: Company Origin (Company LTD only) -->
+      <div class="field" id="originField" data-conditional style="display:none">
+        <label for="companyOrigin">Company Origin</label>
+        <select id="companyOrigin">
+          <option value="">— Select company origin —</option>
+          <option value="israeli">Israeli Company</option>
+          <option value="foreign">Foreign Company</option>
+        </select>
+      </div>
+
+      <!-- Conditional: Purpose (Real Estate only) -->
+      <div class="field" id="purposeField" data-conditional style="display:none">
+        <label for="purpose">Purpose</label>
+        <select id="purpose">
+          <option value="">— Select purpose —</option>
+          <option value="capital_gain">Capital Gain</option>
+          <option value="income">Rental Income</option>
+        </select>
+      </div>
+
+      <!-- Conditional: Property Type (Capital Gain only) -->
+      <div class="field" id="propertyField" data-conditional style="display:none">
+        <label for="propertyType">Property Type</label>
+        <select id="propertyType">
+          <option value="">— Select property type —</option>
+          <option value="residential">Residential</option>
+          <option value="commercial">Commercial</option>
+        </select>
+      </div>
+
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-next" id="nextBtn" disabled>Next →</button>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <p><strong>Israel International Tax Guide</strong> — General information only. Not legal or tax advice.</p>
+</footer>
+
+<script>
+  const nextBtn = document.getElementById('nextBtn');
+
+  function setVisible(fieldId, selectId, visible) {
+    const field = document.getElementById(fieldId);
+    const sel   = document.getElementById(selectId);
+    field.style.display = visible ? 'flex' : 'none';
+    if (!visible) sel.value = '';
+    validate();
+  }
+
+  function validate() {
+    // Use JS-based check — CSS [style*="display:none"] breaks after first JS toggle
+    // because browsers normalize to "display: none;" (with space), not "display:none"
+    const allFields = Array.from(document.querySelectorAll('#fieldsGrid .field'));
+    const visibleSelects = allFields
+      .filter(f => f.style.display !== 'none')
+      .map(f => f.querySelector('select'))
+      .filter(Boolean);
+
+    const allFilled = visibleSelects.every(s => s.value !== '');
+    nextBtn.disabled = !allFilled;
+    visibleSelects.forEach(s => s.classList.toggle('filled', s.value !== ''));
+  }
+
+  document.getElementById('entityType').addEventListener('change', function () {
+    setVisible('originField', 'companyOrigin', this.value === 'company');
+  });
+
+  document.getElementById('assetType').addEventListener('change', function () {
+    const isRealEstate = this.value === 'real_estate';
+    setVisible('purposeField', 'purpose', isRealEstate);
+    if (!isRealEstate) setVisible('propertyField', 'propertyType', false);
+  });
+
+  document.getElementById('purpose').addEventListener('change', function () {
+    setVisible('propertyField', 'propertyType', this.value === 'capital_gain');
+  });
+
+  document.querySelectorAll('#fieldsGrid select').forEach(s => s.addEventListener('change', validate));
+
+  nextBtn.addEventListener('click', function () {
+    function normalize(v) { return v.toLowerCase().replace(/\s+/g, '_'); }
+    const vals = {
+      entity:   normalize(document.getElementById('entityType').value),
+      asset:    normalize(document.getElementById('assetType').value),
+      origin:   normalize(document.getElementById('companyOrigin').value  || ''),
+      purpose:  normalize(document.getElementById('purpose').value        || ''),
+      property: normalize(document.getElementById('propertyType').value   || ''),
+    };
+    sessionStorage.setItem('taxForm', JSON.stringify(vals));
+    window.location.href = 'calculator2.html';
+  });
+</script>
+</body>
+</html>

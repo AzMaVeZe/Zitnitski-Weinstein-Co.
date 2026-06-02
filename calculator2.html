@@ -1,0 +1,2287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Israel Real Estate Tax — Step 2</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue:        #1a4b8c;
+      --blue-mid:    #2563b0;
+      --blue-light:  #e8f0fb;
+      --green:       #16a34a;
+      --green-light: #dcfce7;
+      --text:        #1e2330;
+      --muted:       #5a6275;
+      --border:      #d4dae6;
+      --white:       #ffffff;
+      --bg:          #f7f9fc;
+      --radius:      10px;
+      --shadow:      0 4px 24px rgba(26,75,140,.10);
+      --shadow-sm:   0 2px 8px  rgba(26,75,140,.08);
+      --amber:       #d97706;
+      --amber-light: #fef3c7;
+    }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      background: var(--bg); color: var(--text);
+      line-height: 1.7; font-size: 16px;
+      min-height: 100vh; display: flex; flex-direction: column;
+    }
+
+    /* NAV */
+    nav {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      box-shadow: var(--shadow-sm); position: sticky; top: 0; z-index: 100;
+    }
+    .nav-inner {
+      max-width: 960px; margin: 0 auto;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: .9rem 1.5rem;
+    }
+    .nav-brand { font-weight: 700; font-size: 1.05rem; color: var(--blue); text-decoration: none; }
+    .back-link {
+      text-decoration: none; color: var(--muted); font-size: .875rem;
+      padding: .4rem .75rem; border-radius: 6px;
+      border: 1px solid var(--border); transition: all .2s;
+    }
+    .back-link:hover { color: var(--blue); background: var(--blue-light); border-color: var(--blue-mid); }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--blue) 0%, #0d2d5e 100%);
+      color: var(--white); padding: 3rem 1.5rem 2.5rem; text-align: center;
+    }
+    .hero-badge {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.2);
+      border-radius: 50px; padding: .3rem .95rem;
+      font-size: .78rem; letter-spacing: .06em; text-transform: uppercase;
+      margin-bottom: 1rem; color: rgba(255,255,255,.9);
+    }
+    .hero h1 {
+      font-size: clamp(1.5rem, 3.5vw, 2.2rem);
+      font-weight: 800; line-height: 1.2; margin-bottom: .5rem;
+    }
+    .hero p { font-size: .95rem; color: rgba(255,255,255,.75); max-width: 480px; margin: 0 auto; }
+
+    /* STEPS */
+    .steps-bar {
+      background: var(--white); border-bottom: 1px solid var(--border);
+      padding: .85rem 1.5rem;
+    }
+    .steps-inner {
+      max-width: 960px; margin: 0 auto;
+      display: flex; align-items: center; gap: .5rem; font-size: .82rem;
+    }
+    .step { display: flex; align-items: center; gap: .4rem; padding: .3rem .7rem; border-radius: 20px; font-weight: 600; }
+    .step.done   { color: var(--green); }
+    .step.active { background: var(--blue); color: var(--white); }
+    .step.pending{ color: var(--muted); }
+    .step-num {
+      width: 18px; height: 18px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: .7rem; font-weight: 800;
+    }
+    .step.done   .step-num { background: var(--green-light); color: var(--green); }
+    .step.active .step-num { background: rgba(255,255,255,.25); }
+    .step.pending .step-num{ background: var(--border); color: var(--muted); }
+    .step-sep { color: var(--border); font-size: 1rem; }
+
+    /* PAGE */
+    .page { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; flex: 1; }
+
+    /* CARD */
+    .card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 2.25rem 2.5rem; margin-bottom: 1.5rem;
+    }
+    @media (max-width: 580px) { .card { padding: 1.5rem 1.25rem; } }
+    .card-header { padding-bottom: 1.25rem; margin-bottom: 1.75rem; border-bottom: 1px solid var(--border); }
+    .card-header h2 { font-size: 1.15rem; font-weight: 700; color: var(--blue); margin-bottom: .25rem; }
+    .card-header p  { font-size: .87rem; color: var(--muted); }
+
+    /* FIELDS */
+    .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 2rem; }
+    @media (max-width: 560px) { .fields { grid-template-columns: 1fr; } }
+    .field { display: flex; flex-direction: column; gap: .4rem; }
+    .field.full { grid-column: 1 / -1; }
+    .field label { font-size: .84rem; font-weight: 600; color: var(--text); }
+    .field select {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 7px;
+      padding: .65rem .9rem; font-size: .94rem; color: var(--text);
+      background: var(--white); outline: none; cursor: pointer;
+      appearance: none; -webkit-appearance: none; padding-right: 2.4rem;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%235a6275' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right .85rem center;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .field select:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(37,99,176,.12); }
+    .field select.filled { border-color: #86efac; background-color: #f0fdf4; }
+
+    /* INCOME INPUT */
+    .income-wrap {
+      display: flex; align-items: stretch;
+      border: 1.5px solid var(--border); border-radius: 7px;
+      background: var(--white); overflow: hidden;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .income-wrap:focus-within { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(37,99,176,.12); }
+    .income-wrap.filled { border-color: #86efac; background-color: #f0fdf4; }
+    .income-prefix {
+      display: flex; align-items: center; padding: 0 .5rem 0 .9rem;
+      color: var(--muted); font-size: .95rem; user-select: none; flex-shrink: 0;
+    }
+    .income-wrap input {
+      border: none; outline: none; background: transparent;
+      padding: .65rem .5rem .65rem .2rem;
+      font-size: .94rem; color: var(--text); flex: 1; min-width: 0;
+    }
+    .income-wrap input::-webkit-inner-spin-button { opacity: .4; }
+
+    /* BRACKET TABLE */
+    .bracket-table-wrap {
+      grid-column: 1 / -1;
+      overflow-x: auto; border-radius: 8px;
+      border: 1px solid var(--border);
+    }
+    .bracket-table-wrap table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+    .bracket-table-wrap thead th {
+      background: var(--blue); color: var(--white);
+      padding: .6rem 1rem; text-align: left;
+      font-size: .78rem; font-weight: 700; letter-spacing: .04em;
+    }
+    .bracket-table-wrap thead th:first-child { border-radius: 0; }
+    .bracket-table-wrap tbody td {
+      padding: .55rem 1rem; border-bottom: 1px solid var(--border); color: var(--text);
+    }
+    .bracket-table-wrap tbody tr:last-child td { border-bottom: none; }
+    .bracket-table-wrap tbody tr:nth-child(even) { background: var(--bg); }
+    .bracket-table-wrap tbody tr.active-bracket {
+      background: var(--blue-light) !important;
+    }
+    .bracket-table-wrap tbody tr.active-bracket td {
+      color: var(--blue); font-weight: 700;
+    }
+    .bracket-table-wrap tbody tr.active-bracket td:last-child::after {
+      content: ' ← you'; font-size: .75rem; font-weight: 400; color: var(--blue-mid);
+    }
+
+    /* slide-in */
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateY(-5px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    /* TWO-COLUMN LAYOUT */
+    .two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1.5rem;
+      align-items: start;
+    }
+    @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
+
+    /* METRICS GRID */
+    .metrics {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: .75rem; margin-top: 1.5rem;
+      animation: slideIn .2s ease;
+    }
+    .metric {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: .9rem 1rem;
+    }
+    .metric-label {
+      font-size: .72rem; font-weight: 700; letter-spacing: .05em;
+      text-transform: uppercase; color: var(--muted); margin-bottom: .35rem;
+    }
+    .metric-val {
+      font-size: 1.25rem; font-weight: 800; color: var(--text);
+    }
+    .metric-val.accent { color: var(--blue); font-size: 1.45rem; }
+
+    /* BRACKET CHART */
+    .bracket-chart { display: flex; flex-direction: column; gap: .7rem; }
+    .b-row { cursor: default; }
+    .b-meta {
+      display: flex; justify-content: space-between; align-items: baseline;
+      margin-bottom: .25rem;
+    }
+    .b-range { font-size: .78rem; color: var(--muted); }
+    .b-rate  { font-size: .82rem; font-weight: 700; color: var(--text); }
+    .b-track {
+      height: 22px; background: var(--bg);
+      border-radius: 5px; border: 1px solid var(--border);
+      overflow: hidden;
+    }
+    .b-fill {
+      height: 100%; border-radius: 5px;
+      background: var(--blue-light);
+      transition: background .25s;
+    }
+    .b-row.active .b-range { color: var(--blue); font-weight: 600; }
+    .b-row.active .b-rate  { color: var(--blue); }
+    .b-row.active .b-track { border-color: var(--blue-mid); }
+    .b-row.active .b-fill  { background: var(--blue); }
+    .b-row.active .b-meta::after {
+      content: '← your bracket';
+      font-size: .72rem; color: var(--blue-mid); font-style: italic;
+    }
+    /* CHECKBOX ROW */
+    .checkbox-row {
+      display: flex; align-items: center; gap: .55rem;
+      font-size: .875rem; font-weight: 600; color: var(--text);
+      cursor: pointer; margin-top: .75rem;
+    }
+    .checkbox-row input[type="checkbox"] {
+      width: 16px; height: 16px; flex-shrink: 0;
+      cursor: pointer; accent-color: var(--blue);
+    }
+
+    /* hint text below input */
+    .input-hint {
+      font-size: .78rem; color: var(--muted);
+      margin-top: .4rem;
+    }
+
+    /* INPUT TABLE */
+    .input-table {
+      width: 100%; border-collapse: collapse; font-size: .9rem;
+    }
+    .input-table th {
+      background: var(--blue); color: var(--white);
+      padding: .55rem 1rem; font-size: .78rem; font-weight: 700;
+      letter-spacing: .04em; text-align: center;
+    }
+    .input-table th:first-child { text-align: left; }
+    .input-table td {
+      padding: .5rem .75rem; border: 1px solid var(--border); vertical-align: middle;
+    }
+    .input-table tbody tr:nth-child(even) { background: var(--bg); }
+    .input-row-label {
+      font-weight: 600; font-size: .87rem; color: var(--text); white-space: nowrap; width: 220px;
+    }
+    .input-table input[type="number"] {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 6px;
+      padding: .5rem .65rem; font-size: .9rem; color: var(--text);
+      background: var(--white); outline: none;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .input-table input[type="number"]:focus {
+      border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(37,99,176,.12);
+    }
+    .input-table input[type="number"]::-webkit-inner-spin-button { opacity: .4; }
+    .input-row-disabled { opacity: .4; }
+    .input-row-disabled input { background: var(--bg); cursor: not-allowed; }
+    .table-checkboxes {
+      display: flex; justify-content: center; gap: 2.5rem; align-items: center;
+      margin-top: .9rem;
+    }
+    .table-checkboxes .checkbox-row { margin-top: 0; }
+
+    /* TRACK COMPARISON SECTION */
+    .track-section {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); box-shadow: var(--shadow);
+      padding: 2.25rem 2.5rem; margin-top: 1.5rem;
+    }
+    @media (max-width: 580px) { .track-section { padding: 1.5rem 1.25rem; } }
+    .track-section-header {
+      padding-bottom: 1.25rem; margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .track-section-header h2 { font-size: 1.15rem; font-weight: 700; color: var(--blue); margin-bottom: .25rem; }
+    .track-section-header p  { font-size: .87rem; color: var(--muted); }
+    .track-inputs {
+      display: grid; grid-template-columns: 1fr 1fr 1fr;
+      gap: 1rem 1.5rem; margin-bottom: 1.75rem; align-items: end;
+    }
+    @media (max-width: 720px) { .track-inputs { grid-template-columns: 1fr; } }
+    .track-cards {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;
+    }
+    @media (max-width: 720px) { .track-cards { grid-template-columns: 1fr; } }
+    .track-cards-2 { grid-template-columns: repeat(2, 1fr); }
+    @media (max-width: 720px) { .track-cards-2 { grid-template-columns: 1fr; } }
+    .track-card.track-ineligible { opacity: .55; }
+    .track-card {
+      border: 2px solid var(--border); border-radius: var(--radius);
+      padding: 1.5rem 1.75rem; display: flex; flex-direction: column; gap: .6rem;
+    }
+    .track-card-name {
+      display: flex; align-items: center; gap: .4rem;
+      font-size: .75rem; font-weight: 700; letter-spacing: .06em;
+      text-transform: uppercase; color: var(--muted);
+    }
+    .track-letter {
+      display: inline-flex; align-items: center; justify-content: center;
+      width: 18px; height: 18px; border-radius: 50%; flex-shrink: 0;
+      background: var(--blue-light); color: var(--blue);
+      font-size: .68rem; font-weight: 800; line-height: 1;
+    }
+    .track-letter-c { background: var(--amber-light); color: var(--amber); }
+    .track-card-rate {
+      font-size: 2rem; font-weight: 800; color: var(--text); line-height: 1.1;
+    }
+    .track-divider { border: none; border-top: 1px solid var(--border); margin: .25rem 0; }
+    .track-result-row {
+      display: flex; justify-content: space-between; align-items: baseline;
+      font-size: .875rem; gap: .5rem;
+    }
+    .track-result-label { color: var(--muted); }
+    .track-result-val   { font-weight: 700; color: var(--text); }
+    .track-badge-area   { min-height: 1.75rem; margin-top: .25rem; }
+    .track-verdict {
+      margin-top: 1.25rem; font-size: .9rem; color: var(--muted);
+      text-align: center; font-style: italic;
+    }
+    .badge {
+      display: inline-block; padding: .25rem .65rem;
+      border-radius: 20px; font-size: .75rem; font-weight: 700; letter-spacing: .03em;
+    }
+    .badge-recommended { background: var(--green-light); color: var(--green); border: 1px solid #86efac; }
+    .badge-close       { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
+    .badge-warning     { background: var(--amber-light); color: var(--amber); border: 1px solid #fcd34d; }
+    .track-card.track-recommended { border-color: var(--green); }
+    .bl-note {
+      font-size: .74rem; color: var(--amber); line-height: 1.4;
+      background: var(--amber-light); border: 1px solid #fcd34d;
+      border-radius: 6px; padding: .4rem .65rem; margin-top: .25rem;
+    }
+
+    /* CAPITAL GAINS — date input (matches number input styling) */
+    .input-table input[type="date"] {
+      width: 100%; border: 1.5px solid var(--border); border-radius: 6px;
+      padding: .5rem .65rem; font-size: .9rem; color: var(--text);
+      background: var(--white); outline: none; font-family: inherit;
+      transition: border-color .2s, box-shadow .2s;
+    }
+    .input-table input[type="date"]:focus {
+      border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(37,99,176,.12);
+    }
+    /* Ownership flag badge */
+    .cg-flag {
+      display: inline-flex; align-items: center; gap: .35rem;
+      font-size: .82rem; font-weight: 700; padding: .25rem .7rem;
+      border-radius: 20px; margin-left: .5rem;
+    }
+    .cg-flag-yes { background: var(--green-light); color: var(--green); border: 1px solid #86efac; }
+    .cg-flag-no  { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+    .cg-flag-na  { background: var(--bg); color: var(--muted); border: 1px solid var(--border); font-weight: 400; font-style: italic; }
+    /* Foreign-owner notice box */
+    .foreign-notice {
+      background: var(--amber-light); border: 1px solid #fcd34d;
+      border-radius: var(--radius); padding: .9rem 1.1rem; margin-top: 1rem;
+      font-size: .875rem; color: var(--text); line-height: 1.55;
+    }
+    .foreign-notice strong { color: var(--amber); }
+    /* CG extras area below the input table */
+    .cg-extras { margin-top: 1.25rem; }
+
+    /* FALLBACK */
+    .fallback {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--radius); padding: 2.5rem;
+      text-align: center; color: var(--muted); box-shadow: var(--shadow-sm);
+    }
+    .fallback p { margin-bottom: 1rem; }
+    .fallback a { color: var(--blue-mid); text-decoration: none; font-weight: 600; }
+    .fallback a:hover { text-decoration: underline; }
+
+    /* FOOTER */
+    footer {
+      background: var(--blue); color: rgba(255,255,255,.6);
+      text-align: center; padding: 1.75rem 1.5rem; font-size: .84rem;
+    }
+    footer strong { color: var(--white); }
+  </style>
+</head>
+<body>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">🇮🇱 Israel Tax Guide</a>
+    <a href="calculator.html" class="back-link">← Back to Step 1</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-badge">🏠 Real Estate Tax</div>
+  <h1>Israel Real Estate Tax Calculator</h1>
+  <p>Based on your selections, here are the relevant tax calculations.</p>
+</header>
+
+<div class="steps-bar">
+  <div class="steps-inner">
+    <div class="step done"><span class="step-num">✓</span> Classification</div>
+    <span class="step-sep">›</span>
+    <div class="step active"><span class="step-num">2</span> Calculations</div>
+  </div>
+</div>
+
+<main class="page">
+
+  <!-- ═══ Ind_RE_Inc: Individual · Real Estate · Rental Income ════════════════════ -->
+  <div class="calc-section" id="Ind_RE_Inc" style="display:none">
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Individual — Rental Income</h2>
+        <p>Enter your monthly rental income to see your tax options below.</p>
+      </div>
+
+      <table class="input-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Monthly (₪)</th>
+            <th>Annual (₪)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="input-row-label">Gross Rental Income</td>
+            <td><input type="number" id="rentalIncome" min="0" placeholder="e.g. 8,000" /></td>
+            <td><input type="number" id="rentalIncome_annual" min="0" placeholder="e.g. 96,000" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Deductible Expenses</td>
+            <td><input type="number" id="expensesInput" min="0" placeholder="0" /></td>
+            <td><input type="number" id="expensesInput_annual" min="0" placeholder="0" /></td>
+          </tr>
+          <tr id="otherIncomeRow" class="input-row-disabled">
+            <td class="input-row-label">Other Income</td>
+            <td><input type="number" id="otherIncome" min="0" placeholder="0" disabled /></td>
+            <td><input type="number" id="otherIncome_annual" min="0" placeholder="0" disabled /></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="table-checkboxes">
+        <label class="checkbox-row">
+          <input type="checkbox" id="hasOtherIncome" />
+          <span>I have other monthly income</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="over60Check" />
+          <span>I am over 60 years old</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="track-section">
+      <div class="track-section-header">
+        <h2>Which Track Is Better For You?</h2>
+          <p>Based on your inputs above, here is how the three tracks compare.</p>
+      </div>
+
+      <div class="track-cards">
+
+        <div class="track-card" id="exemptCard">
+          <div class="track-card-name"><span class="track-letter">A</span>Standard Exemption</div>
+          <div class="track-card-rate">Marginal</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Annual tax</span>
+            <span class="track-result-val" id="exemptAnnual">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Monthly equivalent</span>
+            <span class="track-result-val" id="exemptMonthly">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate</span>
+            <span class="track-result-val" id="exemptEffective">—</span>
+          </div>
+          <div class="track-badge-area" id="exemptBadge"></div>
+        </div>
+
+        <div class="track-card" id="flatCard">
+          <div class="track-card-name"><span class="track-letter">B</span>Flat Rate</div>
+          <div class="track-card-rate">10%</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Annual tax</span>
+            <span class="track-result-val" id="flatAnnual">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Monthly equivalent</span>
+            <span class="track-result-val" id="flatMonthly">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate</span>
+            <span class="track-result-val" id="flatEffective">—</span>
+          </div>
+          <div class="track-badge-area" id="flatBadge"></div>
+        </div>
+
+        <div class="track-card" id="progCard">
+          <div class="track-card-name"><span class="track-letter track-letter-c">C</span>Progressive Rate</div>
+          <div class="track-card-rate">Marginal</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Annual tax</span>
+            <span class="track-result-val" id="progAnnual">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Monthly equivalent</span>
+            <span class="track-result-val" id="progMonthly">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate</span>
+            <span class="track-result-val" id="progEffective">—</span>
+          </div>
+          <div class="track-badge-area" id="progBadge"></div>
+          <div class="bl-note">⚠ Track C may incur up to ~12% Bituach Leumi on net rental income. Tracks A &amp; B are exempt.</div>
+        </div>
+
+      </div>
+
+      <p class="track-verdict" id="trackVerdict"></p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי). Consult a tax advisor for your exact liability.</p>
+    </div>
+
+  </div><!-- /Ind_RE_Inc -->
+
+
+  <!-- ═══ Ind_RE_CG_Res: Individual · Real Estate · Capital Gain · Residential ════ -->
+  <div class="calc-section" id="Ind_RE_CG_Res" style="display:none">
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Individual — Residential Capital Gain</h2>
+        <p>Enter the details of your property sale to estimate your capital gains tax.</p>
+      </div>
+
+      <table class="input-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th style="text-align:left">Amount / Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="input-row-label">Sale Price</td>
+            <td><input type="number" id="cg_res_salePrice" min="0" placeholder="0" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Original Purchase Price</td>
+            <td><input type="number" id="cg_res_purchasePrice" min="0" placeholder="0" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Purchase Date</td>
+            <td><input type="date" id="cg_res_purchaseDate" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Sale Date</td>
+            <td><input type="date" id="cg_res_saleDate" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Acquisition Expenses</td>
+            <td>
+              <input type="number" id="cg_res_acqExpenses" min="0" placeholder="0" />
+              <div class="input-hint">Purchase tax (mas rechisha), legal fees, agent commission at purchase</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Sale Expenses</td>
+            <td>
+              <input type="number" id="cg_res_saleExpenses" min="0" placeholder="0" />
+              <div class="input-hint">Legal fees, agent commission at sale</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Capital Improvements</td>
+            <td><input type="number" id="cg_res_improvements" min="0" placeholder="0" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Depreciation Claimed</td>
+            <td>
+              <input type="number" id="cg_res_depreciation" min="0" placeholder="0" />
+              <div class="input-hint">Subtracted from your purchase price, which raises the taxable gain</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="input-row-label" style="color:var(--muted); font-weight:500">
+              CPI-Indexed Real Gain
+              <div style="font-size:.76rem; font-weight:400; margin-top:.15rem">(optional override)</div>
+            </td>
+            <td>
+              <input type="number" id="cg_res_cpiGain" min="0" placeholder="optional" />
+              <div class="input-hint">Leave blank to estimate from the figures above (nominal, not inflation-adjusted)</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Other Annual Taxable Income</td>
+            <td>
+              <input type="number" id="cg_res_otherIncome" min="0" placeholder="0" />
+              <div class="input-hint">Other income in the same tax year</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Residential-only extras -->
+      <div class="cg-extras">
+
+        <label class="checkbox-row">
+          <input type="checkbox" id="cg_res_onlyApt" />
+          <span>This is my only residential apartment in Israel</span>
+        </label>
+
+        <div style="margin-top:.85rem; font-size:.84rem; font-weight:600; color:var(--text)">
+          Owned ≥ 18 months:
+          <span id="cg_res_ownedFlag" class="cg-flag cg-flag-na">Enter dates above</span>
+        </div>
+
+        <!-- Shown only when origin === 'foreign' -->
+        <div id="cg_res_foreignNotice" style="display:none">
+          <div class="foreign-notice">
+            <strong>Note — Foreign owner:</strong> The single-home capital gains exemption generally requires the seller to own no residential apartment abroad. As a foreign resident, this exemption is typically unavailable unless you hold a qualifying certificate from your home-country tax authority.
+          </div>
+          <label class="checkbox-row">
+            <input type="checkbox" id="cg_res_foreignCert" />
+            <span>I hold a certificate from my home-country tax authority confirming I own no residential apartment there</span>
+          </label>
+        </div>
+
+      </div>
+    </div><!-- /card -->
+
+    <!-- CG Residential comparison panel -->
+    <div class="track-section">
+      <div class="track-section-header">
+        <h2>Which Track Is Better For You?</h2>
+        <p>Real gain: <strong id="cg_res_gainDisplay">—</strong></p>
+      </div>
+
+      <div id="cg_res_noDateWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
+        <strong>Purchase date not entered.</strong> Track A requires a known holding period. Track B assumes the full gain accrued post-2014 (25% rate) — actual tax may be lower if you purchased before 2014.
+      </div>
+
+      <div class="track-cards track-cards-2">
+
+        <div class="track-card" id="cg_res_A_card">
+          <div class="track-card-name"><span class="track-letter">A</span>Single-Home Exemption</div>
+          <div class="track-card-rate" style="font-size:1.3rem">Single-Home Exemption</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Estimated tax</span>
+            <span class="track-result-val" id="cg_res_A_tax">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate on gain</span>
+            <span class="track-result-val" id="cg_res_A_effective">—</span>
+          </div>
+          <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+            <span class="track-result-label">Total</span>
+            <span class="track-result-val" id="cg_res_A_total">—</span>
+          </div>
+          <div class="track-badge-area" id="cg_res_A_badge"></div>
+          <p class="input-hint" id="cg_res_A_note"></p>
+        </div>
+
+        <div class="track-card" id="cg_res_B_card">
+          <div class="track-card-name"><span class="track-letter">B</span>Linear Calculation</div>
+          <div class="track-card-rate" style="font-size:1.3rem">25% post-2014</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Estimated tax</span>
+            <span class="track-result-val" id="cg_res_B_tax">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate on gain</span>
+            <span class="track-result-val" id="cg_res_B_effective">—</span>
+          </div>
+          <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+            <span class="track-result-label">Total</span>
+            <span class="track-result-val" id="cg_res_B_total">—</span>
+          </div>
+          <div class="track-badge-area" id="cg_res_B_badge"></div>
+          <div class="bl-note">Preserves your once-per-4-years single-home exemption for a future, higher-value sale.</div>
+        </div>
+
+      </div>
+
+      <p class="track-verdict" id="cg_res_verdict"></p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">⚠ 2026 figures. Real gain shown is nominal unless you entered a CPI-indexed value — true Mas Shevach indexes the cost basis to CPI. Excludes betterment levy and VAT. Rates and exemptions per §48A, §49B(2), §49E RETL. Consult a tax advisor for your exact liability.</p>
+    </div>
+
+  </div><!-- /Ind_RE_CG_Res -->
+
+  <!-- ═══ Ind_RE_CG_Com: Individual · Real Estate · Capital Gain · Commercial ═════ -->
+  <div class="calc-section" id="Ind_RE_CG_Com" style="display:none">
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Individual — Commercial Capital Gain</h2>
+        <p>Enter the details of your property sale to estimate your capital gains tax.</p>
+      </div>
+
+      <table class="input-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th style="text-align:left">Amount / Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="input-row-label">Sale Price</td>
+            <td><input type="number" id="cg_com_salePrice" min="0" placeholder="0" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Original Purchase Price</td>
+            <td><input type="number" id="cg_com_purchasePrice" min="0" placeholder="0" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Purchase Date</td>
+            <td><input type="date" id="cg_com_purchaseDate" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Sale Date</td>
+            <td><input type="date" id="cg_com_saleDate" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Acquisition Expenses</td>
+            <td>
+              <input type="number" id="cg_com_acqExpenses" min="0" placeholder="0" />
+              <div class="input-hint">Purchase tax (mas rechisha), legal fees, agent commission at purchase</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Sale Expenses</td>
+            <td>
+              <input type="number" id="cg_com_saleExpenses" min="0" placeholder="0" />
+              <div class="input-hint">Legal fees, agent commission at sale</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Capital Improvements</td>
+            <td><input type="number" id="cg_com_improvements" min="0" placeholder="0" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Depreciation Claimed</td>
+            <td>
+              <input type="number" id="cg_com_depreciation" min="0" placeholder="0" />
+              <div class="input-hint">Subtracted from your purchase price, which raises the taxable gain</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="input-row-label" style="color:var(--muted); font-weight:500">
+              CPI-Indexed Real Gain
+              <div style="font-size:.76rem; font-weight:400; margin-top:.15rem">(optional override)</div>
+            </td>
+            <td>
+              <input type="number" id="cg_com_cpiGain" min="0" placeholder="optional" />
+              <div class="input-hint">Leave blank to estimate from the figures above (nominal, not inflation-adjusted)</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Other Annual Taxable Income</td>
+            <td>
+              <input type="number" id="cg_com_otherIncome" min="0" placeholder="0" />
+              <div class="input-hint">Other income in the same tax year</div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+      <p class="input-hint" style="margin-top:.75rem">Any depreciation previously claimed is recaptured into the gain via the adjusted basis (basis = purchase price − depreciation + improvements).</p>
+    </div><!-- /card -->
+
+    <!-- Commercial CG output panel -->
+    <div class="track-section">
+      <div class="track-section-header">
+        <h2>Estimated Capital Gains Tax</h2>
+        <p>Gain: <strong id="cg_com_gainDisplay">—</strong></p>
+      </div>
+
+      <div id="cg_com_noDateWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
+        <strong>Purchase date not entered.</strong> Worst-case assumed: entire gain taxed at 47% (pre-2001 marginal rate). Enter a purchase date for an accurate period-by-period breakdown.
+      </div>
+
+      <!-- period breakdown -->
+      <div class="bracket-table-wrap" style="margin-bottom:1.25rem">
+        <table>
+          <thead>
+            <tr>
+              <th>Period</th>
+              <th>Rate</th>
+              <th>Gain in Period</th>
+              <th>Tax</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Before 7 Nov 2001</td>
+              <td>47% (marginal)</td>
+              <td id="cg_com_pre2001Gain">—</td>
+              <td id="cg_com_pre2001Tax">—</td>
+            </tr>
+            <tr>
+              <td>7 Nov 2001 – 31 Dec 2011</td>
+              <td>20%</td>
+              <td id="cg_com_midGain">—</td>
+              <td id="cg_com_midTax">—</td>
+            </tr>
+            <tr>
+              <td>1 Jan 2012 – Sale Date</td>
+              <td>25%</td>
+              <td id="cg_com_postGain">—</td>
+              <td id="cg_com_postTax">—</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">Base Tax</div>
+          <div class="metric-val" id="cg_com_totalTax">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Effective Rate on Gain</div>
+          <div class="metric-val" id="cg_com_effective">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Total</div>
+          <div class="metric-val accent" id="cg_com_grandTotal">—</div>
+        </div>
+      </div>
+
+      <p class="track-verdict" id="cg_com_verdict"></p>
+      <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">Casual sales to a registered dealer may also trigger VAT — verify separately.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">⚠ 2026 figures. Real gain shown is nominal unless you entered a CPI-indexed value — true Mas Shevach indexes the cost basis to CPI. Excludes betterment levy and VAT. Rates and exemptions per §48A, §49B(2), §49E RETL. Consult a tax advisor for your exact liability.</p>
+    </div>
+
+  </div><!-- /Ind_RE_CG_Com -->
+
+  <!-- ═══ Ind_Shares: Individual · Shares ════════════════════════════════════════ -->
+  <div class="calc-section" id="Ind_Shares" style="display:none">
+    <div class="fallback">
+      <p><strong>Individual — Shares</strong></p>
+      <p>Content for this combination is coming soon.</p>
+      <a href="calculator.html">← Go back to Step 1</a>
+    </div>
+  </div>
+
+  <!-- ═══ Co_IL_RE_Inc: Israeli Company · Real Estate · Rental Income ════════════ -->
+  <div class="calc-section" id="Co_IL_RE_Inc" style="display:none">
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Israeli Company — Rental Income</h2>
+        <p>Enter the company's rental income and the representative shareholder's details.</p>
+      </div>
+
+      <table class="input-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Monthly (₪)</th>
+            <th>Annual (₪)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="input-row-label">Gross Rental Income</td>
+            <td><input type="number" id="coil_rentalIncome" min="0" placeholder="e.g. 8,000" /></td>
+            <td><input type="number" id="coil_rentalIncome_annual" min="0" placeholder="e.g. 96,000" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Deductible Expenses</td>
+            <td></td>
+            <td>
+              <input type="number" id="coil_expenses" min="0" placeholder="0" />
+              <div class="input-hint">Maintenance, interest, legal fees, depreciation — not deductible on the 10% flat track</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Shareholder's Other Annual Income</td>
+            <td></td>
+            <td><input type="number" id="coil_otherIncome" min="0" placeholder="0" /></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div class="table-checkboxes" style="justify-content:flex-start; gap:2rem;">
+        <label class="checkbox-row">
+          <input type="checkbox" id="coil_over60" />
+          <span>Representative shareholder is over 60</span>
+        </label>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem 2rem; margin-top:1.5rem; align-items:start;">
+        <div>
+          <label for="coil_ownershipPct" style="font-size:.84rem; font-weight:600; color:var(--text); display:block; margin-bottom:.4rem;">Ownership Share (%)</label>
+          <div class="income-wrap">
+            <input type="number" id="coil_ownershipPct" min="0" max="100" value="100" style="padding:.65rem .9rem;" />
+          </div>
+          <div class="input-hint" style="margin-top:.4rem;">Your proportionate share of the company's rental income — relevant for Family and House company attribution</div>
+        </div>
+        <div class="field">
+          <label for="coil_companyType">Company Type</label>
+          <select id="coil_companyType">
+            <option value="regular">Regular</option>
+            <option value="family">Family</option>
+            <option value="house">House</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="coil_propertyType">Property Type</label>
+          <select id="coil_propertyType">
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="margin-top:1.1rem; background:var(--blue-light); border:1px solid #bfcfe8; border-radius:var(--radius); padding:.85rem 1.1rem; font-size:.84rem; color:var(--text); line-height:1.6;">
+        <strong style="color:var(--blue);">Classification guide</strong>
+        <ol style="margin:.4rem 0 0 1.25rem; display:flex; flex-direction:column; gap:.25rem;">
+          <li>No election filed within 3 months of incorporation → <strong>Regular</strong> (23% corporate rate; dividends taxed again at shareholder level).</li>
+          <li>Election made + all shareholders are relatives → <strong>Family</strong> — income attributed to the representative shareholder at individual progressive rates.</li>
+          <li>Election made + unrelated shareholders + 20 or fewer + holds only Israeli real estate → <strong>House</strong> — same attribution; individual tracks A, B, and C all available.</li>
+        </ol>
+      </div>
+    </div><!-- /card -->
+
+    <!-- Regular company output sub-div -->
+    <div id="coil_output_regular" class="track-section">
+      <div class="track-section-header">
+        <h2>Regular Company — Estimated Tax</h2>
+        <p>Net rental income: <strong id="coil_reg_netDisplay">—</strong></p>
+      </div>
+
+      <div class="track-cards track-cards-2">
+
+        <div class="track-card" id="coil_reg_retainCard">
+          <div class="track-card-name"><span class="track-letter">1</span>Profits Retained</div>
+          <div class="track-card-rate">23%</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Corporate tax (23%)</span>
+            <span class="track-result-val" id="coil_reg_corpTax">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">After-tax profit</span>
+            <span class="track-result-val" id="coil_reg_afterTax">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate on net</span>
+            <span class="track-result-val" id="coil_reg_retainEffective">—</span>
+          </div>
+          <div class="track-badge-area" id="coil_reg_retainBadge"></div>
+          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">This is the floor — corporate tax applies whether or not profits are distributed.</div>
+        </div>
+
+        <div class="track-card" id="coil_reg_distCard">
+          <div class="track-card-name"><span class="track-letter">2</span>Fully Distributed</div>
+          <div class="track-card-rate" style="font-size:1.3rem;">23% + 30%</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Corporate tax (23%)</span>
+            <span class="track-result-val" id="coil_reg_corpTax2">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Dividend tax (30%)</span>
+            <span class="track-result-val" id="coil_reg_divTax">—</span>
+          </div>
+          <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+            <span class="track-result-label">Combined total</span>
+            <span class="track-result-val" id="coil_reg_combined">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Combined rate on net</span>
+            <span class="track-result-val" id="coil_reg_combinedEffective">—</span>
+          </div>
+          <div class="track-badge-area" id="coil_reg_distBadge"></div>
+        </div>
+
+      </div>
+
+      <p class="track-verdict" id="coil_reg_verdict"></p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Assumes substantial shareholder (≥ 10% holding, 30% dividend rate). Consult a tax advisor for your exact liability.</p>
+    </div>
+
+    <!-- Transparent company output sub-div (Family § 64A / House § 64) -->
+    <div id="coil_output_transparent" class="track-section" style="display:none;">
+      <div class="track-section-header">
+        <h2>Transparent Company — Which Track Is Better?</h2>
+        <p>Rental income is attributed to the representative shareholder at the individual level. Attributed income: <strong id="coil_tr_attrDisplay">—</strong></p>
+      </div>
+
+      <div class="track-cards">
+
+        <div class="track-card" id="coil_tr_exemptCard">
+          <div class="track-card-name"><span class="track-letter">A</span>Standard Exemption</div>
+          <div class="track-card-rate">Marginal</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Annual tax</span>
+            <span class="track-result-val" id="coil_tr_exemptAnnual">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Monthly equivalent</span>
+            <span class="track-result-val" id="coil_tr_exemptMonthly">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate</span>
+            <span class="track-result-val" id="coil_tr_exemptEffective">—</span>
+          </div>
+          <div class="track-badge-area" id="coil_tr_exemptBadge"></div>
+        </div>
+
+        <div class="track-card" id="coil_tr_flatCard">
+          <div class="track-card-name"><span class="track-letter">B</span>Flat Rate</div>
+          <div class="track-card-rate">10%</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Annual tax</span>
+            <span class="track-result-val" id="coil_tr_flatAnnual">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Monthly equivalent</span>
+            <span class="track-result-val" id="coil_tr_flatMonthly">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate</span>
+            <span class="track-result-val" id="coil_tr_flatEffective">—</span>
+          </div>
+          <div class="track-badge-area" id="coil_tr_flatBadge"></div>
+        </div>
+
+        <div class="track-card" id="coil_tr_progCard">
+          <div class="track-card-name"><span class="track-letter track-letter-c">C</span>Progressive Rate</div>
+          <div class="track-card-rate">Marginal</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Annual tax</span>
+            <span class="track-result-val" id="coil_tr_progAnnual">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Monthly equivalent</span>
+            <span class="track-result-val" id="coil_tr_progMonthly">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate</span>
+            <span class="track-result-val" id="coil_tr_progEffective">—</span>
+          </div>
+          <div class="track-badge-area" id="coil_tr_progBadge"></div>
+          <div class="bl-note">⚠ Track C may incur up to ~12% Bituach Leumi on net rental income. Tracks A &amp; B are exempt.</div>
+        </div>
+
+      </div>
+
+      <p class="track-verdict" id="coil_tr_verdict"></p>
+      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">Because income is taxed at the individual (shareholder) level on attribution, there is <strong>no second-tier dividend tax</strong> on later distributions — unlike a Regular company.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי). Consult a tax advisor for your exact liability.</p>
+    </div>
+
+  </div><!-- /Co_IL_RE_Inc -->
+
+  <!-- ═══ Co_IL_RE_CG_Res: Israeli Company · Real Estate · CG · Residential ══════ -->
+  <div class="calc-section" id="Co_IL_RE_CG_Res" style="display:none">
+    <div class="fallback">
+      <p><strong>Israeli Company — Residential Capital Gain</strong></p>
+      <p>Content for this combination is coming soon.</p>
+      <a href="calculator.html">← Go back to Step 1</a>
+    </div>
+  </div>
+
+  <!-- ═══ Co_IL_RE_CG_Com: Israeli Company · Real Estate · CG · Commercial ════════ -->
+  <div class="calc-section" id="Co_IL_RE_CG_Com" style="display:none">
+    <div class="fallback">
+      <p><strong>Israeli Company — Commercial Capital Gain</strong></p>
+      <p>Content for this combination is coming soon.</p>
+      <a href="calculator.html">← Go back to Step 1</a>
+    </div>
+  </div>
+
+  <!-- ═══ Co_IL_Shares: Israeli Company · Shares ══════════════════════════════════ -->
+  <div class="calc-section" id="Co_IL_Shares" style="display:none">
+    <div class="fallback">
+      <p><strong>Israeli Company — Shares</strong></p>
+      <p>Content for this combination is coming soon.</p>
+      <a href="calculator.html">← Go back to Step 1</a>
+    </div>
+  </div>
+
+  <!-- ═══ Co_FOR_RE_Inc: Foreign Company · Real Estate · Rental Income ════════════ -->
+  <div class="calc-section" id="Co_FOR_RE_Inc" style="display:none">
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Foreign Company — Rental Income</h2>
+        <p>Enter the company's rental income and the representative shareholder's details.</p>
+      </div>
+
+      <table class="input-table">
+        <thead>
+          <tr>
+            <th></th>
+            <th>Monthly (₪)</th>
+            <th>Annual (₪)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td class="input-row-label">Gross Rental Income</td>
+            <td><input type="number" id="cofor_rentalIncome" min="0" placeholder="e.g. 8,000" /></td>
+            <td><input type="number" id="cofor_rentalIncome_annual" min="0" placeholder="e.g. 96,000" /></td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Deductible Expenses</td>
+            <td></td>
+            <td>
+              <input type="number" id="cofor_expenses" min="0" placeholder="0" />
+              <div class="input-hint">Maintenance, interest, legal fees, depreciation — not deductible on the 10% flat track</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="input-row-label">Shareholder's Other Annual Income</td>
+            <td></td>
+            <td><input type="number" id="cofor_otherIncome" min="0" placeholder="0" /></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="margin-top:.9rem; display:flex; flex-direction:column; gap:.5rem; align-items:flex-start;">
+        <label class="checkbox-row" style="margin-top:0;">
+          <input type="checkbox" id="cofor_over60" />
+          <span>Representative shareholder is over 60</span>
+        </label>
+        <div>
+          <label class="checkbox-row" style="margin-top:0; align-items:flex-start;">
+            <input type="checkbox" id="cofor_transparent" style="margin-top:.15rem;" />
+            <span>Transparent entity in my home country</span>
+          </label>
+          <div class="input-hint" style="margin-top:.25rem; margin-left:calc(16px + .55rem);">Attributes the company's rental income to you at individual progressive rates, unlocking the individual tracks.</div>
+        </div>
+      </div>
+
+      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem 2rem; margin-top:1.5rem; align-items:start;">
+        <div>
+          <label for="cofor_ownershipPct" style="font-size:.84rem; font-weight:600; color:var(--text); display:block; margin-bottom:.4rem;">Ownership Share (%)</label>
+          <div class="income-wrap">
+            <input type="number" id="cofor_ownershipPct" min="0" max="100" value="100" style="padding:.65rem .9rem;" />
+          </div>
+          <div class="input-hint" style="margin-top:.4rem;">Your proportionate share of the company's rental income — relevant for transparent entity attribution</div>
+        </div>
+        <div class="field">
+          <label for="cofor_taxBasis">Taxation Basis</label>
+          <select id="cofor_taxBasis">
+            <option value="withholding">23% withholding on gross (default)</option>
+            <option value="return">File Israeli return — taxed on 23% of net</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="cofor_propertyType">Property Type</label>
+          <select id="cofor_propertyType">
+            <option value="residential">Residential</option>
+            <option value="commercial">Commercial</option>
+          </select>
+        </div>
+      </div>
+    </div><!-- /card -->
+
+    <!-- Output stub -->
+    <div id="cofor_output" class="track-section">
+      <div class="track-section-header">
+        <h2>Estimated Tax</h2>
+        <p>Tax calculation coming soon.</p>
+      </div>
+      <p class="track-verdict" style="color:var(--muted); font-style:italic;">Enter rental income above to see estimates.</p>
+    </div>
+
+  </div><!-- /Co_FOR_RE_Inc -->
+
+  <!-- ═══ Co_FOR_RE_CG_Res: Foreign Company · Real Estate · CG · Residential ═══════ -->
+  <div class="calc-section" id="Co_FOR_RE_CG_Res" style="display:none">
+    <div class="fallback">
+      <p><strong>Foreign Company — Residential Capital Gain</strong></p>
+      <p>Content for this combination is coming soon.</p>
+      <a href="calculator.html">← Go back to Step 1</a>
+    </div>
+  </div>
+
+  <!-- ═══ Co_FOR_RE_CG_Com: Foreign Company · Real Estate · CG · Commercial ════════ -->
+  <div class="calc-section" id="Co_FOR_RE_CG_Com" style="display:none">
+    <div class="fallback">
+      <p><strong>Foreign Company — Commercial Capital Gain</strong></p>
+      <p>Content for this combination is coming soon.</p>
+      <a href="calculator.html">← Go back to Step 1</a>
+    </div>
+  </div>
+
+  <!-- ═══ Co_FOR_Shares: Foreign Company · Shares ═════════════════════════════════ -->
+  <div class="calc-section" id="Co_FOR_Shares" style="display:none">
+    <div class="fallback">
+      <p><strong>Foreign Company — Shares</strong></p>
+      <p>Content for this combination is coming soon.</p>
+      <a href="calculator.html">← Go back to Step 1</a>
+    </div>
+  </div>
+
+  <!-- ═══ fallback ════════════════════════════════════════════════════════════════ -->
+  <div class="calc-section" id="fallback" style="display:none">
+    <div class="fallback">
+      <p>Content for this combination is coming soon.</p>
+      <a href="calculator.html">← Go back to Step 1</a>
+    </div>
+  </div>
+
+</main>
+
+<footer>
+  <p><strong>Israel International Tax Guide</strong> — General information only. Not legal or tax advice.</p>
+</footer>
+
+<script>
+  // ── Tax brackets (monthly NIS, 2024) ────────────────────────────
+  const BRACKETS = [
+    { min: 0,     max: 7010,     rate: 0.10, label: '₪0 – ₪7,010'       },
+    { min: 7010,  max: 10060,    rate: 0.14, label: '₪7,011 – ₪10,060'  },
+    { min: 10060, max: 16150,    rate: 0.20, label: '₪10,061 – ₪16,150' },
+    { min: 16150, max: 22440,    rate: 0.31, label: '₪16,151 – ₪22,440' },
+    { min: 22440, max: 46690,    rate: 0.35, label: '₪22,441 – ₪46,690' },
+    { min: 46690, max: Infinity, rate: 0.47, label: 'Above ₪46,690'      },
+  ];
+
+  function calcTaxPassive(annualIncome) {
+    const t31 = BRACKETS[3].max * 12;
+    const t35 = BRACKETS[4].max * 12;
+    let tax = 0;
+    tax += Math.min(annualIncome, t31) * 0.31;
+    if (annualIncome > t31) tax += (Math.min(annualIncome, t35) - t31) * 0.35;
+    if (annualIncome > t35) tax += (annualIncome - t35) * 0.47;
+    return tax;
+  }
+
+  function calcTaxActive(annualIncome) {
+    let tax = 0;
+    for (const b of BRACKETS) {
+      const lo = b.min * 12;
+      const hi = b.max === Infinity ? Infinity : b.max * 12;
+      if (annualIncome <= lo) break;
+      tax += (Math.min(annualIncome, hi) - lo) * b.rate;
+    }
+    return tax;
+  }
+
+  function fmt(n) { return '₪' + Math.round(n).toLocaleString('en-IL'); }
+
+  // ── Three-track rental tax (pure: no DOM read/write) ─────────────
+  // Inputs are ANNUAL figures. Returns { flatTax, exemptTax, fullyExempt, progTax }.
+  // isResidential=false → Tracks A (exemption) & B (flat) are unavailable
+  // (returned as null) so commercial callers can gray them; only Track C applies.
+  function computeTracks({ grossAnnual, otherAnnualIncome = 0, annualExpenses = 0, over60 = false, isResidential = true }) {
+    const C_EXEMPT = 67848;
+
+    const R   = grossAnnual;
+    const O   = otherAnnualIncome;
+    const E   = Math.min(annualExpenses, R);
+    const Net = Math.max(0, R - E);
+
+    // Track C: Progressive Rate (residential and commercial)
+    let progTax;
+    if (over60) {
+      progTax = calcTaxActive(Net);
+    } else if (O > 0) {
+      let T;
+      if (O <= 269280)      T = 0.31;
+      else if (O <= 560280) T = 0.35;
+      else                  T = 0.47;
+      progTax = T * Net;
+    } else {
+      progTax = calcTaxPassive(Net);
+    }
+
+    // Tracks A & B apply to residential only
+    if (!isResidential) {
+      return { flatTax: null, exemptTax: null, fullyExempt: false, progTax };
+    }
+
+    // Track B: Flat Rate
+    const flatTax = 0.10 * R;
+
+    // Track A: Standard Exemption
+    let exemptTax;
+    let fullyExempt = false;
+
+    if (R <= C_EXEMPT) {
+      exemptTax = 0;
+      fullyExempt = true;
+    } else if (R >= 2 * C_EXEMPT) {
+      exemptTax = calcTaxPassive(Net);
+    } else {
+      let T;
+      if (O > 0) {
+        if (O <= 269280)      T = 0.31;
+        else if (O <= 560280) T = 0.35;
+        else                  T = 0.47;
+      } else {
+        T = over60 ? 0.10 : 0.31;
+      }
+      exemptTax = T * (2 * (R - C_EXEMPT) * (1 - Math.min(E / R, 1)));
+    }
+
+    return { flatTax, exemptTax, fullyExempt, progTax };
+  }
+
+  // ── Capital Gains shared helpers (§48A linear-split method) ──────
+
+  // purchasePrice − depreciationClaimed + capitalImprovements
+  function adjustedBasis(purchasePrice, depreciationClaimed, capitalImprovements) {
+    return purchasePrice - depreciationClaimed + capitalImprovements;
+  }
+
+  // Gross gain before tax; floored at 0 (no negative gain)
+  function nominalGain(salePrice, saleExpenses, acquisitionExpenses, basis) {
+    return Math.max(0, salePrice - saleExpenses - acquisitionExpenses - basis);
+  }
+
+  // If the CPI-override field is filled (> 0), use it as the real gain.
+  // Otherwise fall back to nominalGain and flag it so the UI can display
+  // a "nominal — not CPI-indexed" label.
+  // Returns { value: number, isNominal: boolean }
+  function realGain(cpiGainOverride, nominalGainVal) {
+    if (cpiGainOverride > 0) {
+      return { value: cpiGainOverride, isNominal: false };
+    }
+    return { value: nominalGainVal, isNominal: true };
+  }
+
+  // Days between two Date objects (d2 − d1)
+  function daysBetween(d1, d2) {
+    return Math.round((d2.getTime() - d1.getTime()) / 86400000);
+  }
+
+  // Total holding period in days
+  function totalDaysOwned(purchaseDate, saleDate) {
+    return daysBetween(purchaseDate, saleDate);
+  }
+
+  // §48A straight-line allocation of gainValue across periods defined by
+  // cutoffDates (array of Date objects).  Cutoffs outside the ownership
+  // window are silently ignored.
+  // Returns: Array of { from: Date, to: Date, days: number, gain: number }
+  function linearSplit(gainValue, purchaseDate, saleDate, cutoffDates) {
+    const total = daysBetween(purchaseDate, saleDate);
+    if (total <= 0) return [];
+
+    // Build sorted boundary list, clipped to [purchaseDate, saleDate]
+    const inner = cutoffDates
+      .filter(d => d > purchaseDate && d < saleDate)
+      .sort((a, b) => a - b);
+    const boundaries = [purchaseDate, ...inner, saleDate];
+
+    return boundaries.slice(0, -1).map((from, i) => {
+      const to   = boundaries[i + 1];
+      const days = daysBetween(from, to);
+      return { from, to, days, gain: gainValue * (days / total) };
+    });
+  }
+
+  /*
+  // ── linearSplit sanity-check (uncomment to run in browser console) ─
+  (function testLinearSplit() {
+    const purchase  = new Date('2010-01-01');
+    const sale      = new Date('2020-01-01');
+    const cutoff    = new Date('2014-01-01');   // §48A cutoff example
+    const gain      = 1_000_000;
+    const total     = totalDaysOwned(purchase, sale);
+    const periods   = linearSplit(gain, purchase, sale, [cutoff]);
+
+    console.group('linearSplit — 2014 cutoff sanity check');
+    console.log('Total days owned:', total);
+    periods.forEach((p, i) => {
+      console.log(
+        'Period', i + 1,
+        '|', p.from.toISOString().slice(0,10), '→', p.to.toISOString().slice(0,10),
+        '| days:', p.days,
+        '| share:', (p.days / total * 100).toFixed(2) + '%',
+        '| gain: ₪' + Math.round(p.gain).toLocaleString()
+      );
+    });
+    const sumGain = periods.reduce((s, p) => s + p.gain, 0);
+    console.log('Sum of period gains:', Math.round(sumGain), '(should equal', gain, ')');
+    console.groupEnd();
+  })();
+  */
+
+  // ── Section router ────────────────────────────────────────────────
+  function showSection() {
+    const saved    = JSON.parse(sessionStorage.getItem('taxForm') || '{}');
+    const entity   = (saved.entity   || '').trim();
+    const asset    = (saved.asset    || '').trim();
+    const origin   = (saved.origin   || '').trim();
+    const purpose  = (saved.purpose  || '').trim();
+    const property = (saved.property || '').trim();
+
+    let key = 'fallback';
+
+    if (entity === 'individual') {
+      if (asset === 'shares') {
+        key = 'Ind_Shares';
+      } else if (asset === 'real_estate') {
+        if (purpose === 'income') {
+          key = 'Ind_RE_Inc';
+        } else if (purpose === 'capital_gain') {
+          if (property === 'residential')     key = 'Ind_RE_CG_Res';
+          else if (property === 'commercial') key = 'Ind_RE_CG_Com';
+        }
+      }
+    } else if (entity === 'company') {
+      if (origin === 'israeli') {
+        if (asset === 'shares') {
+          key = 'Co_IL_Shares';
+        } else if (asset === 'real_estate') {
+          if (purpose === 'income') {
+            key = 'Co_IL_RE_Inc';
+          } else if (purpose === 'capital_gain') {
+            if (property === 'residential')     key = 'Co_IL_RE_CG_Res';
+            else if (property === 'commercial') key = 'Co_IL_RE_CG_Com';
+          }
+        }
+      } else if (origin === 'foreign') {
+        if (asset === 'shares') {
+          key = 'Co_FOR_Shares';
+        } else if (asset === 'real_estate') {
+          if (purpose === 'income') {
+            key = 'Co_FOR_RE_Inc';
+          } else if (purpose === 'capital_gain') {
+            if (property === 'residential')     key = 'Co_FOR_RE_CG_Res';
+            else if (property === 'commercial') key = 'Co_FOR_RE_CG_Com';
+          }
+        }
+      }
+    }
+
+    const section = document.getElementById(key) || document.getElementById('fallback');
+    section.style.display = '';
+
+    if      (key === 'Ind_RE_Inc')     initIndividualResidential();
+    else if (key === 'Ind_RE_CG_Res') initIndCGRes();
+    else if (key === 'Ind_RE_CG_Com') initIndCGCom();
+    else if (key === 'Co_IL_RE_Inc')  initCoILREInc();
+    else if (key === 'Co_FOR_RE_Inc') initCoFORREInc();
+  }
+
+  // ── Individual + Real Estate + Income (Rental) — event wiring ────
+  function initIndividualResidential() {
+
+    document.getElementById('hasOtherIncome').addEventListener('change', function () {
+      const row    = document.getElementById('otherIncomeRow');
+      const mInput = document.getElementById('otherIncome');
+      const aInput = document.getElementById('otherIncome_annual');
+      if (this.checked) {
+        row.classList.remove('input-row-disabled');
+        mInput.disabled = false;
+        aInput.disabled = false;
+        mInput.focus();
+      } else {
+        row.classList.add('input-row-disabled');
+        mInput.disabled = true;
+        aInput.disabled = true;
+        mInput.value = '';
+        aInput.value = '';
+      }
+    });
+
+    // Monthly ↔ Annual sync for each row
+    function syncPair(monthlyId, annualId) {
+      document.getElementById(monthlyId).addEventListener('input', function () {
+        document.getElementById(annualId).value =
+          this.value !== '' ? +(parseFloat(this.value) * 12).toFixed(2) : '';
+      });
+      document.getElementById(annualId).addEventListener('input', function () {
+        document.getElementById(monthlyId).value =
+          this.value !== '' ? +(parseFloat(this.value) / 12).toFixed(2) : '';
+      });
+    }
+    syncPair('rentalIncome',  'rentalIncome_annual');
+    syncPair('expensesInput', 'expensesInput_annual');
+    syncPair('otherIncome',   'otherIncome_annual');
+
+    function runTrackCalc() {
+      const rental   = parseFloat(document.getElementById('rentalIncome').value) || 0;
+      const hasOther = document.getElementById('hasOtherIncome').checked;
+      const other    = hasOther ? (parseFloat(document.getElementById('otherIncome').value) || 0) : 0;
+      const expenses = parseFloat(document.getElementById('expensesInput').value) || 0;
+      const over60 = document.getElementById('over60Check').checked;
+
+      const R = rental * 12;
+
+      if (!R || R <= 0) {
+        ['flatAnnual','flatMonthly','flatEffective',
+         'exemptAnnual','exemptMonthly','exemptEffective',
+         'progAnnual','progMonthly','progEffective'].forEach(id => {
+          document.getElementById(id).textContent = '—';
+        });
+        ['flatBadge','exemptBadge','progBadge'].forEach(id => {
+          document.getElementById(id).innerHTML = '';
+        });
+        ['flatCard','exemptCard','progCard'].forEach(id => {
+          document.getElementById(id).classList.remove('track-recommended');
+        });
+        document.getElementById('trackVerdict').textContent = '';
+        return;
+      }
+
+      const { flatTax, exemptTax, fullyExempt, progTax } = computeTracks({
+        grossAnnual:       R,
+        otherAnnualIncome: other * 12,
+        annualExpenses:    expenses * 12,
+        over60,
+        isResidential:     true,
+      });
+
+      // Populate cards
+      document.getElementById('flatAnnual').textContent    = fmt(flatTax);
+      document.getElementById('flatMonthly').textContent   = fmt(flatTax / 12);
+      document.getElementById('flatEffective').textContent = ((flatTax / R) * 100).toFixed(1) + '%';
+
+      document.getElementById('exemptAnnual').textContent    = fullyExempt ? '₪0'   : fmt(exemptTax);
+      document.getElementById('exemptMonthly').textContent   = fullyExempt ? '₪0'   : fmt(exemptTax / 12);
+      document.getElementById('exemptEffective').textContent = fullyExempt ? '0.0%' : ((exemptTax / R) * 100).toFixed(1) + '%';
+
+      document.getElementById('progAnnual').textContent    = fmt(progTax);
+      document.getElementById('progMonthly').textContent   = fmt(progTax / 12);
+      document.getElementById('progEffective').textContent = ((progTax / R) * 100).toFixed(1) + '%';
+
+      // Recommendation logic
+      const THRESHOLD = 500;
+      const tracks = [
+        { id: 'exemptCard', badge: 'exemptBadge', tax: exemptTax, label: 'Track A' },
+        { id: 'flatCard',   badge: 'flatBadge',   tax: flatTax,   label: 'Track B' },
+        { id: 'progCard',   badge: 'progBadge',   tax: progTax,   label: 'Track C' },
+      ];
+
+      tracks.forEach(t => {
+        document.getElementById(t.id).classList.remove('track-recommended');
+        document.getElementById(t.badge).innerHTML = '';
+      });
+
+      if (fullyExempt) {
+        document.getElementById('exemptCard').classList.add('track-recommended');
+        document.getElementById('exemptBadge').innerHTML = '<span class="badge badge-recommended">Fully Exempt ✓</span>';
+        document.getElementById('trackVerdict').textContent = 'You are fully exempt on Track A — ₪0 tax owed.';
+        return;
+      }
+
+      const sorted   = [...tracks].sort((a, b) => a.tax - b.tax);
+      const cheapest = sorted[0];
+      const runnerUp = sorted[1];
+      const margin   = runnerUp.tax - cheapest.tax;
+
+      if (margin <= THRESHOLD) {
+        tracks.forEach(t => {
+          if (t.tax - cheapest.tax <= THRESHOLD) {
+            document.getElementById(t.badge).innerHTML = '<span class="badge badge-close">Too close to call</span>';
+          }
+        });
+        document.getElementById('trackVerdict').textContent =
+          'Results are within ₪' + THRESHOLD.toLocaleString() + '/year — review all tracks carefully.';
+      } else if (cheapest.label === 'Track C') {
+        document.getElementById('progCard').classList.add('track-recommended');
+        document.getElementById('progBadge').innerHTML = '<span class="badge badge-recommended">Verify after Bituach Leumi ✓</span>';
+        document.getElementById('trackVerdict').textContent =
+          'Track C appears cheapest, but factor in potential Bituach Leumi before deciding.';
+      } else {
+        document.getElementById(cheapest.id).classList.add('track-recommended');
+        document.getElementById(cheapest.badge).innerHTML = '<span class="badge badge-recommended">Recommended ✓</span>';
+        document.getElementById('trackVerdict').textContent =
+          cheapest.label + ' is cheapest at ' + fmt(cheapest.tax) + '/year — saving you ' + fmt(margin) + ' vs. the next best option.';
+      }
+    }
+
+    ['rentalIncome', 'rentalIncome_annual',
+     'otherIncome',  'otherIncome_annual',
+     'expensesInput','expensesInput_annual'].forEach(id =>
+      document.getElementById(id).addEventListener('input', runTrackCalc)
+    );
+    ['hasOtherIncome', 'over60Check'].forEach(id =>
+      document.getElementById(id).addEventListener('change', runTrackCalc)
+    );
+  }
+
+  // ── Individual + Real Estate + Capital Gain (Residential) ───────
+  function initIndCGRes() {
+    const FULL_EXEMPTION_CAP = 5008000;
+    const LINEAR_CUTOFF      = new Date('2014-01-01');
+    const POST_RATE          = 0.25;
+    const THRESHOLD          = 500;
+
+    const saved  = JSON.parse(sessionStorage.getItem('taxForm') || '{}');
+    const origin = (saved.origin || '').trim();
+
+    document.getElementById('cg_res_saleDate').value =
+      new Date().toISOString().split('T')[0];
+
+    if (origin === 'foreign') {
+      document.getElementById('cg_res_foreignNotice').style.display = '';
+    }
+
+    function pn(id) {
+      return parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
+    }
+    function pd(id) {
+      const v = document.getElementById(id).value;
+      return v ? new Date(v) : null;
+    }
+
+    // ── Owned ≥ 18 months flag ────────────────────────────────────
+    function updateOwnedFlag() {
+      const purchaseVal = document.getElementById('cg_res_purchaseDate').value;
+      const saleVal     = document.getElementById('cg_res_saleDate').value;
+      const flagEl      = document.getElementById('cg_res_ownedFlag');
+      if (!purchaseVal || !saleVal) {
+        flagEl.className   = 'cg-flag cg-flag-na';
+        flagEl.textContent = 'Enter dates above';
+        return;
+      }
+      const purchase = new Date(purchaseVal);
+      const sale     = new Date(saleVal);
+      const months   = (sale.getFullYear() - purchase.getFullYear()) * 12 +
+                       (sale.getMonth() - purchase.getMonth());
+      if (months >= 18) {
+        flagEl.className   = 'cg-flag cg-flag-yes';
+        flagEl.textContent = '✓ Yes (' + months + ' months)';
+      } else {
+        flagEl.className   = 'cg-flag cg-flag-no';
+        flagEl.textContent = '✗ No (' + months + ' months)';
+      }
+    }
+
+    // ── Reset all output elements to blank ───────────────────────
+    function resetCGResCards() {
+      ['cg_res_A_tax','cg_res_A_effective','cg_res_A_total',
+       'cg_res_B_tax','cg_res_B_effective','cg_res_B_total',
+       'cg_res_gainDisplay'].forEach(id => {
+        document.getElementById(id).textContent = '—';
+      });
+      document.getElementById('cg_res_A_note').textContent           = '';
+      document.getElementById('cg_res_verdict').textContent          = '';
+      document.getElementById('cg_res_noDateWarn').style.display     = 'none';
+      ['cg_res_A_badge','cg_res_B_badge'].forEach(id => {
+        document.getElementById(id).innerHTML = '';
+      });
+      ['cg_res_A_card','cg_res_B_card'].forEach(id => {
+        document.getElementById(id).classList.remove('track-recommended','track-ineligible');
+      });
+    }
+
+    // ── Main calculation ─────────────────────────────────────────
+    function runCGResCalc() {
+      const salePrice    = pn('cg_res_salePrice');
+      const purchPrice   = pn('cg_res_purchasePrice');
+      const acqExp       = pn('cg_res_acqExpenses');
+      const saleExp      = pn('cg_res_saleExpenses');
+      const improvements = pn('cg_res_improvements');
+      const depreciation = pn('cg_res_depreciation');
+      const cpiOverride  = pn('cg_res_cpiGain');
+      const otherIncome  = pn('cg_res_otherIncome');
+      const purchaseDate = pd('cg_res_purchaseDate');
+      const saleDate_    = pd('cg_res_saleDate');
+      const onlyApt      = document.getElementById('cg_res_onlyApt').checked;
+      const foreignCert  = document.getElementById('cg_res_foreignCert').checked;
+
+      if (!salePrice) { resetCGResCards(); return; }
+
+      const noDate = !purchaseDate;
+
+      const basis   = adjustedBasis(purchPrice, depreciation, improvements);
+      const nominal = nominalGain(salePrice, saleExp, acqExp, basis);
+      const rg      = realGain(cpiOverride, nominal);
+      const gain    = rg.value;
+
+      if (gain <= 0) {
+        resetCGResCards();
+        document.getElementById('cg_res_noDateWarn').style.display     = noDate ? '' : 'none';
+        document.getElementById('cg_res_gainDisplay').textContent      = '₪0 (no taxable gain)';
+        ['cg_res_A_tax','cg_res_A_total',
+         'cg_res_B_tax','cg_res_B_total'].forEach(id => {
+          document.getElementById(id).textContent = '₪0';
+        });
+        document.getElementById('cg_res_A_effective').textContent = '0.0%';
+        document.getElementById('cg_res_B_effective').textContent = '0.0%';
+        document.getElementById('cg_res_verdict').textContent     = 'No taxable gain — no capital gains tax owed on either track.';
+        return;
+      }
+
+      // ── Eligibility for §49b2 single-home exemption ──────────────
+      const ownedMonths = (purchaseDate && saleDate_)
+        ? (saleDate_.getFullYear() - purchaseDate.getFullYear()) * 12 +
+          (saleDate_.getMonth() - purchaseDate.getMonth())
+        : 0;
+      const owned18   = ownedMonths >= 18;
+      const foreignOK = origin !== 'foreign' || foreignCert;
+      const eligible  = onlyApt && owned18 && foreignOK;
+
+      const ineligibleReasons = [];
+      if (!onlyApt)      ineligibleReasons.push('only-apartment box not checked');
+      if (noDate)        ineligibleReasons.push('purchase date not entered — holding period unknown');
+      else if (!owned18) ineligibleReasons.push('held < 18 months');
+      if (!foreignOK)    ineligibleReasons.push('home-country certificate not confirmed');
+      const ineligible = !eligible;
+
+      // ── Track A: Single-Home Exemption ──────────────────────────
+      let taxA         = null;
+      let fullExempt   = false;
+      let partialNote  = '';
+      let taxableGainA = 0;
+
+      if (eligible) {
+        if (salePrice <= FULL_EXEMPTION_CAP) {
+          taxA         = 0;
+          fullExempt   = true;
+          taxableGainA = 0;
+        } else {
+          const excessFraction = (salePrice - FULL_EXEMPTION_CAP) / salePrice;
+          taxableGainA = gain * excessFraction;
+          const periods = (purchaseDate && saleDate_)
+            ? linearSplit(taxableGainA, purchaseDate, saleDate_, [LINEAR_CUTOFF])
+            : [{ gain: taxableGainA }];
+          const postGain = periods.length > 1 ? periods[periods.length - 1].gain : taxableGainA;
+          taxA        = postGain * POST_RATE;
+          partialNote = 'Proportional estimate — only the gain attributable to the sale price above ₪5,008,000 is taxed at 25%.';
+        }
+      }
+
+      const totalA = ineligible ? null : (taxA || 0);
+
+      // ── Track B: §48A linear split, exemption preserved ────────
+      let postGainB;
+      if (purchaseDate && saleDate_) {
+        const periods = linearSplit(gain, purchaseDate, saleDate_, [LINEAR_CUTOFF]);
+        postGainB = periods.length > 1 ? periods[periods.length - 1].gain : gain;
+      } else {
+        postGainB = gain;   // worst case: full gain at post-2014 rate
+      }
+      const taxB = postGainB * POST_RATE;
+
+      const totalB = taxB;
+
+      // ── Populate output ─────────────────────────────────────────
+      resetCGResCards();
+      document.getElementById('cg_res_noDateWarn').style.display = noDate ? '' : 'none';
+
+      document.getElementById('cg_res_gainDisplay').textContent =
+        fmt(gain) + (rg.isNominal ? ' (nominal — not CPI-indexed)' : ' (CPI-indexed)');
+
+      // Track A display
+      if (ineligible) {
+        document.getElementById('cg_res_A_card').classList.add('track-ineligible');
+        ['cg_res_A_tax','cg_res_A_effective','cg_res_A_total'].forEach(id => {
+          document.getElementById(id).textContent = 'N/A';
+        });
+        document.getElementById('cg_res_A_badge').innerHTML =
+          '<span class="badge badge-warning">Ineligible</span>';
+        document.getElementById('cg_res_A_note').textContent =
+          'Missing: ' + ineligibleReasons.join('; ') + '.';
+      } else {
+        document.getElementById('cg_res_A_tax').textContent =
+          fullExempt ? '₪0' : fmt(taxA);
+        document.getElementById('cg_res_A_effective').textContent =
+          fullExempt ? '0.0%' : ((taxA / gain) * 100).toFixed(1) + '%';
+        document.getElementById('cg_res_A_total').textContent =
+          fmt(totalA);
+        if (partialNote) document.getElementById('cg_res_A_note').textContent = partialNote;
+      }
+
+      // Track B display
+      document.getElementById('cg_res_B_tax').textContent       = fmt(taxB);
+      document.getElementById('cg_res_B_effective').textContent = ((taxB / gain) * 100).toFixed(1) + '%';
+      document.getElementById('cg_res_B_total').textContent     = fmt(totalB);
+
+      // ── Recommendation (compare totals) ─────────────────────────
+      if (ineligible) {
+        document.getElementById('cg_res_B_card').classList.add('track-recommended');
+        document.getElementById('cg_res_B_badge').innerHTML =
+          '<span class="badge badge-recommended">Only available track ✓</span>';
+        document.getElementById('cg_res_verdict').textContent =
+          'Track A is unavailable (' + ineligibleReasons.join('; ') + '). '
+          + 'Track B tax: ' + fmt(totalB) + '.';
+        return;
+      }
+
+      if (fullExempt) {
+        document.getElementById('cg_res_A_card').classList.add('track-recommended');
+        document.getElementById('cg_res_A_badge').innerHTML =
+          '<span class="badge badge-recommended">Fully Exempt ✓</span>';
+        document.getElementById('cg_res_verdict').textContent =
+          'Track A gives full exemption — ₪0 total tax.'
+          + ' Consider Track B if you plan to sell a higher-value property within the next 4 years, '
+          + 'as using the exemption now forfeits it for that future sale.';
+        return;
+      }
+
+      const margin = Math.abs(totalB - totalA);
+      if (margin <= THRESHOLD) {
+        ['cg_res_A_badge','cg_res_B_badge'].forEach(id => {
+          document.getElementById(id).innerHTML =
+            '<span class="badge badge-close">Too close to call</span>';
+        });
+        document.getElementById('cg_res_verdict').textContent =
+          'Results are within ₪500 — either track is reasonable. '
+          + 'Track B also preserves your single-home exemption for a future, higher-value sale.';
+      } else if (totalA < totalB) {
+        document.getElementById('cg_res_A_card').classList.add('track-recommended');
+        document.getElementById('cg_res_A_badge').innerHTML =
+          '<span class="badge badge-recommended">Lower total ✓</span>';
+        document.getElementById('cg_res_B_badge').innerHTML =
+          '<span class="badge badge-close">Saves exemption</span>';
+        document.getElementById('cg_res_verdict').textContent =
+          'Track A saves ' + fmt(totalB - totalA)
+          + ' — total ' + fmt(totalA) + ' vs ' + fmt(totalB) + ' on Track B. '
+          + 'Track B preserves your once-per-4-years single-home exemption — consider which matters more.';
+      } else {
+        document.getElementById('cg_res_B_card').classList.add('track-recommended');
+        document.getElementById('cg_res_B_badge').innerHTML =
+          '<span class="badge badge-recommended">Lower total + saves exemption ✓</span>';
+        document.getElementById('cg_res_verdict').textContent =
+          'Track B is cheaper by ' + fmt(totalA - totalB)
+          + ' — total ' + fmt(totalB) + ' vs ' + fmt(totalA) + ' on Track A — and also preserves your single-home exemption.';
+      }
+    }
+
+    // ── Event wiring ─────────────────────────────────────────────
+    document.getElementById('cg_res_purchaseDate').addEventListener('change', function () {
+      updateOwnedFlag(); runCGResCalc();
+    });
+    document.getElementById('cg_res_saleDate').addEventListener('change', function () {
+      updateOwnedFlag(); runCGResCalc();
+    });
+    ['cg_res_salePrice','cg_res_purchasePrice','cg_res_acqExpenses',
+     'cg_res_saleExpenses','cg_res_improvements','cg_res_depreciation',
+     'cg_res_cpiGain','cg_res_otherIncome'].forEach(id =>
+      document.getElementById(id).addEventListener('input', runCGResCalc)
+    );
+    ['cg_res_onlyApt','cg_res_foreignCert'].forEach(id =>
+      document.getElementById(id).addEventListener('change', runCGResCalc)
+    );
+
+    updateOwnedFlag();
+    runCGResCalc();
+  }
+
+  // ── Individual + Real Estate + Capital Gain (Commercial) ─────────
+  function initIndCGCom() {
+    const CUTOFF_2001      = new Date('2001-11-07');
+    const CUTOFF_2012      = new Date('2012-01-01');
+    const PRE_RATE         = 0.47;   // marginal rate — worst-case when no purchase date
+    const MID_RATE         = 0.20;   // 7 Nov 2001 – 31 Dec 2011
+    const POST_RATE        = 0.25;   // 1 Jan 2012 onward
+
+    document.getElementById('cg_com_saleDate').value =
+      new Date().toISOString().split('T')[0];
+
+    function pn(id) {
+      return parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
+    }
+    function pd(id) {
+      const v = document.getElementById(id).value;
+      return v ? new Date(v) : null;
+    }
+
+    const ALL_OUTPUT_IDS = [
+      'cg_com_pre2001Gain','cg_com_pre2001Tax',
+      'cg_com_midGain',    'cg_com_midTax',
+      'cg_com_postGain',   'cg_com_postTax',
+      'cg_com_totalTax',   'cg_com_effective',
+      'cg_com_grandTotal',
+      'cg_com_gainDisplay',
+    ];
+
+    function resetComCards() {
+      ALL_OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
+      document.getElementById('cg_com_verdict').textContent      = '';
+      document.getElementById('cg_com_noDateWarn').style.display = 'none';
+    }
+
+    function runCGComCalc() {
+      const salePrice    = pn('cg_com_salePrice');
+      const purchPrice   = pn('cg_com_purchasePrice');
+      const acqExp       = pn('cg_com_acqExpenses');
+      const saleExp      = pn('cg_com_saleExpenses');
+      const improvements = pn('cg_com_improvements');
+      const depreciation = pn('cg_com_depreciation');
+      const cpiOverride  = pn('cg_com_cpiGain');
+      const otherIncome  = pn('cg_com_otherIncome');
+      const purchaseDate = pd('cg_com_purchaseDate');
+      const saleDate_    = pd('cg_com_saleDate');
+
+      if (!salePrice) { resetComCards(); return; }
+
+      const noDate = !purchaseDate;
+      document.getElementById('cg_com_noDateWarn').style.display = noDate ? '' : 'none';
+
+      const basis   = adjustedBasis(purchPrice, depreciation, improvements);
+      const nominal = nominalGain(salePrice, saleExp, acqExp, basis);
+      const rg      = realGain(cpiOverride, nominal);
+      const gain    = rg.value;
+
+      if (gain <= 0) {
+        resetComCards();
+        document.getElementById('cg_com_noDateWarn').style.display = noDate ? '' : 'none';
+        document.getElementById('cg_com_gainDisplay').textContent  = '₪0 (no taxable gain)';
+        ['cg_com_totalTax','cg_com_grandTotal',
+         'cg_com_pre2001Gain','cg_com_midGain','cg_com_postGain'].forEach(id => {
+          document.getElementById(id).textContent = '₪0';
+        });
+        ['cg_com_pre2001Tax','cg_com_midTax','cg_com_postTax'].forEach(id => {
+          document.getElementById(id).textContent = '—';
+        });
+        document.getElementById('cg_com_effective').textContent = '0.0%';
+        document.getElementById('cg_com_verdict').textContent   = 'No taxable gain — no capital gains tax owed.';
+        return;
+      }
+
+      document.getElementById('cg_com_gainDisplay').textContent =
+        fmt(gain) + (rg.isNominal ? ' (nominal — not CPI-indexed)' : ' (CPI-indexed)');
+
+      // §48A linear split — or worst-case (full gain at PRE_RATE) if no purchase date
+      let pre2001 = 0, mid = 0, post = 0;
+
+      if (purchaseDate && saleDate_) {
+        const periods = linearSplit(gain, purchaseDate, saleDate_, [CUTOFF_2001, CUTOFF_2012]);
+        for (const p of periods) {
+          if (p.from < CUTOFF_2001)      pre2001 += p.gain;
+          else if (p.from < CUTOFF_2012) mid     += p.gain;
+          else                           post    += p.gain;
+        }
+      } else {
+        pre2001 = gain;   // worst case: unknown date → 47% on everything
+      }
+
+      const taxPre  = pre2001 * PRE_RATE;
+      const taxMid  = mid     * MID_RATE;
+      const taxPost = post    * POST_RATE;
+      const total   = taxPre + taxMid + taxPost;
+
+      const grandTotal = total;
+
+      document.getElementById('cg_com_pre2001Gain').textContent = fmt(pre2001);
+      document.getElementById('cg_com_pre2001Tax').textContent  = pre2001 > 0 ? fmt(taxPre)  : '—';
+      document.getElementById('cg_com_midGain').textContent     = fmt(mid);
+      document.getElementById('cg_com_midTax').textContent      = mid     > 0 ? fmt(taxMid)  : '—';
+      document.getElementById('cg_com_postGain').textContent    = fmt(post);
+      document.getElementById('cg_com_postTax').textContent     = post    > 0 ? fmt(taxPost) : '—';
+      document.getElementById('cg_com_totalTax').textContent    = fmt(total);
+      document.getElementById('cg_com_effective').textContent   = ((total / gain) * 100).toFixed(1) + '%';
+      document.getElementById('cg_com_grandTotal').textContent  = fmt(grandTotal);
+
+      // Plain-English summary
+      const parts = [];
+      if (pre2001 > 0) parts.push(noDate ? 'full gain at 47% (worst case — no purchase date)' : 'pre-2001 at 47%');
+      if (mid     > 0) parts.push('2001–2011 at 20%');
+      if (post    > 0) parts.push('post-2012 at 25%');
+      document.getElementById('cg_com_verdict').textContent =
+        'Split: ' + parts.join(', ') + '. '
+        + 'Base tax ' + fmt(total) + ' (' + ((total / gain) * 100).toFixed(1) + '% of gain).';
+    }
+
+    ['cg_com_salePrice','cg_com_purchasePrice','cg_com_acqExpenses',
+     'cg_com_saleExpenses','cg_com_improvements','cg_com_depreciation',
+     'cg_com_cpiGain','cg_com_otherIncome'].forEach(id =>
+      document.getElementById(id).addEventListener('input', runCGComCalc)
+    );
+    ['cg_com_purchaseDate','cg_com_saleDate'].forEach(id =>
+      document.getElementById(id).addEventListener('change', runCGComCalc)
+    );
+
+    runCGComCalc();
+  }
+
+  // ── Israeli Company · Real Estate · Rental Income ────────────────
+  function initCoILREInc() {
+    const CORP_RATE        = 0.23;
+    const DIVIDEND_RATE    = 0.30;
+
+    const saved = JSON.parse(sessionStorage.getItem('taxForm') || '{}');
+    // Seed the in-section Property Type dropdown from Page 1 if it was set there;
+    // otherwise it stays at its default (Residential).
+    if ((saved.property || '').trim() === 'commercial') {
+      document.getElementById('coil_propertyType').value = 'commercial';
+    }
+
+    function pn(id) {
+      return parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
+    }
+
+    function syncPair(monthlyId, annualId) {
+      document.getElementById(monthlyId).addEventListener('input', function () {
+        document.getElementById(annualId).value =
+          this.value !== '' ? +(parseFloat(this.value) * 12).toFixed(2) : '';
+      });
+      document.getElementById(annualId).addEventListener('input', function () {
+        document.getElementById(monthlyId).value =
+          this.value !== '' ? +(parseFloat(this.value) / 12).toFixed(2) : '';
+      });
+    }
+    syncPair('coil_rentalIncome', 'coil_rentalIncome_annual');
+
+    const REG_OUTPUT_IDS = [
+      'coil_reg_corpTax',  'coil_reg_afterTax',  'coil_reg_retainEffective',
+      'coil_reg_corpTax2', 'coil_reg_divTax',
+      'coil_reg_combined', 'coil_reg_combinedEffective',
+    ];
+
+    function resetRegCards() {
+      REG_OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
+      document.getElementById('coil_reg_netDisplay').textContent = '—';
+      document.getElementById('coil_reg_verdict').textContent    = '';
+      ['coil_reg_retainBadge','coil_reg_distBadge'].forEach(id => {
+        document.getElementById(id).innerHTML = '';
+      });
+      ['coil_reg_retainCard','coil_reg_distCard'].forEach(id => {
+        document.getElementById(id).classList.remove('track-recommended');
+      });
+    }
+
+    function runCoILRegCalc() {
+      if (document.getElementById('coil_output_regular').style.display === 'none') return;
+
+      const grossRent    = pn('coil_rentalIncome_annual');
+      const expenses     = pn('coil_expenses');
+      const otherIncome  = pn('coil_otherIncome');
+      const ownershipPct = Math.min(100, Math.max(0, pn('coil_ownershipPct') || 100));
+
+      if (!grossRent) { resetRegCards(); return; }
+
+      const net      = Math.max(0, grossRent - expenses);
+      const ownership = ownershipPct / 100;
+
+      // Corporate-level (company pays on full net)
+      const corpTax  = net * CORP_RATE;
+      const afterTax = net * (1 - CORP_RATE);
+
+      // Shareholder-level (proportional to ownership)
+      const dividend = afterTax * ownership;
+      const divTax   = dividend * DIVIDEND_RATE;
+
+      // Combined = company tax (full) + shareholder's dividend tax
+      const combined          = corpTax + divTax;
+      const combinedEffective = net > 0 ? combined / net : 0;
+
+      document.getElementById('coil_reg_netDisplay').textContent = fmt(net);
+
+      // Card 1 — Profits Retained
+      document.getElementById('coil_reg_corpTax').textContent         = fmt(corpTax);
+      document.getElementById('coil_reg_afterTax').textContent        = fmt(afterTax);
+      document.getElementById('coil_reg_retainEffective').textContent = (CORP_RATE * 100).toFixed(1) + '%';
+
+      // Card 2 — Fully Distributed
+      document.getElementById('coil_reg_corpTax2').textContent          = fmt(corpTax);
+      document.getElementById('coil_reg_divTax').textContent            = fmt(divTax);
+      document.getElementById('coil_reg_combined').textContent          = fmt(combined);
+      document.getElementById('coil_reg_combinedEffective').textContent = (combinedEffective * 100).toFixed(1) + '%';
+
+      // Verdict
+      const extraCost = divTax;
+      document.getElementById('coil_reg_verdict').textContent =
+        'Corporate tax: ' + fmt(corpTax) + ' (23% of net). '
+        + 'Full distribution adds ' + fmt(divTax) + ' dividend tax'
+        + ' — total ' + fmt(combined) + ' (' + (combinedEffective * 100).toFixed(1) + '% combined).';
+
+      // Card 1 is always lower current tax; Card 2 shows the cost of access
+      ['coil_reg_retainCard','coil_reg_distCard'].forEach(id => {
+        document.getElementById(id).classList.remove('track-recommended');
+      });
+      document.getElementById('coil_reg_retainCard').classList.add('track-recommended');
+      document.getElementById('coil_reg_retainBadge').innerHTML =
+        '<span class="badge badge-recommended">Lower current tax ✓</span>';
+      document.getElementById('coil_reg_distBadge').innerHTML =
+        '<span class="badge badge-warning">+' + fmt(extraCost) + ' to access funds</span>';
+    }
+
+    // ── Transparent path (Family §64A / House §64) — reuses computeTracks ──
+    const TR_OUTPUT_IDS = [
+      'coil_tr_exemptAnnual','coil_tr_exemptMonthly','coil_tr_exemptEffective',
+      'coil_tr_flatAnnual','coil_tr_flatMonthly','coil_tr_flatEffective',
+      'coil_tr_progAnnual','coil_tr_progMonthly','coil_tr_progEffective',
+    ];
+
+    function resetTransparentCards() {
+      TR_OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
+      document.getElementById('coil_tr_attrDisplay').textContent = '—';
+      document.getElementById('coil_tr_verdict').textContent     = '';
+      ['coil_tr_exemptBadge','coil_tr_flatBadge','coil_tr_progBadge'].forEach(id => {
+        document.getElementById(id).innerHTML = '';
+      });
+      ['coil_tr_exemptCard','coil_tr_flatCard','coil_tr_progCard'].forEach(id => {
+        document.getElementById(id).classList.remove('track-recommended','track-ineligible');
+      });
+    }
+
+    function grayTransparentTrack(cardId, badgeId, valIds) {
+      document.getElementById(cardId).classList.add('track-ineligible');
+      valIds.forEach(id => { document.getElementById(id).textContent = 'N/A'; });
+      document.getElementById(badgeId).innerHTML = '<span class="badge badge-warning">Residential only</span>';
+    }
+
+    function runCoILTransparentCalc() {
+      if (document.getElementById('coil_output_transparent').style.display === 'none') return;
+
+      const THRESHOLD = 500;
+
+      const grossRent    = pn('coil_rentalIncome_annual');
+      const expenses     = pn('coil_expenses');
+      const otherIncome  = pn('coil_otherIncome');
+      const over60       = document.getElementById('coil_over60').checked;
+      const ownershipPct = Math.min(100, Math.max(0, pn('coil_ownershipPct') || 100));
+      const isResidential = document.getElementById('coil_propertyType').value !== 'commercial';
+
+      if (!grossRent) { resetTransparentCards(); return; }
+
+      // Attribution: scale gross rent and expenses by ownership share
+      const ownership    = ownershipPct / 100;
+      const attrGross    = grossRent * ownership;
+      const attrExpenses = expenses  * ownership;
+
+      const { flatTax, exemptTax, fullyExempt, progTax } = computeTracks({
+        grossAnnual:       attrGross,
+        otherAnnualIncome: otherIncome,
+        annualExpenses:    attrExpenses,
+        over60,
+        isResidential,
+      });
+
+      const progTotal = progTax;
+
+      resetTransparentCards();
+
+      document.getElementById('coil_tr_attrDisplay').textContent =
+        fmt(attrGross) + ' (' + ownershipPct + '% of ' + fmt(grossRent) + ')';
+
+      // ── Tracks A & B — residential only ──
+      if (isResidential) {
+        document.getElementById('coil_tr_exemptAnnual').textContent    = fullyExempt ? '₪0' : fmt(exemptTax);
+        document.getElementById('coil_tr_exemptMonthly').textContent   = fullyExempt ? '₪0' : fmt(exemptTax / 12);
+        document.getElementById('coil_tr_exemptEffective').textContent = fullyExempt ? '0.0%' : ((exemptTax / attrGross) * 100).toFixed(1) + '%';
+
+        document.getElementById('coil_tr_flatAnnual').textContent    = fmt(flatTax);
+        document.getElementById('coil_tr_flatMonthly').textContent   = fmt(flatTax / 12);
+        document.getElementById('coil_tr_flatEffective').textContent = ((flatTax / attrGross) * 100).toFixed(1) + '%';
+      } else {
+        grayTransparentTrack('coil_tr_exemptCard', 'coil_tr_exemptBadge',
+          ['coil_tr_exemptAnnual','coil_tr_exemptMonthly','coil_tr_exemptEffective']);
+        grayTransparentTrack('coil_tr_flatCard', 'coil_tr_flatBadge',
+          ['coil_tr_flatAnnual','coil_tr_flatMonthly','coil_tr_flatEffective']);
+      }
+
+      // ── Track C — always available ──
+      document.getElementById('coil_tr_progAnnual').textContent    = fmt(progTotal);
+      document.getElementById('coil_tr_progMonthly').textContent   = fmt(progTotal / 12);
+      document.getElementById('coil_tr_progEffective').textContent = ((progTotal / attrGross) * 100).toFixed(1) + '%';
+
+      // ── Recommendation ──
+      if (!isResidential) {
+        document.getElementById('coil_tr_progCard').classList.add('track-recommended');
+        document.getElementById('coil_tr_progBadge').innerHTML =
+          '<span class="badge badge-recommended">Only available track ✓</span>';
+        document.getElementById('coil_tr_verdict').textContent =
+          'Residential-only tracks A & B are unavailable; commercial income must use the progressive track (C) — '
+          + fmt(progTotal) + '/year'
+          + '. Factor in potential Bituach Leumi before deciding.';
+        return;
+      }
+
+      if (fullyExempt) {
+        document.getElementById('coil_tr_exemptCard').classList.add('track-recommended');
+        document.getElementById('coil_tr_exemptBadge').innerHTML =
+          '<span class="badge badge-recommended">Fully Exempt ✓</span>';
+        document.getElementById('coil_tr_verdict').textContent =
+          'Attributed income is fully exempt on Track A — ₪0 tax owed.';
+        return;
+      }
+
+      const tracks = [
+        { id: 'coil_tr_exemptCard', badge: 'coil_tr_exemptBadge', tax: exemptTax, label: 'Track A' },
+        { id: 'coil_tr_flatCard',   badge: 'coil_tr_flatBadge',   tax: flatTax,   label: 'Track B' },
+        { id: 'coil_tr_progCard',   badge: 'coil_tr_progBadge',   tax: progTotal, label: 'Track C' },
+      ];
+
+      const sorted   = [...tracks].sort((a, b) => a.tax - b.tax);
+      const cheapest = sorted[0];
+      const runnerUp = sorted[1];
+      const margin   = runnerUp.tax - cheapest.tax;
+
+      if (margin <= THRESHOLD) {
+        tracks.forEach(t => {
+          if (t.tax - cheapest.tax <= THRESHOLD) {
+            document.getElementById(t.badge).innerHTML = '<span class="badge badge-close">Too close to call</span>';
+          }
+        });
+        document.getElementById('coil_tr_verdict').textContent =
+          'Results are within ₪' + THRESHOLD.toLocaleString() + '/year — review all tracks carefully.';
+      } else if (cheapest.label === 'Track C') {
+        document.getElementById('coil_tr_progCard').classList.add('track-recommended');
+        document.getElementById('coil_tr_progBadge').innerHTML = '<span class="badge badge-recommended">Verify after Bituach Leumi ✓</span>';
+        document.getElementById('coil_tr_verdict').textContent =
+          'Track C appears cheapest, but factor in potential Bituach Leumi before deciding.';
+      } else {
+        document.getElementById(cheapest.id).classList.add('track-recommended');
+        document.getElementById(cheapest.badge).innerHTML = '<span class="badge badge-recommended">Recommended ✓</span>';
+        document.getElementById('coil_tr_verdict').textContent =
+          cheapest.label + ' is cheapest at ' + fmt(cheapest.tax) + '/year — saving you ' + fmt(margin) + ' vs. the next best option.';
+      }
+    }
+
+    function runCoILCalc() {
+      runCoILRegCalc();
+      runCoILTransparentCalc();
+    }
+
+    function updateOutputPanel() {
+      const type          = document.getElementById('coil_companyType').value;
+      const isTransparent = type === 'family' || type === 'house';
+      document.getElementById('coil_output_regular').style.display    = isTransparent ? 'none' : '';
+      document.getElementById('coil_output_transparent').style.display = isTransparent ? ''     : 'none';
+      runCoILCalc();
+    }
+
+    document.getElementById('coil_companyType').addEventListener('change', updateOutputPanel);
+
+    ['coil_rentalIncome','coil_rentalIncome_annual','coil_expenses','coil_otherIncome','coil_ownershipPct'].forEach(id =>
+      document.getElementById(id).addEventListener('input', runCoILCalc)
+    );
+    document.getElementById('coil_over60').addEventListener('change', runCoILCalc);
+    document.getElementById('coil_propertyType').addEventListener('change', runCoILCalc);
+
+    updateOutputPanel();
+  }
+
+  // ── Foreign Company · Real Estate · Rental Income ─────────────────
+  function initCoFORREInc() {
+    const saved  = JSON.parse(sessionStorage.getItem('taxForm') || '{}');
+    // Seed the in-section Property Type dropdown from Page 1 if it was set there;
+    // otherwise it stays at its default (Residential). The §64-election logic will
+    // read residential/commercial from this dropdown rather than sessionStorage.
+    if ((saved.property || '').trim() === 'commercial') {
+      document.getElementById('cofor_propertyType').value = 'commercial';
+    }
+
+    function syncPair(monthlyId, annualId) {
+      document.getElementById(monthlyId).addEventListener('input', function () {
+        document.getElementById(annualId).value =
+          this.value !== '' ? +(parseFloat(this.value) * 12).toFixed(2) : '';
+      });
+      document.getElementById(annualId).addEventListener('input', function () {
+        document.getElementById(monthlyId).value =
+          this.value !== '' ? +(parseFloat(this.value) / 12).toFixed(2) : '';
+      });
+    }
+    syncPair('cofor_rentalIncome', 'cofor_rentalIncome_annual');
+  }
+
+  document.addEventListener('DOMContentLoaded', showSection);
+</script>
+</body>
+</html>
