@@ -863,10 +863,97 @@
 
   <!-- ═══ Ind_Shares: Individual · Shares ════════════════════════════════════════ -->
   <div class="calc-section" id="Ind_Shares" style="display:none">
-    <div class="fallback">
-      <p><strong>Individual — Shares</strong></p>
-      <p>Content for this combination is coming soon.</p>
-      <a href="calculator.html">← Go back to Step 1</a>
+    <div class="card">
+      <div class="card-header">
+        <h2>Individual — Dividend Income</h2>
+        <p>Enter your annual dividend income and shareholding details below.</p>
+      </div>
+
+      <div class="fields">
+        <div class="field full">
+          <label for="shares_dividend">Annual Dividend Amount</label>
+          <div class="income-wrap">
+            <span class="income-prefix">₪</span>
+            <input type="text" id="shares_dividend" inputmode="decimal" placeholder="e.g. 50,000" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="shares_residency">Residency</label>
+          <select id="shares_residency">
+            <option value="israeli">Israeli resident</option>
+            <option value="foreign">Foreign resident</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="shares_source">Dividend Source</label>
+          <select id="shares_source">
+            <option value="israeli">Israeli company</option>
+            <option value="foreign">Foreign company</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="shares_foreignWithheld">Foreign tax withheld (%)</label>
+          <div class="income-wrap">
+            <input type="number" id="shares_foreignWithheld" min="0" max="100" placeholder="0" style="padding:.65rem .9rem;" />
+          </div>
+          <div class="input-hint">Tax already withheld abroad. Only applies to foreign-source dividends for Israeli residents (foreign tax credit).</div>
+        </div>
+      </div>
+
+      <div class="cg-extras">
+        <label class="checkbox-row">
+          <input type="checkbox" id="shares_substantial" />
+          <span>I hold 10% or more of the company (substantial shareholder)</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="shares_oleh" />
+          <span>New immigrant / returning resident within the 10-year exemption window</span>
+        </label>
+      </div>
+    </div><!-- /card -->
+
+    <div class="track-section">
+      <div class="track-section-header">
+        <h2>Estimated Dividend Tax</h2>
+        <p>Taxable dividend: <strong id="shares_dividendDisplay">—</strong></p>
+      </div>
+
+      <div class="metrics">
+        <div class="metric">
+          <div class="metric-label">Israeli Tax Owed</div>
+          <div class="metric-val accent" id="shares_taxDisplay">—</div>
+        </div>
+        <div class="metric">
+          <div class="metric-label">Effective Rate</div>
+          <div class="metric-val" id="shares_effective">—</div>
+        </div>
+      </div>
+
+      <!-- Foreign tax credit breakdown — shown only for an Israeli resident on a foreign-company dividend (not Oleh-exempt) -->
+      <div id="shares_ftcBreakdown" style="display:none; flex-direction:column; gap:.5rem; margin-top:1.25rem; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:1rem 1.25rem;">
+        <div class="track-result-row">
+          <span class="track-result-label">Gross Israeli tax</span>
+          <span class="track-result-val" id="shares_grossTax">—</span>
+        </div>
+        <div class="track-result-row">
+          <span class="track-result-label">Foreign tax credited</span>
+          <span class="track-result-val" id="shares_ftcDisplay">—</span>
+        </div>
+        <div class="track-result-row">
+          <span class="track-result-label">Net Israeli tax owed</span>
+          <span class="track-result-val" id="shares_netTaxDisplay">—</span>
+        </div>
+        <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+          <span class="track-result-label">Total tax paid (foreign + Israeli)</span>
+          <span class="track-result-val" id="shares_totalTaxDisplay">—</span>
+        </div>
+      </div>
+
+      <p class="track-verdict" id="shares_verdict" style="color:var(--muted); font-style:italic;">Enter a dividend amount above to see estimates.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before the high-income surtax and personal tax credit points (נקודות זיכוי). Consult a tax advisor for your exact liability.</p>
     </div>
   </div>
 
@@ -1469,6 +1556,7 @@
     if      (key === 'Ind_RE_Inc')     initIndividualResidential();
     else if (key === 'Ind_RE_CG_Res') initIndCGRes();
     else if (key === 'Ind_RE_CG_Com') initIndCGCom();
+    else if (key === 'Ind_Shares')    initIndShares();
     else if (key === 'Co_IL_RE_Inc')  initCoILREInc();
     else if (key === 'Co_FOR_RE_Inc') initCoFORREInc();
   }
@@ -1997,6 +2085,127 @@
     );
 
     runCGComCalc();
+  }
+
+  // ── Individual · Shares (Dividends) ──────────────────────────────
+  function initIndShares() {
+    function pn(id) {
+      return parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
+    }
+
+    // Live comma formatting for the annual dividend field (pairs with pn()'s
+    // comma-stripping parse); keeps the caret roughly in place while typing.
+    const dividendEl = document.getElementById('shares_dividend');
+    dividendEl.addEventListener('input', function () {
+      const fromEnd = this.value.length - this.selectionStart;
+      const raw     = this.value.replace(/[^\d.]/g, '');
+      if (raw === '') { this.value = ''; return; }
+      const [intPart, decPart] = raw.split('.');
+      let out = intPart ? parseInt(intPart, 10).toLocaleString('en-IL') : '0';
+      if (decPart !== undefined) out += '.' + decPart;
+      this.value = out;
+      const pos = Math.max(0, out.length - fromEnd);
+      this.setSelectionRange(pos, pos);
+    });
+
+    const OUTPUT_IDS = [
+      'shares_dividendDisplay', 'shares_taxDisplay', 'shares_effective',
+      'shares_grossTax', 'shares_ftcDisplay', 'shares_netTaxDisplay', 'shares_totalTaxDisplay',
+    ];
+
+    function resetSharesCards() {
+      OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
+      document.getElementById('shares_ftcBreakdown').style.display = 'none';
+      document.getElementById('shares_verdict').textContent =
+        'Enter a dividend amount above to see estimates.';
+    }
+
+    // 2026 figures. Surtax (mas yesef) is not computed here — disclosed in the
+    // disclaimer only, matching the other sections.
+    function runSharesCalc() {
+      const dividend              = pn('shares_dividend');
+      const residency             = document.getElementById('shares_residency').value;
+      const substantial           = document.getElementById('shares_substantial').checked;
+      const source                = document.getElementById('shares_source').value;
+      const oleh                  = document.getElementById('shares_oleh').checked;
+      const foreignTaxWithheldPct = pn('shares_foreignWithheld');
+
+      if (dividend <= 0) { resetSharesCards(); return; }
+
+      const rate            = substantial ? 0.30 : 0.25;   // 30% substantial shareholder, else 25%
+      const rateLabel       = (substantial ? 30 : 25) + '%';
+      const foreignWithheld = (foreignTaxWithheldPct / 100) * dividend;
+
+      let israeliTax  = 0;   // Israeli tax owed (net of any foreign credit)
+      let grossTax    = 0;   // Israeli tax before the foreign credit
+      let totalBurden = 0;   // foreign + Israeli combined
+      let ftcActive   = false;
+      let note        = '';
+
+      if (residency === 'foreign') {
+        if (source === 'israeli') {
+          israeliTax  = rate * dividend;
+          totalBurden = israeliTax;
+          note = 'Israeli-source dividend to a foreign resident, taxed at ' + rateLabel +
+                 '. An applicable tax treaty may reduce this rate.';
+        } else {
+          israeliTax  = 0;
+          totalBurden = 0;
+          note = 'Foreign-source dividend to a foreign resident is outside Israeli tax (territorial basis).';
+        }
+      } else {   // Israeli resident
+        if (source === 'israeli') {
+          israeliTax  = rate * dividend;
+          totalBurden = israeliTax;
+          note = 'Israeli-source dividend, taxed at ' + rateLabel + '.' +
+                 (oleh ? ' Oleh status does not affect Israeli-source income.' : '');
+        } else if (oleh) {
+          israeliTax  = 0;
+          totalBurden = 0;
+          note = 'Exempt under the 10-year new-immigrant / returning-resident window.';
+        } else {
+          ftcActive   = true;
+          grossTax    = rate * dividend;
+          israeliTax  = Math.max(0, grossTax - foreignWithheld);
+          totalBurden = foreignWithheld + israeliTax;   // = max(grossTax, foreignWithheld)
+          note = 'Foreign tax of ' + fmt(foreignWithheld) + ' credited against ' +
+                 fmt(grossTax) + ' gross Israeli tax (' + rateLabel + ').';
+        }
+      }
+
+      const effective = totalBurden / dividend;
+
+      document.getElementById('shares_dividendDisplay').textContent = fmt(dividend);
+      document.getElementById('shares_taxDisplay').textContent      = fmt(israeliTax);
+      document.getElementById('shares_effective').textContent       = (effective * 100).toFixed(1) + '%';
+
+      const breakdown = document.getElementById('shares_ftcBreakdown');
+      if (ftcActive) {
+        breakdown.style.display = 'flex';
+        document.getElementById('shares_grossTax').textContent        = fmt(grossTax);
+        document.getElementById('shares_ftcDisplay').textContent      = fmt(foreignWithheld);
+        document.getElementById('shares_netTaxDisplay').textContent   = fmt(israeliTax);
+        document.getElementById('shares_totalTaxDisplay').textContent = fmt(totalBurden);
+      } else {
+        breakdown.style.display = 'none';
+        ['shares_grossTax', 'shares_ftcDisplay', 'shares_netTaxDisplay', 'shares_totalTaxDisplay']
+          .forEach(id => { document.getElementById(id).textContent = '—'; });
+      }
+
+      document.getElementById('shares_verdict').textContent = note;
+    }
+
+    ['shares_dividend', 'shares_foreignWithheld'].forEach(id =>
+      document.getElementById(id).addEventListener('input', runSharesCalc)
+    );
+    ['shares_residency', 'shares_source'].forEach(id =>
+      document.getElementById(id).addEventListener('change', runSharesCalc)
+    );
+    ['shares_substantial', 'shares_oleh'].forEach(id =>
+      document.getElementById(id).addEventListener('change', runSharesCalc)
+    );
+
+    runSharesCalc();
   }
 
   // ── Israeli Company · Real Estate · Rental Income ────────────────
