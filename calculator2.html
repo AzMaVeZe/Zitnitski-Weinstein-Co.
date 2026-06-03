@@ -953,7 +953,8 @@
       </div>
 
       <p class="track-verdict" id="shares_verdict" style="color:var(--muted); font-style:italic;">Enter a dividend amount above to see estimates.</p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before the high-income surtax and personal tax credit points (נקודות זיכוי). Consult a tax advisor for your exact liability.</p>
+      <p id="shares_note" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;"></p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. Foreign residents: treaty rates may substantially reduce the withholding shown. Consult a tax advisor for your exact liability.</p>
     </div>
   </div>
 
@@ -2116,8 +2117,10 @@
     function resetSharesCards() {
       OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
       document.getElementById('shares_ftcBreakdown').style.display = 'none';
-      document.getElementById('shares_verdict').textContent =
-        'Enter a dividend amount above to see estimates.';
+      document.getElementById('shares_note').style.display = 'none';
+      const verdict = document.getElementById('shares_verdict');
+      verdict.style.display = '';
+      verdict.textContent = 'Enter a dividend amount above to see estimates.';
     }
 
     // 2026 figures. Surtax (mas yesef) is not computed here — disclosed in the
@@ -2133,43 +2136,41 @@
       if (dividend <= 0) { resetSharesCards(); return; }
 
       const rate            = substantial ? 0.30 : 0.25;   // 30% substantial shareholder, else 25%
-      const rateLabel       = (substantial ? 30 : 25) + '%';
       const foreignWithheld = (foreignTaxWithheldPct / 100) * dividend;
 
       let israeliTax  = 0;   // Israeli tax owed (net of any foreign credit)
       let grossTax    = 0;   // Israeli tax before the foreign credit
       let totalBurden = 0;   // foreign + Israeli combined
       let ftcActive   = false;
-      let note        = '';
+      let context     = '';  // branch-specific explanation shown in #shares_note
 
       if (residency === 'foreign') {
         if (source === 'israeli') {
           israeliTax  = rate * dividend;
           totalBurden = israeliTax;
-          note = 'Israeli-source dividend to a foreign resident, taxed at ' + rateLabel +
-                 '. An applicable tax treaty may reduce this rate.';
+          context = "As a foreign resident, Israel withholds at the statutory rate. Your country's tax treaty may substantially reduce this.";
         } else {
           israeliTax  = 0;
           totalBurden = 0;
-          note = 'Foreign-source dividend to a foreign resident is outside Israeli tax (territorial basis).';
+          context = 'Foreign-source dividends paid to a foreign resident are not taxed by Israel.';
         }
       } else {   // Israeli resident
         if (source === 'israeli') {
           israeliTax  = rate * dividend;
           totalBurden = israeliTax;
-          note = 'Israeli-source dividend, taxed at ' + rateLabel + '.' +
-                 (oleh ? ' Oleh status does not affect Israeli-source income.' : '');
+          context = oleh
+            ? 'The 10-year exemption does not apply to Israeli-source dividends — the standard rate applies from day one.'
+            : '';
         } else if (oleh) {
           israeliTax  = 0;
           totalBurden = 0;
-          note = 'Exempt under the 10-year new-immigrant / returning-resident window.';
+          context = 'Within the 10-year new-immigrant exemption, foreign-source dividends are fully exempt from Israeli tax. Tax withheld abroad is not refundable.';
         } else {
           ftcActive   = true;
           grossTax    = rate * dividend;
           israeliTax  = Math.max(0, grossTax - foreignWithheld);
           totalBurden = foreignWithheld + israeliTax;   // = max(grossTax, foreignWithheld)
-          note = 'Foreign tax of ' + fmt(foreignWithheld) + ' credited against ' +
-                 fmt(grossTax) + ' gross Israeli tax (' + rateLabel + ').';
+          context = 'Israel credits the foreign tax already withheld, so you effectively pay the higher of the two rates.';
         }
       }
 
@@ -2192,7 +2193,16 @@
           .forEach(id => { document.getElementById(id).textContent = '—'; });
       }
 
-      document.getElementById('shares_verdict').textContent = note;
+      // Active-branch explanation note; hide the empty-state placeholder verdict.
+      document.getElementById('shares_verdict').style.display = 'none';
+      const noteEl = document.getElementById('shares_note');
+      if (context) {
+        noteEl.textContent = context;
+        noteEl.style.display = '';
+      } else {
+        noteEl.textContent = '';
+        noteEl.style.display = 'none';
+      }
     }
 
     ['shares_dividend', 'shares_foreignWithheld'].forEach(id =>
