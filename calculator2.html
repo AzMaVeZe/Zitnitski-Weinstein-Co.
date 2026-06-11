@@ -353,14 +353,14 @@
       border-radius: 6px; padding: .4rem .65rem; margin-top: .25rem;
     }
 
-    /* CAPITAL GAINS — date input (matches number input styling) */
-    .input-table input[type="date"] {
+    /* CAPITAL GAINS — DD/MM/YYYY text date input (matches number input styling) */
+    .input-table input.cg-date {
       width: 100%; border: 1.5px solid var(--border); border-radius: 6px;
       padding: .5rem .65rem; font-size: .9rem; color: var(--text);
       background: var(--white); outline: none; font-family: inherit;
       transition: border-color .2s, box-shadow .2s;
     }
-    .input-table input[type="date"]:focus {
+    .input-table input.cg-date:focus {
       border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(37,99,176,.12);
     }
     /* Ownership flag badge */
@@ -575,11 +575,11 @@
           </tr>
           <tr>
             <td class="input-row-label">Purchase Date</td>
-            <td><input type="date" id="cg_res_purchaseDate" /></td>
+            <td><input type="text" class="cg-date" id="cg_res_purchaseDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Sale Date</td>
-            <td><input type="date" id="cg_res_saleDate" /></td>
+            <td><input type="text" class="cg-date" id="cg_res_saleDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Acquisition Expenses</td>
@@ -741,11 +741,11 @@
           </tr>
           <tr>
             <td class="input-row-label">Purchase Date</td>
-            <td><input type="date" id="cg_com_purchaseDate" /></td>
+            <td><input type="text" class="cg-date" id="cg_com_purchaseDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Sale Date</td>
-            <td><input type="date" id="cg_com_saleDate" /></td>
+            <td><input type="text" class="cg-date" id="cg_com_saleDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Acquisition Expenses</td>
@@ -1445,6 +1445,26 @@
     return { value: nominalGainVal, isNominal: true };
   }
 
+  // ── DD/MM/YYYY (Israeli format) date helpers ─────────────────────
+  // Parse "DD/MM/YYYY" → local-midnight Date.  Returns null if blank,
+  // malformed, or a non-existent calendar date (e.g. 31/02/2020).
+  // Built by hand because new Date("DD/MM/YYYY") misparses the order.
+  function parseDMY(str) {
+    const m = (str || '').trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    if (!m) return null;
+    const day = +m[1], month = +m[2], year = +m[3];
+    const d = new Date(year, month - 1, day);   // local midnight
+    if (d.getFullYear() !== year || d.getMonth() !== month - 1 || d.getDate() !== day) return null;
+    return d;
+  }
+
+  // Format a Date → "DD/MM/YYYY" (local).
+  function formatDMY(d) {
+    const dd = String(d.getDate()).padStart(2, '0');
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    return dd + '/' + mm + '/' + d.getFullYear();
+  }
+
   // Days between two Date objects (d2 − d1)
   function daysBetween(d1, d2) {
     return Math.round((d2.getTime() - d1.getTime()) / 86400000);
@@ -1703,15 +1723,14 @@
   // ── Individual + Real Estate + Capital Gain (Residential) ───────
   function initIndCGRes() {
     const FULL_EXEMPTION_CAP = 5008000;
-    const LINEAR_CUTOFF      = new Date('2014-01-01');
+    const LINEAR_CUTOFF      = new Date(2014, 0, 1);   // 1 Jan 2014 — local midnight, matches parseDMY
     const POST_RATE          = 0.25;
     const THRESHOLD          = 500;
 
     const saved  = JSON.parse(sessionStorage.getItem('taxForm') || '{}');
     const origin = (saved.origin || '').trim();
 
-    document.getElementById('cg_res_saleDate').value =
-      new Date().toISOString().split('T')[0];
+    document.getElementById('cg_res_saleDate').value = formatDMY(new Date());
 
     if (origin === 'foreign') {
       document.getElementById('cg_res_foreignNotice').style.display = '';
@@ -1721,22 +1740,19 @@
       return parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
     }
     function pd(id) {
-      const v = document.getElementById(id).value;
-      return v ? new Date(v) : null;
+      return parseDMY(document.getElementById(id).value);   // DD/MM/YYYY → Date | null
     }
 
     // ── Owned ≥ 18 months flag ────────────────────────────────────
     function updateOwnedFlag() {
-      const purchaseVal = document.getElementById('cg_res_purchaseDate').value;
-      const saleVal     = document.getElementById('cg_res_saleDate').value;
-      const flagEl      = document.getElementById('cg_res_ownedFlag');
-      if (!purchaseVal || !saleVal) {
+      const purchase = parseDMY(document.getElementById('cg_res_purchaseDate').value);
+      const sale     = parseDMY(document.getElementById('cg_res_saleDate').value);
+      const flagEl   = document.getElementById('cg_res_ownedFlag');
+      if (!purchase || !sale) {
         flagEl.className   = 'cg-flag cg-flag-na';
         flagEl.textContent = 'Enter dates above';
         return;
       }
-      const purchase = new Date(purchaseVal);
-      const sale     = new Date(saleVal);
       const months   = (sale.getFullYear() - purchase.getFullYear()) * 12 +
                        (sale.getMonth() - purchase.getMonth());
       if (months >= 18) {
@@ -1941,10 +1957,10 @@
     }
 
     // ── Event wiring ─────────────────────────────────────────────
-    document.getElementById('cg_res_purchaseDate').addEventListener('change', function () {
+    document.getElementById('cg_res_purchaseDate').addEventListener('input', function () {
       updateOwnedFlag(); runCGResCalc();
     });
-    document.getElementById('cg_res_saleDate').addEventListener('change', function () {
+    document.getElementById('cg_res_saleDate').addEventListener('input', function () {
       updateOwnedFlag(); runCGResCalc();
     });
     ['cg_res_salePrice','cg_res_purchasePrice','cg_res_acqExpenses',
@@ -1962,21 +1978,19 @@
 
   // ── Individual + Real Estate + Capital Gain (Commercial) ─────────
   function initIndCGCom() {
-    const CUTOFF_2001      = new Date('2001-11-07');
-    const CUTOFF_2012      = new Date('2012-01-01');
+    const CUTOFF_2001      = new Date(2001, 10, 7);   // 7 Nov 2001 — local midnight, matches parseDMY
+    const CUTOFF_2012      = new Date(2012, 0, 1);    // 1 Jan 2012 — local midnight
     const PRE_RATE         = 0.47;   // marginal rate — worst-case when no purchase date
     const MID_RATE         = 0.20;   // 7 Nov 2001 – 31 Dec 2011
     const POST_RATE        = 0.25;   // 1 Jan 2012 onward
 
-    document.getElementById('cg_com_saleDate').value =
-      new Date().toISOString().split('T')[0];
+    document.getElementById('cg_com_saleDate').value = formatDMY(new Date());
 
     function pn(id) {
       return parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
     }
     function pd(id) {
-      const v = document.getElementById(id).value;
-      return v ? new Date(v) : null;
+      return parseDMY(document.getElementById(id).value);   // DD/MM/YYYY → Date | null
     }
 
     const ALL_OUTPUT_IDS = [
@@ -2082,7 +2096,7 @@
       document.getElementById(id).addEventListener('input', runCGComCalc)
     );
     ['cg_com_purchaseDate','cg_com_saleDate'].forEach(id =>
-      document.getElementById(id).addEventListener('change', runCGComCalc)
+      document.getElementById(id).addEventListener('input', runCGComCalc)
     );
 
     runCGComCalc();
