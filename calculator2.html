@@ -616,13 +616,6 @@
               <div class="input-hint">Leave blank to estimate from the figures above (nominal, not inflation-adjusted)</div>
             </td>
           </tr>
-          <tr>
-            <td class="input-row-label">Other Annual Taxable Income</td>
-            <td>
-              <input type="number" id="cg_res_otherIncome" min="0" placeholder="0" />
-              <div class="input-hint">Other income in the same tax year</div>
-            </td>
-          </tr>
         </tbody>
       </table>
 
@@ -780,13 +773,6 @@
             <td>
               <input type="number" id="cg_com_cpiGain" min="0" placeholder="optional" />
               <div class="input-hint">Leave blank to estimate from the figures above (nominal, not inflation-adjusted)</div>
-            </td>
-          </tr>
-          <tr>
-            <td class="input-row-label">Other Annual Taxable Income</td>
-            <td>
-              <input type="number" id="cg_com_otherIncome" min="0" placeholder="0" />
-              <div class="input-hint">Other income in the same tax year</div>
             </td>
           </tr>
         </tbody>
@@ -1470,11 +1456,6 @@
     return Math.round((d2.getTime() - d1.getTime()) / 86400000);
   }
 
-  // Total holding period in days
-  function totalDaysOwned(purchaseDate, saleDate) {
-    return daysBetween(purchaseDate, saleDate);
-  }
-
   // §48A straight-line allocation of gainValue across periods defined by
   // cutoffDates (array of Date objects).  Cutoffs outside the ownership
   // window are silently ignored.
@@ -1495,33 +1476,6 @@
       return { from, to, days, gain: gainValue * (days / total) };
     });
   }
-
-  /*
-  // ── linearSplit sanity-check (uncomment to run in browser console) ─
-  (function testLinearSplit() {
-    const purchase  = new Date('2010-01-01');
-    const sale      = new Date('2020-01-01');
-    const cutoff    = new Date('2014-01-01');   // §48A cutoff example
-    const gain      = 1_000_000;
-    const total     = totalDaysOwned(purchase, sale);
-    const periods   = linearSplit(gain, purchase, sale, [cutoff]);
-
-    console.group('linearSplit — 2014 cutoff sanity check');
-    console.log('Total days owned:', total);
-    periods.forEach((p, i) => {
-      console.log(
-        'Period', i + 1,
-        '|', p.from.toISOString().slice(0,10), '→', p.to.toISOString().slice(0,10),
-        '| days:', p.days,
-        '| share:', (p.days / total * 100).toFixed(2) + '%',
-        '| gain: ₪' + Math.round(p.gain).toLocaleString()
-      );
-    });
-    const sumGain = periods.reduce((s, p) => s + p.gain, 0);
-    console.log('Sum of period gains:', Math.round(sumGain), '(should equal', gain, ')');
-    console.groupEnd();
-  })();
-  */
 
   // ── Section router ────────────────────────────────────────────────
   function showSection() {
@@ -1791,7 +1745,6 @@
       const improvements = pn('cg_res_improvements');
       const depreciation = pn('cg_res_depreciation');
       const cpiOverride  = pn('cg_res_cpiGain');
-      const otherIncome  = pn('cg_res_otherIncome');
       const purchaseDate = pd('cg_res_purchaseDate');
       const saleDate_    = pd('cg_res_saleDate');
       const onlyApt      = document.getElementById('cg_res_onlyApt').checked;
@@ -1965,7 +1918,7 @@
     });
     ['cg_res_salePrice','cg_res_purchasePrice','cg_res_acqExpenses',
      'cg_res_saleExpenses','cg_res_improvements','cg_res_depreciation',
-     'cg_res_cpiGain','cg_res_otherIncome'].forEach(id =>
+     'cg_res_cpiGain'].forEach(id =>
       document.getElementById(id).addEventListener('input', runCGResCalc)
     );
     ['cg_res_onlyApt','cg_res_foreignCert'].forEach(id =>
@@ -2016,7 +1969,6 @@
       const improvements = pn('cg_com_improvements');
       const depreciation = pn('cg_com_depreciation');
       const cpiOverride  = pn('cg_com_cpiGain');
-      const otherIncome  = pn('cg_com_otherIncome');
       const purchaseDate = pd('cg_com_purchaseDate');
       const saleDate_    = pd('cg_com_saleDate');
 
@@ -2092,7 +2044,7 @@
 
     ['cg_com_salePrice','cg_com_purchasePrice','cg_com_acqExpenses',
      'cg_com_saleExpenses','cg_com_improvements','cg_com_depreciation',
-     'cg_com_cpiGain','cg_com_otherIncome'].forEach(id =>
+     'cg_com_cpiGain'].forEach(id =>
       document.getElementById(id).addEventListener('input', runCGComCalc)
     );
     ['cg_com_purchaseDate','cg_com_saleDate'].forEach(id =>
@@ -2283,7 +2235,6 @@
 
       const grossRent    = pn('coil_rentalIncome_annual');
       const expenses     = pn('coil_expenses');
-      const otherIncome  = pn('coil_otherIncome');
       const ownershipPct = Math.min(100, Math.max(0, pn('coil_ownershipPct') || 100));
 
       if (!grossRent) { resetRegCards(); return; }
