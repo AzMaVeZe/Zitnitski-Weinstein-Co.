@@ -265,13 +265,15 @@
     .input-row-label {
       font-weight: 600; font-size: .87rem; color: var(--text); white-space: nowrap; width: 220px;
     }
-    .input-table input[type="number"] {
+    .input-table input[type="number"],
+    .input-table input[type="text"] {
       width: 100%; border: 1.5px solid var(--border); border-radius: 6px;
       padding: .5rem .65rem; font-size: .9rem; color: var(--text);
       background: var(--white); outline: none;
       transition: border-color .2s, box-shadow .2s;
     }
-    .input-table input[type="number"]:focus {
+    .input-table input[type="number"]:focus,
+    .input-table input[type="text"]:focus {
       border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(37,99,176,.12);
     }
     .input-table input[type="number"]::-webkit-inner-spin-button { opacity: .4; }
@@ -445,18 +447,18 @@
         <tbody>
           <tr>
             <td class="input-row-label">Gross Rental Income</td>
-            <td><input type="number" id="rentalIncome" min="0" placeholder="e.g. 8,000" /></td>
-            <td><input type="number" id="rentalIncome_annual" min="0" placeholder="e.g. 96,000" /></td>
+            <td><input type="text" inputmode="decimal" id="rentalIncome" placeholder="e.g. 8,000" /></td>
+            <td><input type="text" inputmode="decimal" id="rentalIncome_annual" placeholder="e.g. 96,000" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Deductible Expenses</td>
-            <td><input type="number" id="expensesInput" min="0" placeholder="0" /></td>
-            <td><input type="number" id="expensesInput_annual" min="0" placeholder="0" /></td>
+            <td><input type="text" inputmode="decimal" id="expensesInput" placeholder="0" /></td>
+            <td><input type="text" inputmode="decimal" id="expensesInput_annual" placeholder="0" /></td>
           </tr>
           <tr id="otherIncomeRow" class="input-row-disabled">
             <td class="input-row-label">Other Income</td>
-            <td><input type="number" id="otherIncome" min="0" placeholder="0" disabled /></td>
-            <td><input type="number" id="otherIncome_annual" min="0" placeholder="0" disabled /></td>
+            <td><input type="text" inputmode="decimal" id="otherIncome" placeholder="0" disabled /></td>
+            <td><input type="text" inputmode="decimal" id="otherIncome_annual" placeholder="0" disabled /></td>
           </tr>
         </tbody>
       </table>
@@ -567,11 +569,11 @@
         <tbody>
           <tr>
             <td class="input-row-label">Sale Price</td>
-            <td><input type="number" id="cg_res_salePrice" min="0" placeholder="0" /></td>
+            <td><input type="text" inputmode="decimal" id="cg_res_salePrice" placeholder="0" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Original Purchase Price</td>
-            <td><input type="number" id="cg_res_purchasePrice" min="0" placeholder="0" /></td>
+            <td><input type="text" inputmode="decimal" id="cg_res_purchasePrice" placeholder="0" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Purchase Date</td>
@@ -584,25 +586,25 @@
           <tr>
             <td class="input-row-label">Acquisition Expenses</td>
             <td>
-              <input type="number" id="cg_res_acqExpenses" min="0" placeholder="0" />
-              <div class="input-hint">Purchase tax (mas rechisha), legal fees, agent commission at purchase</div>
+              <input type="text" inputmode="decimal" id="cg_res_acqExpenses" placeholder="0" />
+              <div class="input-hint">Purchase tax (Mas Rechisha), legal fees, agent commission at purchase</div>
             </td>
           </tr>
           <tr>
             <td class="input-row-label">Sale Expenses</td>
             <td>
-              <input type="number" id="cg_res_saleExpenses" min="0" placeholder="0" />
+              <input type="text" inputmode="decimal" id="cg_res_saleExpenses" placeholder="0" />
               <div class="input-hint">Legal fees, agent commission at sale</div>
             </td>
           </tr>
           <tr>
             <td class="input-row-label">Capital Improvements</td>
-            <td><input type="number" id="cg_res_improvements" min="0" placeholder="0" /></td>
+            <td><input type="text" inputmode="decimal" id="cg_res_improvements" placeholder="0" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Depreciation Claimed</td>
             <td>
-              <input type="number" id="cg_res_depreciation" min="0" placeholder="0" />
+              <input type="text" inputmode="decimal" id="cg_res_depreciation" placeholder="0" />
               <div class="input-hint">Subtracted from your purchase price, which raises the taxable gain</div>
             </td>
           </tr>
@@ -612,7 +614,7 @@
               <div style="font-size:.76rem; font-weight:400; margin-top:.15rem">(optional override)</div>
             </td>
             <td>
-              <input type="number" id="cg_res_cpiGain" min="0" placeholder="optional" />
+              <input type="text" inputmode="decimal" id="cg_res_cpiGain" placeholder="optional" />
               <div class="input-hint">Leave blank to estimate from the figures above (nominal, not inflation-adjusted)</div>
             </td>
           </tr>
@@ -706,7 +708,7 @@
       </div>
 
       <p class="track-verdict" id="cg_res_verdict"></p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before the high-income surtax and exclude the betterment levy and VAT. Real gain is nominal unless you entered a CPI-indexed value; true Mas Shevach indexes the cost basis to CPI. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. They exclude the betterment levy and VAT, and the real gain is nominal unless you entered a CPI-indexed value — true Mas Shevach indexes the cost basis to CPI. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div><!-- /Ind_RE_CG_Res -->
@@ -730,11 +732,11 @@
         <tbody>
           <tr>
             <td class="input-row-label">Sale Price</td>
-            <td><input type="number" id="cg_com_salePrice" min="0" placeholder="0" /></td>
+            <td><input type="text" inputmode="decimal" id="cg_com_salePrice" placeholder="0" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Original Purchase Price</td>
-            <td><input type="number" id="cg_com_purchasePrice" min="0" placeholder="0" /></td>
+            <td><input type="text" inputmode="decimal" id="cg_com_purchasePrice" placeholder="0" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Purchase Date</td>
@@ -747,25 +749,25 @@
           <tr>
             <td class="input-row-label">Acquisition Expenses</td>
             <td>
-              <input type="number" id="cg_com_acqExpenses" min="0" placeholder="0" />
-              <div class="input-hint">Purchase tax (mas rechisha), legal fees, agent commission at purchase</div>
+              <input type="text" inputmode="decimal" id="cg_com_acqExpenses" placeholder="0" />
+              <div class="input-hint">Purchase tax (Mas Rechisha), legal fees, agent commission at purchase</div>
             </td>
           </tr>
           <tr>
             <td class="input-row-label">Sale Expenses</td>
             <td>
-              <input type="number" id="cg_com_saleExpenses" min="0" placeholder="0" />
+              <input type="text" inputmode="decimal" id="cg_com_saleExpenses" placeholder="0" />
               <div class="input-hint">Legal fees, agent commission at sale</div>
             </td>
           </tr>
           <tr>
             <td class="input-row-label">Capital Improvements</td>
-            <td><input type="number" id="cg_com_improvements" min="0" placeholder="0" /></td>
+            <td><input type="text" inputmode="decimal" id="cg_com_improvements" placeholder="0" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Depreciation Claimed</td>
             <td>
-              <input type="number" id="cg_com_depreciation" min="0" placeholder="0" />
+              <input type="text" inputmode="decimal" id="cg_com_depreciation" placeholder="0" />
               <div class="input-hint">Subtracted from your purchase price, which raises the taxable gain</div>
             </td>
           </tr>
@@ -775,7 +777,7 @@
               <div style="font-size:.76rem; font-weight:400; margin-top:.15rem">(optional override)</div>
             </td>
             <td>
-              <input type="number" id="cg_com_cpiGain" min="0" placeholder="optional" />
+              <input type="text" inputmode="decimal" id="cg_com_cpiGain" placeholder="optional" />
               <div class="input-hint">Leave blank to estimate from the figures above (nominal, not inflation-adjusted)</div>
             </td>
           </tr>
@@ -812,19 +814,19 @@
           </thead>
           <tbody>
             <tr>
-              <td>Before 7 Nov 2001</td>
+              <td>Before 07/11/2001</td>
               <td>47% (marginal)</td>
               <td id="cg_com_pre2001Gain">—</td>
               <td id="cg_com_pre2001Tax">—</td>
             </tr>
             <tr>
-              <td>7 Nov 2001 – 31 Dec 2011</td>
+              <td>07/11/2001 – 31/12/2011</td>
               <td>20%</td>
               <td id="cg_com_midGain">—</td>
               <td id="cg_com_midTax">—</td>
             </tr>
             <tr>
-              <td>1 Jan 2012 – Sale Date</td>
+              <td>01/01/2012 – Sale Date</td>
               <td>25%</td>
               <td id="cg_com_postGain">—</td>
               <td id="cg_com_postTax">—</td>
@@ -850,7 +852,7 @@
 
       <p class="track-verdict" id="cg_com_verdict"></p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">Casual sales to a registered dealer may also trigger VAT — verify separately.</p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before the high-income surtax and exclude the betterment levy and VAT. Real gain is nominal unless you entered a CPI-indexed value; true Mas Shevach indexes the cost basis to CPI. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. They exclude the betterment levy and VAT, and the real gain is nominal unless you entered a CPI-indexed value — true Mas Shevach indexes the cost basis to CPI. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div><!-- /Ind_RE_CG_Com -->
@@ -972,21 +974,21 @@
         <tbody>
           <tr>
             <td class="input-row-label">Gross Rental Income</td>
-            <td><input type="number" id="coil_rentalIncome" min="0" placeholder="e.g. 8,000" /></td>
-            <td><input type="number" id="coil_rentalIncome_annual" min="0" placeholder="e.g. 96,000" /></td>
+            <td><input type="text" inputmode="decimal" id="coil_rentalIncome" placeholder="e.g. 8,000" /></td>
+            <td><input type="text" inputmode="decimal" id="coil_rentalIncome_annual" placeholder="e.g. 96,000" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Deductible Expenses</td>
             <td></td>
             <td>
-              <input type="number" id="coil_expenses" min="0" placeholder="0" />
+              <input type="text" inputmode="decimal" id="coil_expenses" placeholder="0" />
               <div class="input-hint">Maintenance, interest, legal fees, depreciation — not deductible on the 10% flat track</div>
             </td>
           </tr>
           <tr>
             <td class="input-row-label">Shareholder's Other Annual Income</td>
             <td></td>
-            <td><input type="number" id="coil_otherIncome" min="0" placeholder="0" /></td>
+            <td><input type="text" inputmode="decimal" id="coil_otherIncome" placeholder="0" /></td>
           </tr>
         </tbody>
       </table>
@@ -1088,7 +1090,7 @@
       </div>
 
       <p class="track-verdict" id="coil_reg_verdict"></p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown assume a substantial shareholder (10% or greater holding) at the 30% dividend rate, and are before the high-income surtax. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. Figures assume a substantial shareholder (10% or greater holding) at the 30% dividend rate. Consult a tax advisor for your exact liability.</p>
     </div>
 
     <!-- Transparent company output sub-div (Family § 64A / House § 64) -->
@@ -1214,21 +1216,21 @@
         <tbody>
           <tr>
             <td class="input-row-label">Gross Rental Income</td>
-            <td><input type="number" id="cofor_rentalIncome" min="0" placeholder="e.g. 8,000" /></td>
-            <td><input type="number" id="cofor_rentalIncome_annual" min="0" placeholder="e.g. 96,000" /></td>
+            <td><input type="text" inputmode="decimal" id="cofor_rentalIncome" placeholder="e.g. 8,000" /></td>
+            <td><input type="text" inputmode="decimal" id="cofor_rentalIncome_annual" placeholder="e.g. 96,000" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Deductible Expenses</td>
             <td></td>
             <td>
-              <input type="number" id="cofor_expenses" min="0" placeholder="0" />
+              <input type="text" inputmode="decimal" id="cofor_expenses" placeholder="0" />
               <div class="input-hint">Maintenance, interest, legal fees, depreciation — not deductible on the 10% flat track</div>
             </td>
           </tr>
           <tr>
             <td class="input-row-label">Shareholder's Other Annual Income</td>
             <td></td>
-            <td><input type="number" id="cofor_otherIncome" min="0" placeholder="0" /></td>
+            <td><input type="text" inputmode="decimal" id="cofor_otherIncome" placeholder="0" /></td>
           </tr>
         </tbody>
       </table>
@@ -1357,6 +1359,23 @@
   }
 
   function fmt(n) { return '₪' + Math.round(n).toLocaleString('en-IL'); }
+
+  // Live thousands-separator formatting for a currency text input; pairs with
+  // the comma-stripping parses used throughout. Keeps the caret roughly in
+  // place while typing. Attached to every input[inputmode="decimal"].
+  function liveComma(el) {
+    el.addEventListener('input', function () {
+      const fromEnd = this.value.length - this.selectionStart;
+      const raw     = this.value.replace(/[^\d.]/g, '');
+      if (raw === '') { this.value = ''; return; }
+      const [intPart, decPart] = raw.split('.');
+      let out = intPart ? parseInt(intPart, 10).toLocaleString('en-IL') : '0';
+      if (decPart !== undefined) out += '.' + decPart;
+      this.value = out;
+      const pos = Math.max(0, out.length - fromEnd);
+      this.setSelectionRange(pos, pos);
+    });
+  }
 
   // ── Three-track rental tax (pure: no DOM read/write) ─────────────
   // Inputs are ANNUAL figures. Returns { flatTax, exemptTax, fullyExempt, progTax }.
@@ -1560,6 +1579,10 @@
       }
     }
 
+    // Live comma formatting on every currency field, attached before the
+    // section init wires its recalc listeners so formatting runs first.
+    document.querySelectorAll('input[inputmode="decimal"]').forEach(liveComma);
+
     const section = document.getElementById(key) || document.getElementById('fallback');
     section.style.display = '';
 
@@ -1600,16 +1623,14 @@
 
     // Monthly ↔ Annual sync for each row
     function syncPair(monthlyId, annualId) {
-      document.getElementById(monthlyId).addEventListener('input', function () {
-        const v = parseFloat(this.value);
-        document.getElementById(annualId).value =
-          Number.isFinite(v) ? +(v * 12).toFixed(2) : '';
-      });
-      document.getElementById(annualId).addEventListener('input', function () {
-        const v = parseFloat(this.value);
-        document.getElementById(monthlyId).value =
-          Number.isFinite(v) ? +(v / 12).toFixed(2) : '';
-      });
+      function mirror(fromEl, toId, factor) {
+        const v = parseFloat((fromEl.value || '').replace(/,/g, ''));
+        document.getElementById(toId).value = Number.isFinite(v)
+          ? (+(v * factor).toFixed(2)).toLocaleString('en-IL', { maximumFractionDigits: 2 })
+          : '';
+      }
+      document.getElementById(monthlyId).addEventListener('input', function () { mirror(this, annualId, 12); });
+      document.getElementById(annualId).addEventListener('input', function () { mirror(this, monthlyId, 1 / 12); });
     }
     syncPair('rentalIncome',  'rentalIncome_annual');
     syncPair('expensesInput', 'expensesInput_annual');
@@ -1617,7 +1638,7 @@
 
     function runTrackCalc() {
       function num(id) {
-        const v = parseFloat(document.getElementById(id).value);
+        const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
         return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity
       }
       const rental   = num('rentalIncome');
@@ -1657,8 +1678,8 @@
       document.getElementById('flatMonthly').textContent   = fmt(flatTax / 12);
       document.getElementById('flatEffective').textContent = ((flatTax / R) * 100).toFixed(1) + '%';
 
-      document.getElementById('exemptAnnual').textContent    = fullyExempt ? '₪0'   : fmt(exemptTax);
-      document.getElementById('exemptMonthly').textContent   = fullyExempt ? '₪0'   : fmt(exemptTax / 12);
+      document.getElementById('exemptAnnual').textContent    = fullyExempt ? fmt(0) : fmt(exemptTax);
+      document.getElementById('exemptMonthly').textContent   = fullyExempt ? fmt(0) : fmt(exemptTax / 12);
       document.getElementById('exemptEffective').textContent = fullyExempt ? '0.0%' : ((exemptTax / R) * 100).toFixed(1) + '%';
 
       document.getElementById('progAnnual').textContent    = fmt(progTax);
@@ -1697,7 +1718,7 @@
           }
         });
         document.getElementById('trackVerdict').textContent =
-          'Results are within ₪' + THRESHOLD.toLocaleString() + '/year — review all tracks carefully.';
+          'Results are within ' + fmt(THRESHOLD) + '/year — review all tracks carefully.';
       } else if (cheapest.label === 'Track C') {
         document.getElementById('progCard').classList.add('track-recommended');
         document.getElementById('progBadge').innerHTML = '<span class="badge badge-recommended">Verify after Bituach Leumi ✓</span>';
@@ -1824,10 +1845,10 @@
       if (gain <= 0) {
         resetCGResCards();
         document.getElementById('cg_res_noDateWarn').style.display     = noDate ? '' : 'none';
-        document.getElementById('cg_res_gainDisplay').textContent      = '₪0 (no taxable gain)';
+        document.getElementById('cg_res_gainDisplay').textContent      = fmt(0) + ' (no taxable gain)';
         ['cg_res_A_tax','cg_res_A_total',
          'cg_res_B_tax','cg_res_B_total'].forEach(id => {
-          document.getElementById(id).textContent = '₪0';
+          document.getElementById(id).textContent = fmt(0);
         });
         document.getElementById('cg_res_A_effective').textContent = '0.0%';
         document.getElementById('cg_res_B_effective').textContent = '0.0%';
@@ -1907,7 +1928,7 @@
           'Missing: ' + ineligibleReasons.join('; ') + '.';
       } else {
         document.getElementById('cg_res_A_tax').textContent =
-          fullExempt ? '₪0' : fmt(taxA);
+          fullExempt ? fmt(0) : fmt(taxA);
         document.getElementById('cg_res_A_effective').textContent =
           fullExempt ? '0.0%' : ((taxA / gain) * 100).toFixed(1) + '%';
         document.getElementById('cg_res_A_total').textContent =
@@ -1949,7 +1970,7 @@
             '<span class="badge badge-close">Too close to call</span>';
         });
         document.getElementById('cg_res_verdict').textContent =
-          'Results are within ₪500 — either track is reasonable. '
+          'Results are within ' + fmt(THRESHOLD) + ' — either track is reasonable. '
           + 'Track B also preserves your single-home exemption for a future, higher-value sale.';
       } else if (totalA < totalB) {
         document.getElementById('cg_res_A_card').classList.add('track-recommended');
@@ -2056,10 +2077,10 @@
       if (gain <= 0) {
         resetComCards();
         document.getElementById('cg_com_noDateWarn').style.display = noDate ? '' : 'none';
-        document.getElementById('cg_com_gainDisplay').textContent  = '₪0 (no taxable gain)';
+        document.getElementById('cg_com_gainDisplay').textContent  = fmt(0) + ' (no taxable gain)';
         ['cg_com_totalTax','cg_com_grandTotal',
          'cg_com_pre2001Gain','cg_com_midGain','cg_com_postGain'].forEach(id => {
-          document.getElementById(id).textContent = '₪0';
+          document.getElementById(id).textContent = fmt(0);
         });
         ['cg_com_pre2001Tax','cg_com_midTax','cg_com_postTax'].forEach(id => {
           document.getElementById(id).textContent = '—';
@@ -2135,21 +2156,6 @@
       const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
       return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity from stray input
     }
-
-    // Live comma formatting for the annual dividend field (pairs with pn()'s
-    // comma-stripping parse); keeps the caret roughly in place while typing.
-    const dividendEl = document.getElementById('shares_dividend');
-    dividendEl.addEventListener('input', function () {
-      const fromEnd = this.value.length - this.selectionStart;
-      const raw     = this.value.replace(/[^\d.]/g, '');
-      if (raw === '') { this.value = ''; return; }
-      const [intPart, decPart] = raw.split('.');
-      let out = intPart ? parseInt(intPart, 10).toLocaleString('en-IL') : '0';
-      if (decPart !== undefined) out += '.' + decPart;
-      this.value = out;
-      const pos = Math.max(0, out.length - fromEnd);
-      this.setSelectionRange(pos, pos);
-    });
 
     const OUTPUT_IDS = [
       'shares_dividendDisplay', 'shares_taxDisplay', 'shares_effective',
@@ -2278,16 +2284,14 @@
     }
 
     function syncPair(monthlyId, annualId) {
-      document.getElementById(monthlyId).addEventListener('input', function () {
-        const v = parseFloat(this.value);
-        document.getElementById(annualId).value =
-          Number.isFinite(v) ? +(v * 12).toFixed(2) : '';
-      });
-      document.getElementById(annualId).addEventListener('input', function () {
-        const v = parseFloat(this.value);
-        document.getElementById(monthlyId).value =
-          Number.isFinite(v) ? +(v / 12).toFixed(2) : '';
-      });
+      function mirror(fromEl, toId, factor) {
+        const v = parseFloat((fromEl.value || '').replace(/,/g, ''));
+        document.getElementById(toId).value = Number.isFinite(v)
+          ? (+(v * factor).toFixed(2)).toLocaleString('en-IL', { maximumFractionDigits: 2 })
+          : '';
+      }
+      document.getElementById(monthlyId).addEventListener('input', function () { mirror(this, annualId, 12); });
+      document.getElementById(annualId).addEventListener('input', function () { mirror(this, monthlyId, 1 / 12); });
     }
     syncPair('coil_rentalIncome', 'coil_rentalIncome_annual');
 
@@ -2425,8 +2429,8 @@
 
       // ── Tracks A & B — residential only ──
       if (isResidential) {
-        document.getElementById('coil_tr_exemptAnnual').textContent    = fullyExempt ? '₪0' : fmt(exemptTax);
-        document.getElementById('coil_tr_exemptMonthly').textContent   = fullyExempt ? '₪0' : fmt(exemptTax / 12);
+        document.getElementById('coil_tr_exemptAnnual').textContent    = fullyExempt ? fmt(0) : fmt(exemptTax);
+        document.getElementById('coil_tr_exemptMonthly').textContent   = fullyExempt ? fmt(0) : fmt(exemptTax / 12);
         document.getElementById('coil_tr_exemptEffective').textContent = fullyExempt ? '0.0%' : ((exemptTax / attrGross) * 100).toFixed(1) + '%';
 
         document.getElementById('coil_tr_flatAnnual').textContent    = fmt(flatTax);
@@ -2483,7 +2487,7 @@
           }
         });
         document.getElementById('coil_tr_verdict').textContent =
-          'Results are within ₪' + THRESHOLD.toLocaleString() + '/year — review all tracks carefully.';
+          'Results are within ' + fmt(THRESHOLD) + '/year — review all tracks carefully.';
       } else if (cheapest.label === 'Track C') {
         document.getElementById('coil_tr_progCard').classList.add('track-recommended');
         document.getElementById('coil_tr_progBadge').innerHTML = '<span class="badge badge-recommended">Verify after Bituach Leumi ✓</span>';
@@ -2532,16 +2536,14 @@
     }
 
     function syncPair(monthlyId, annualId) {
-      document.getElementById(monthlyId).addEventListener('input', function () {
-        const v = parseFloat(this.value);
-        document.getElementById(annualId).value =
-          Number.isFinite(v) ? +(v * 12).toFixed(2) : '';
-      });
-      document.getElementById(annualId).addEventListener('input', function () {
-        const v = parseFloat(this.value);
-        document.getElementById(monthlyId).value =
-          Number.isFinite(v) ? +(v / 12).toFixed(2) : '';
-      });
+      function mirror(fromEl, toId, factor) {
+        const v = parseFloat((fromEl.value || '').replace(/,/g, ''));
+        document.getElementById(toId).value = Number.isFinite(v)
+          ? (+(v * factor).toFixed(2)).toLocaleString('en-IL', { maximumFractionDigits: 2 })
+          : '';
+      }
+      document.getElementById(monthlyId).addEventListener('input', function () { mirror(this, annualId, 12); });
+      document.getElementById(annualId).addEventListener('input', function () { mirror(this, monthlyId, 1 / 12); });
     }
     syncPair('cofor_rentalIncome', 'cofor_rentalIncome_annual');
   }
