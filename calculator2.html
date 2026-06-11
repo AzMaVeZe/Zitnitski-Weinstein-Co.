@@ -30,6 +30,8 @@
       line-height: 1.7; font-size: 16px;
       min-height: 100vh; display: flex; flex-direction: column;
     }
+    /* Form controls don't inherit the body font by default */
+    input, select, button { font-family: inherit; }
 
     /* NAV */
     nav {
@@ -93,16 +95,21 @@
     /* PAGE */
     .page { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; flex: 1; }
 
-    /* CARD */
-    .card {
+    /* CARD / RESULT PANEL — shared shell so inputs and results read as one system */
+    .card, .track-section {
       background: var(--white); border: 1px solid var(--border);
       border-radius: var(--radius); box-shadow: var(--shadow);
-      padding: 2.25rem 2.5rem; margin-bottom: 1.5rem;
+      padding: 2.25rem 2.5rem;
     }
-    @media (max-width: 580px) { .card { padding: 1.5rem 1.25rem; } }
-    .card-header { padding-bottom: 1.25rem; margin-bottom: 1.75rem; border-bottom: 1px solid var(--border); }
-    .card-header h2 { font-size: 1.15rem; font-weight: 700; color: var(--blue); margin-bottom: .25rem; }
-    .card-header p  { font-size: .87rem; color: var(--muted); }
+    .card          { margin-bottom: 1.5rem; }
+    .track-section { margin-top: 1.5rem; }
+    @media (max-width: 580px) { .card, .track-section { padding: 1.5rem 1.25rem; } }
+    .card-header, .track-section-header {
+      padding-bottom: 1.25rem; margin-bottom: 1.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .card-header h2, .track-section-header h2 { font-size: 1.15rem; font-weight: 700; color: var(--blue); margin-bottom: .25rem; }
+    .card-header p,  .track-section-header p  { font-size: .87rem; color: var(--muted); }
 
     /* FIELDS */
     .fields { display: grid; grid-template-columns: 1fr 1fr; gap: 1.25rem 2rem; }
@@ -119,6 +126,7 @@
       background-repeat: no-repeat; background-position: right .85rem center;
       transition: border-color .2s, box-shadow .2s;
     }
+    .field select:hover { border-color: var(--blue-mid); }
     .field select:focus { border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(37,99,176,.12); }
     .field select.filled { border-color: #86efac; background-color: #f0fdf4; }
 
@@ -185,9 +193,9 @@
     }
     @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
 
-    /* METRICS GRID */
+    /* METRICS GRID — auto-fit keeps 2 or 3 metrics on one scannable row */
     .metrics {
-      display: grid; grid-template-columns: 1fr 1fr;
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: .75rem; margin-top: 1.5rem;
       animation: slideIn .2s ease;
     }
@@ -265,18 +273,15 @@
     .input-row-label {
       font-weight: 600; font-size: .87rem; color: var(--text); white-space: nowrap; width: 220px;
     }
-    .input-table input[type="number"],
     .input-table input[type="text"] {
       width: 100%; border: 1.5px solid var(--border); border-radius: 6px;
       padding: .5rem .65rem; font-size: .9rem; color: var(--text);
       background: var(--white); outline: none;
       transition: border-color .2s, box-shadow .2s;
     }
-    .input-table input[type="number"]:focus,
     .input-table input[type="text"]:focus {
       border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(37,99,176,.12);
     }
-    .input-table input[type="number"]::-webkit-inner-spin-button { opacity: .4; }
     .input-row-disabled { opacity: .4; }
     .input-row-disabled input { background: var(--bg); cursor: not-allowed; }
     .table-checkboxes {
@@ -285,19 +290,7 @@
     }
     .table-checkboxes .checkbox-row { margin-top: 0; }
 
-    /* TRACK COMPARISON SECTION */
-    .track-section {
-      background: var(--white); border: 1px solid var(--border);
-      border-radius: var(--radius); box-shadow: var(--shadow);
-      padding: 2.25rem 2.5rem; margin-top: 1.5rem;
-    }
-    @media (max-width: 580px) { .track-section { padding: 1.5rem 1.25rem; } }
-    .track-section-header {
-      padding-bottom: 1.25rem; margin-bottom: 1.5rem;
-      border-bottom: 1px solid var(--border);
-    }
-    .track-section-header h2 { font-size: 1.15rem; font-weight: 700; color: var(--blue); margin-bottom: .25rem; }
-    .track-section-header p  { font-size: .87rem; color: var(--muted); }
+    /* TRACK COMPARISON SECTION (shell styles shared with .card above) */
     .track-inputs {
       display: grid; grid-template-columns: 1fr 1fr 1fr;
       gap: 1rem 1.5rem; margin-bottom: 1.75rem; align-items: end;
@@ -348,23 +341,16 @@
     .badge-recommended { background: var(--green-light); color: var(--green); border: 1px solid #86efac; }
     .badge-close       { background: var(--bg); color: var(--muted); border: 1px solid var(--border); }
     .badge-warning     { background: var(--amber-light); color: var(--amber); border: 1px solid #fcd34d; }
-    .track-card.track-recommended { border-color: var(--green); }
+    .track-card.track-recommended {
+      border-color: var(--green); background: #f7fdf9;
+      box-shadow: 0 2px 12px rgba(22,163,74,.10);
+    }
     .bl-note {
       font-size: .74rem; color: var(--amber); line-height: 1.4;
       background: var(--amber-light); border: 1px solid #fcd34d;
       border-radius: 6px; padding: .4rem .65rem; margin-top: .25rem;
     }
 
-    /* CAPITAL GAINS — DD/MM/YYYY text date input (matches number input styling) */
-    .input-table input.cg-date {
-      width: 100%; border: 1.5px solid var(--border); border-radius: 6px;
-      padding: .5rem .65rem; font-size: .9rem; color: var(--text);
-      background: var(--white); outline: none; font-family: inherit;
-      transition: border-color .2s, box-shadow .2s;
-    }
-    .input-table input.cg-date:focus {
-      border-color: var(--blue-mid); box-shadow: 0 0 0 3px rgba(37,99,176,.12);
-    }
     /* Ownership flag badge */
     .cg-flag {
       display: inline-flex; align-items: center; gap: .35rem;
@@ -577,11 +563,11 @@
           </tr>
           <tr>
             <td class="input-row-label">Purchase Date</td>
-            <td><input type="text" class="cg-date" id="cg_res_purchaseDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
+            <td><input type="text" id="cg_res_purchaseDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Sale Date</td>
-            <td><input type="text" class="cg-date" id="cg_res_saleDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
+            <td><input type="text" id="cg_res_saleDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Acquisition Expenses</td>
@@ -740,11 +726,11 @@
           </tr>
           <tr>
             <td class="input-row-label">Purchase Date</td>
-            <td><input type="text" class="cg-date" id="cg_com_purchaseDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
+            <td><input type="text" id="cg_com_purchaseDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Sale Date</td>
-            <td><input type="text" class="cg-date" id="cg_com_saleDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
+            <td><input type="text" id="cg_com_saleDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
           </tr>
           <tr>
             <td class="input-row-label">Acquisition Expenses</td>
