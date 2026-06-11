@@ -653,6 +653,10 @@
         <p>Real gain: <strong id="cg_res_gainDisplay">—</strong></p>
       </div>
 
+      <div id="cg_res_badDateWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
+        <strong>Check the date format.</strong> Dates must be entered as DD/MM/YYYY — for example, 15/06/2020. Results will appear once the dates are valid.
+      </div>
+
       <div id="cg_res_noDateWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
         <strong>Purchase date not entered.</strong> Track A requires a known holding period. Track B assumes the full gain accrued post-2014 (25% rate) — actual tax may be lower if you purchased before 2014.
       </div>
@@ -785,6 +789,10 @@
       <div class="track-section-header">
         <h2>Estimated Capital Gains Tax</h2>
         <p>Gain: <strong id="cg_com_gainDisplay">—</strong></p>
+      </div>
+
+      <div id="cg_com_badDateWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
+        <strong>Check the date format.</strong> Dates must be entered as DD/MM/YYYY — for example, 15/06/2020. Results will appear once the dates are valid.
       </div>
 
       <div id="cg_com_noDateWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
@@ -1305,7 +1313,7 @@
   <!-- ═══ fallback ════════════════════════════════════════════════════════════════ -->
   <div class="calc-section" id="fallback" style="display:none">
     <div class="fallback">
-      <p>Content for this combination is coming soon.</p>
+      <p id="fallback_msg">Content for this combination is coming soon.</p>
       <a href="calculator.html">← Go back to Step 1</a>
     </div>
   </div>
@@ -1451,6 +1459,15 @@
     return dd + '/' + mm + '/' + d.getFullYear();
   }
 
+  // Classify a DD/MM/YYYY field so calculations can tell "not entered"
+  // (allowed) apart from "typed but invalid" (blocks with a message).
+  function dateFieldState(id) {
+    const v = (document.getElementById(id).value || '').trim();
+    if (!v) return { state: 'empty', date: null };
+    const d = parseDMY(v);
+    return d ? { state: 'ok', date: d } : { state: 'invalid', date: null };
+  }
+
   // Days between two Date objects (d2 − d1)
   function daysBetween(d1, d2) {
     return Math.round((d2.getTime() - d1.getTime()) / 86400000);
@@ -1479,7 +1496,25 @@
 
   // ── Section router ────────────────────────────────────────────────
   function showSection() {
-    const saved    = JSON.parse(sessionStorage.getItem('taxForm') || '{}');
+    // Routing data may be absent (direct visit), malformed (corrupted JSON),
+    // or unreadable (storage disabled) — never let that blank the page.
+    let saved     = {};
+    let storageOk = true;
+    try {
+      const raw = sessionStorage.getItem('taxForm');
+      if (raw === null) {
+        storageOk = false;
+      } else {
+        saved = JSON.parse(raw);
+        if (typeof saved !== 'object' || saved === null || Array.isArray(saved)) {
+          saved     = {};
+          storageOk = false;
+        }
+      }
+    } catch (e) {
+      saved     = {};
+      storageOk = false;
+    }
     const entity   = (saved.entity   || '').trim();
     const asset    = (saved.asset    || '').trim();
     const origin   = (saved.origin   || '').trim();
@@ -1528,6 +1563,12 @@
     const section = document.getElementById(key) || document.getElementById('fallback');
     section.style.display = '';
 
+    // Missing/unreadable Step 1 data → explain, rather than the generic stub text
+    if (key === 'fallback' && !storageOk) {
+      document.getElementById('fallback_msg').textContent =
+        'We could not read your selections from Step 1 — the session may have expired. Please start again.';
+    }
+
     if      (key === 'Ind_RE_Inc')     initIndividualResidential();
     else if (key === 'Ind_RE_CG_Res') initIndCGRes();
     else if (key === 'Ind_RE_CG_Com') initIndCGCom();
@@ -1560,12 +1601,14 @@
     // Monthly ↔ Annual sync for each row
     function syncPair(monthlyId, annualId) {
       document.getElementById(monthlyId).addEventListener('input', function () {
+        const v = parseFloat(this.value);
         document.getElementById(annualId).value =
-          this.value !== '' ? +(parseFloat(this.value) * 12).toFixed(2) : '';
+          Number.isFinite(v) ? +(v * 12).toFixed(2) : '';
       });
       document.getElementById(annualId).addEventListener('input', function () {
+        const v = parseFloat(this.value);
         document.getElementById(monthlyId).value =
-          this.value !== '' ? +(parseFloat(this.value) / 12).toFixed(2) : '';
+          Number.isFinite(v) ? +(v / 12).toFixed(2) : '';
       });
     }
     syncPair('rentalIncome',  'rentalIncome_annual');
@@ -1573,10 +1616,14 @@
     syncPair('otherIncome',   'otherIncome_annual');
 
     function runTrackCalc() {
-      const rental   = parseFloat(document.getElementById('rentalIncome').value) || 0;
+      function num(id) {
+        const v = parseFloat(document.getElementById(id).value);
+        return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity
+      }
+      const rental   = num('rentalIncome');
       const hasOther = document.getElementById('hasOtherIncome').checked;
-      const other    = hasOther ? (parseFloat(document.getElementById('otherIncome').value) || 0) : 0;
-      const expenses = parseFloat(document.getElementById('expensesInput').value) || 0;
+      const other    = hasOther ? num('otherIncome') : 0;
+      const expenses = num('expensesInput');
       const over60 = document.getElementById('over60Check').checked;
 
       const R = rental * 12;
@@ -1691,17 +1738,22 @@
     }
 
     function pn(id) {
-      return parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
-    }
-    function pd(id) {
-      return parseDMY(document.getElementById(id).value);   // DD/MM/YYYY → Date | null
+      const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
+      return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity from stray input
     }
 
     // ── Owned ≥ 18 months flag ────────────────────────────────────
     function updateOwnedFlag() {
-      const purchase = parseDMY(document.getElementById('cg_res_purchaseDate').value);
-      const sale     = parseDMY(document.getElementById('cg_res_saleDate').value);
-      const flagEl   = document.getElementById('cg_res_ownedFlag');
+      const pDate  = dateFieldState('cg_res_purchaseDate');
+      const sDate  = dateFieldState('cg_res_saleDate');
+      const flagEl = document.getElementById('cg_res_ownedFlag');
+      if (pDate.state === 'invalid' || sDate.state === 'invalid') {
+        flagEl.className   = 'cg-flag cg-flag-na';
+        flagEl.textContent = 'Use DD/MM/YYYY format';
+        return;
+      }
+      const purchase = pDate.date;
+      const sale     = sDate.date;
       if (!purchase || !sale) {
         flagEl.className   = 'cg-flag cg-flag-na';
         flagEl.textContent = 'Enter dates above';
@@ -1728,6 +1780,7 @@
       document.getElementById('cg_res_A_note').textContent           = '';
       document.getElementById('cg_res_verdict').textContent          = '';
       document.getElementById('cg_res_noDateWarn').style.display     = 'none';
+      document.getElementById('cg_res_badDateWarn').style.display    = 'none';
       ['cg_res_A_badge','cg_res_B_badge'].forEach(id => {
         document.getElementById(id).innerHTML = '';
       });
@@ -1745,12 +1798,21 @@
       const improvements = pn('cg_res_improvements');
       const depreciation = pn('cg_res_depreciation');
       const cpiOverride  = pn('cg_res_cpiGain');
-      const purchaseDate = pd('cg_res_purchaseDate');
-      const saleDate_    = pd('cg_res_saleDate');
+      const pDate        = dateFieldState('cg_res_purchaseDate');
+      const sDate        = dateFieldState('cg_res_saleDate');
+      const purchaseDate = pDate.date;
+      const saleDate_    = sDate.date;
       const onlyApt      = document.getElementById('cg_res_onlyApt').checked;
       const foreignCert  = document.getElementById('cg_res_foreignCert').checked;
 
       if (!salePrice) { resetCGResCards(); return; }
+
+      // Typed-but-invalid dates block calculation instead of silently misparsing
+      if (pDate.state === 'invalid' || sDate.state === 'invalid') {
+        resetCGResCards();
+        document.getElementById('cg_res_badDateWarn').style.display = '';
+        return;
+      }
 
       const noDate = !purchaseDate;
 
@@ -1910,12 +1972,13 @@
     }
 
     // ── Event wiring ─────────────────────────────────────────────
-    document.getElementById('cg_res_purchaseDate').addEventListener('input', function () {
-      updateOwnedFlag(); runCGResCalc();
-    });
-    document.getElementById('cg_res_saleDate').addEventListener('input', function () {
-      updateOwnedFlag(); runCGResCalc();
-    });
+    ['cg_res_purchaseDate','cg_res_saleDate'].forEach(id =>
+      document.getElementById(id).addEventListener('input', function () {
+        const clean = this.value.replace(/[^\d/]/g, '');   // digits and "/" only
+        if (clean !== this.value) this.value = clean;
+        updateOwnedFlag(); runCGResCalc();
+      })
+    );
     ['cg_res_salePrice','cg_res_purchasePrice','cg_res_acqExpenses',
      'cg_res_saleExpenses','cg_res_improvements','cg_res_depreciation',
      'cg_res_cpiGain'].forEach(id =>
@@ -1940,10 +2003,8 @@
     document.getElementById('cg_com_saleDate').value = formatDMY(new Date());
 
     function pn(id) {
-      return parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
-    }
-    function pd(id) {
-      return parseDMY(document.getElementById(id).value);   // DD/MM/YYYY → Date | null
+      const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
+      return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity from stray input
     }
 
     const ALL_OUTPUT_IDS = [
@@ -1957,8 +2018,9 @@
 
     function resetComCards() {
       ALL_OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
-      document.getElementById('cg_com_verdict').textContent      = '';
-      document.getElementById('cg_com_noDateWarn').style.display = 'none';
+      document.getElementById('cg_com_verdict').textContent       = '';
+      document.getElementById('cg_com_noDateWarn').style.display  = 'none';
+      document.getElementById('cg_com_badDateWarn').style.display = 'none';
     }
 
     function runCGComCalc() {
@@ -1969,10 +2031,19 @@
       const improvements = pn('cg_com_improvements');
       const depreciation = pn('cg_com_depreciation');
       const cpiOverride  = pn('cg_com_cpiGain');
-      const purchaseDate = pd('cg_com_purchaseDate');
-      const saleDate_    = pd('cg_com_saleDate');
+      const pDate        = dateFieldState('cg_com_purchaseDate');
+      const sDate        = dateFieldState('cg_com_saleDate');
+      const purchaseDate = pDate.date;
+      const saleDate_    = sDate.date;
 
       if (!salePrice) { resetComCards(); return; }
+
+      // Typed-but-invalid dates block calculation instead of silently misparsing
+      if (pDate.state === 'invalid' || sDate.state === 'invalid') {
+        resetComCards();
+        document.getElementById('cg_com_badDateWarn').style.display = '';
+        return;
+      }
 
       const noDate = !purchaseDate;
       document.getElementById('cg_com_noDateWarn').style.display = noDate ? '' : 'none';
@@ -2048,7 +2119,11 @@
       document.getElementById(id).addEventListener('input', runCGComCalc)
     );
     ['cg_com_purchaseDate','cg_com_saleDate'].forEach(id =>
-      document.getElementById(id).addEventListener('input', runCGComCalc)
+      document.getElementById(id).addEventListener('input', function () {
+        const clean = this.value.replace(/[^\d/]/g, '');   // digits and "/" only
+        if (clean !== this.value) this.value = clean;
+        runCGComCalc();
+      })
     );
 
     runCGComCalc();
@@ -2057,7 +2132,8 @@
   // ── Individual · Shares (Dividends) ──────────────────────────────
   function initIndShares() {
     function pn(id) {
-      return parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
+      const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
+      return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity from stray input
     }
 
     // Live comma formatting for the annual dividend field (pairs with pn()'s
@@ -2097,7 +2173,7 @@
       const substantial           = document.getElementById('shares_substantial').checked;
       const source                = document.getElementById('shares_source').value;
       const oleh                  = document.getElementById('shares_oleh').checked;
-      const foreignTaxWithheldPct = pn('shares_foreignWithheld');
+      const foreignTaxWithheldPct = Math.min(100, Math.max(0, pn('shares_foreignWithheld')));   // clamp to 0–100%
 
       if (dividend <= 0) { resetSharesCards(); return; }
 
@@ -2197,17 +2273,20 @@
     }
 
     function pn(id) {
-      return parseFloat((document.getElementById(id).value || '').replace(/,/g, '')) || 0;
+      const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
+      return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity from stray input
     }
 
     function syncPair(monthlyId, annualId) {
       document.getElementById(monthlyId).addEventListener('input', function () {
+        const v = parseFloat(this.value);
         document.getElementById(annualId).value =
-          this.value !== '' ? +(parseFloat(this.value) * 12).toFixed(2) : '';
+          Number.isFinite(v) ? +(v * 12).toFixed(2) : '';
       });
       document.getElementById(annualId).addEventListener('input', function () {
+        const v = parseFloat(this.value);
         document.getElementById(monthlyId).value =
-          this.value !== '' ? +(parseFloat(this.value) / 12).toFixed(2) : '';
+          Number.isFinite(v) ? +(v / 12).toFixed(2) : '';
       });
     }
     syncPair('coil_rentalIncome', 'coil_rentalIncome_annual');
@@ -2454,12 +2533,14 @@
 
     function syncPair(monthlyId, annualId) {
       document.getElementById(monthlyId).addEventListener('input', function () {
+        const v = parseFloat(this.value);
         document.getElementById(annualId).value =
-          this.value !== '' ? +(parseFloat(this.value) * 12).toFixed(2) : '';
+          Number.isFinite(v) ? +(v * 12).toFixed(2) : '';
       });
       document.getElementById(annualId).addEventListener('input', function () {
+        const v = parseFloat(this.value);
         document.getElementById(monthlyId).value =
-          this.value !== '' ? +(parseFloat(this.value) / 12).toFixed(2) : '';
+          Number.isFinite(v) ? +(v / 12).toFixed(2) : '';
       });
     }
     syncPair('cofor_rentalIncome', 'cofor_rentalIncome_annual');
