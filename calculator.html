@@ -28,6 +28,8 @@
     }
     /* Form controls don't inherit the body font by default */
     input, select, button { font-family: inherit; }
+    /* Keyboard navigation — visible focus on links (controls have their own rings) */
+    a:focus-visible { outline: 3px solid rgba(37,99,176,.35); outline-offset: 2px; border-radius: 4px; }
 
     /* NAV */
     nav {
@@ -154,10 +156,11 @@
     .btn-next:not(:disabled):hover  { background: var(--blue-mid); transform: translateY(-1px); }
     .btn-next:not(:disabled):active { transform: none; box-shadow: none; }
     .btn-next:not(:disabled):focus-visible { outline: 3px solid rgba(37,99,176,.35); outline-offset: 2px; }
+    @media (max-width: 580px) { .btn-next { width: 100%; } }
 
     /* FOOTER */
     footer {
-      background: var(--blue); color: rgba(255,255,255,.6);
+      background: var(--blue); color: rgba(255,255,255,.75);
       text-align: center; padding: 1.75rem 1.5rem; font-size: .84rem;
     }
     footer strong { color: var(--white); }

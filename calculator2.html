@@ -10,7 +10,7 @@
       --blue:        #1a4b8c;
       --blue-mid:    #2563b0;
       --blue-light:  #e8f0fb;
-      --green:       #16a34a;
+      --green:       #15803d;   /* dark enough for 4.5:1 text contrast on --green-light */
       --green-light: #dcfce7;
       --text:        #1e2330;
       --muted:       #5a6275;
@@ -20,7 +20,7 @@
       --radius:      10px;
       --shadow:      0 4px 24px rgba(26,75,140,.10);
       --shadow-sm:   0 2px 8px  rgba(26,75,140,.08);
-      --amber:       #d97706;
+      --amber:       #b45309;   /* dark enough for 4.5:1 text contrast on --amber-light */
       --amber-light: #fef3c7;
     }
     html { scroll-behavior: smooth; }
@@ -32,6 +32,8 @@
     }
     /* Form controls don't inherit the body font by default */
     input, select, button { font-family: inherit; }
+    /* Keyboard navigation — visible focus on links (controls have their own rings) */
+    a:focus-visible { outline: 3px solid rgba(37,99,176,.35); outline-offset: 2px; border-radius: 4px; }
 
     /* NAV */
     nav {
@@ -246,7 +248,7 @@
       cursor: pointer; margin-top: .75rem;
     }
     .checkbox-row input[type="checkbox"] {
-      width: 16px; height: 16px; flex-shrink: 0;
+      width: 18px; height: 18px; flex-shrink: 0;
       cursor: pointer; accent-color: var(--blue);
     }
 
@@ -285,8 +287,8 @@
     .input-row-disabled { opacity: .4; }
     .input-row-disabled input { background: var(--bg); cursor: not-allowed; }
     .table-checkboxes {
-      display: flex; justify-content: center; gap: 2.5rem; align-items: center;
-      margin-top: .9rem;
+      display: flex; flex-wrap: wrap; justify-content: center; gap: .6rem 2.5rem;
+      align-items: center; margin-top: .9rem;
     }
     .table-checkboxes .checkbox-row { margin-top: 0; }
 
@@ -358,7 +360,7 @@
       border-radius: 20px; margin-left: .5rem;
     }
     .cg-flag-yes { background: var(--green-light); color: var(--green); border: 1px solid #86efac; }
-    .cg-flag-no  { background: #fee2e2; color: #dc2626; border: 1px solid #fca5a5; }
+    .cg-flag-no  { background: #fee2e2; color: #b91c1c; border: 1px solid #fca5a5; }
     .cg-flag-na  { background: var(--bg); color: var(--muted); border: 1px solid var(--border); font-weight: 400; font-style: italic; }
     /* Foreign-owner notice box */
     .foreign-notice {
@@ -369,6 +371,20 @@
     .foreign-notice strong { color: var(--amber); }
     /* CG extras area below the input table */
     .cg-extras { margin-top: 1.25rem; }
+
+    /* OPTION GRID — two-column option fields that stack on small screens */
+    .opt-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1.25rem 2rem; margin-top: 1.5rem; align-items: start;
+    }
+    @media (max-width: 560px) { .opt-grid { grid-template-columns: 1fr; } }
+
+    /* MOBILE — keep input tables usable on ~375px screens */
+    @media (max-width: 580px) {
+      .input-row-label { white-space: normal; width: 38%; min-width: 100px; }
+      .input-table td { padding: .45rem .5rem; }
+      .input-table input[type="text"] { padding: .6rem .55rem; }
+    }
 
     /* FALLBACK */
     .fallback {
@@ -382,7 +398,7 @@
 
     /* FOOTER */
     footer {
-      background: var(--blue); color: rgba(255,255,255,.6);
+      background: var(--blue); color: rgba(255,255,255,.75);
       text-align: center; padding: 1.75rem 1.5rem; font-size: .84rem;
     }
     footer strong { color: var(--white); }
@@ -432,19 +448,19 @@
         </thead>
         <tbody>
           <tr>
-            <td class="input-row-label">Gross Rental Income</td>
+            <td class="input-row-label"><label for="rentalIncome">Gross Rental Income</label></td>
             <td><input type="text" inputmode="decimal" id="rentalIncome" placeholder="e.g. 8,000" /></td>
-            <td><input type="text" inputmode="decimal" id="rentalIncome_annual" placeholder="e.g. 96,000" /></td>
+            <td><input type="text" inputmode="decimal" id="rentalIncome_annual" aria-label="Gross rental income (annual)" placeholder="e.g. 96,000" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Deductible Expenses</td>
+            <td class="input-row-label"><label for="expensesInput">Deductible Expenses</label></td>
             <td><input type="text" inputmode="decimal" id="expensesInput" placeholder="0" /></td>
-            <td><input type="text" inputmode="decimal" id="expensesInput_annual" placeholder="0" /></td>
+            <td><input type="text" inputmode="decimal" id="expensesInput_annual" aria-label="Deductible expenses (annual)" placeholder="0" /></td>
           </tr>
           <tr id="otherIncomeRow" class="input-row-disabled">
-            <td class="input-row-label">Other Income</td>
+            <td class="input-row-label"><label for="otherIncome">Other Income</label></td>
             <td><input type="text" inputmode="decimal" id="otherIncome" placeholder="0" disabled /></td>
-            <td><input type="text" inputmode="decimal" id="otherIncome_annual" placeholder="0" disabled /></td>
+            <td><input type="text" inputmode="decimal" id="otherIncome_annual" aria-label="Other income (annual)" placeholder="0" disabled /></td>
           </tr>
         </tbody>
       </table>
@@ -554,41 +570,41 @@
         </thead>
         <tbody>
           <tr>
-            <td class="input-row-label">Sale Price</td>
+            <td class="input-row-label"><label for="cg_res_salePrice">Sale Price</label></td>
             <td><input type="text" inputmode="decimal" id="cg_res_salePrice" placeholder="0" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Original Purchase Price</td>
+            <td class="input-row-label"><label for="cg_res_purchasePrice">Original Purchase Price</label></td>
             <td><input type="text" inputmode="decimal" id="cg_res_purchasePrice" placeholder="0" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Purchase Date</td>
+            <td class="input-row-label"><label for="cg_res_purchaseDate">Purchase Date</label></td>
             <td><input type="text" id="cg_res_purchaseDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Sale Date</td>
+            <td class="input-row-label"><label for="cg_res_saleDate">Sale Date</label></td>
             <td><input type="text" id="cg_res_saleDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Acquisition Expenses</td>
+            <td class="input-row-label"><label for="cg_res_acqExpenses">Acquisition Expenses</label></td>
             <td>
               <input type="text" inputmode="decimal" id="cg_res_acqExpenses" placeholder="0" />
               <div class="input-hint">Purchase tax (Mas Rechisha), legal fees, agent commission at purchase</div>
             </td>
           </tr>
           <tr>
-            <td class="input-row-label">Sale Expenses</td>
+            <td class="input-row-label"><label for="cg_res_saleExpenses">Sale Expenses</label></td>
             <td>
               <input type="text" inputmode="decimal" id="cg_res_saleExpenses" placeholder="0" />
               <div class="input-hint">Legal fees, agent commission at sale</div>
             </td>
           </tr>
           <tr>
-            <td class="input-row-label">Capital Improvements</td>
+            <td class="input-row-label"><label for="cg_res_improvements">Capital Improvements</label></td>
             <td><input type="text" inputmode="decimal" id="cg_res_improvements" placeholder="0" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Depreciation Claimed</td>
+            <td class="input-row-label"><label for="cg_res_depreciation">Depreciation Claimed</label></td>
             <td>
               <input type="text" inputmode="decimal" id="cg_res_depreciation" placeholder="0" />
               <div class="input-hint">Subtracted from your purchase price, which raises the taxable gain</div>
@@ -596,7 +612,7 @@
           </tr>
           <tr>
             <td class="input-row-label" style="color:var(--muted); font-weight:500">
-              CPI-Indexed Real Gain
+              <label for="cg_res_cpiGain">CPI-Indexed Real Gain</label>
               <div style="font-size:.76rem; font-weight:400; margin-top:.15rem">(optional override)</div>
             </td>
             <td>
@@ -717,41 +733,41 @@
         </thead>
         <tbody>
           <tr>
-            <td class="input-row-label">Sale Price</td>
+            <td class="input-row-label"><label for="cg_com_salePrice">Sale Price</label></td>
             <td><input type="text" inputmode="decimal" id="cg_com_salePrice" placeholder="0" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Original Purchase Price</td>
+            <td class="input-row-label"><label for="cg_com_purchasePrice">Original Purchase Price</label></td>
             <td><input type="text" inputmode="decimal" id="cg_com_purchasePrice" placeholder="0" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Purchase Date</td>
+            <td class="input-row-label"><label for="cg_com_purchaseDate">Purchase Date</label></td>
             <td><input type="text" id="cg_com_purchaseDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Sale Date</td>
+            <td class="input-row-label"><label for="cg_com_saleDate">Sale Date</label></td>
             <td><input type="text" id="cg_com_saleDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Acquisition Expenses</td>
+            <td class="input-row-label"><label for="cg_com_acqExpenses">Acquisition Expenses</label></td>
             <td>
               <input type="text" inputmode="decimal" id="cg_com_acqExpenses" placeholder="0" />
               <div class="input-hint">Purchase tax (Mas Rechisha), legal fees, agent commission at purchase</div>
             </td>
           </tr>
           <tr>
-            <td class="input-row-label">Sale Expenses</td>
+            <td class="input-row-label"><label for="cg_com_saleExpenses">Sale Expenses</label></td>
             <td>
               <input type="text" inputmode="decimal" id="cg_com_saleExpenses" placeholder="0" />
               <div class="input-hint">Legal fees, agent commission at sale</div>
             </td>
           </tr>
           <tr>
-            <td class="input-row-label">Capital Improvements</td>
+            <td class="input-row-label"><label for="cg_com_improvements">Capital Improvements</label></td>
             <td><input type="text" inputmode="decimal" id="cg_com_improvements" placeholder="0" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Depreciation Claimed</td>
+            <td class="input-row-label"><label for="cg_com_depreciation">Depreciation Claimed</label></td>
             <td>
               <input type="text" inputmode="decimal" id="cg_com_depreciation" placeholder="0" />
               <div class="input-hint">Subtracted from your purchase price, which raises the taxable gain</div>
@@ -759,7 +775,7 @@
           </tr>
           <tr>
             <td class="input-row-label" style="color:var(--muted); font-weight:500">
-              CPI-Indexed Real Gain
+              <label for="cg_com_cpiGain">CPI-Indexed Real Gain</label>
               <div style="font-size:.76rem; font-weight:400; margin-top:.15rem">(optional override)</div>
             </td>
             <td>
@@ -959,12 +975,12 @@
         </thead>
         <tbody>
           <tr>
-            <td class="input-row-label">Gross Rental Income</td>
+            <td class="input-row-label"><label for="coil_rentalIncome">Gross Rental Income</label></td>
             <td><input type="text" inputmode="decimal" id="coil_rentalIncome" placeholder="e.g. 8,000" /></td>
-            <td><input type="text" inputmode="decimal" id="coil_rentalIncome_annual" placeholder="e.g. 96,000" /></td>
+            <td><input type="text" inputmode="decimal" id="coil_rentalIncome_annual" aria-label="Gross rental income (annual)" placeholder="e.g. 96,000" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Deductible Expenses</td>
+            <td class="input-row-label"><label for="coil_expenses">Deductible Expenses</label></td>
             <td></td>
             <td>
               <input type="text" inputmode="decimal" id="coil_expenses" placeholder="0" />
@@ -972,7 +988,7 @@
             </td>
           </tr>
           <tr>
-            <td class="input-row-label">Shareholder's Other Annual Income</td>
+            <td class="input-row-label"><label for="coil_otherIncome">Shareholder's Other Annual Income</label></td>
             <td></td>
             <td><input type="text" inputmode="decimal" id="coil_otherIncome" placeholder="0" /></td>
           </tr>
@@ -986,7 +1002,7 @@
         </label>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem 2rem; margin-top:1.5rem; align-items:start;">
+      <div class="opt-grid">
         <div>
           <label for="coil_ownershipPct" style="font-size:.84rem; font-weight:600; color:var(--text); display:block; margin-bottom:.4rem;">Ownership Share (%)</label>
           <div class="income-wrap">
@@ -1201,12 +1217,12 @@
         </thead>
         <tbody>
           <tr>
-            <td class="input-row-label">Gross Rental Income</td>
+            <td class="input-row-label"><label for="cofor_rentalIncome">Gross Rental Income</label></td>
             <td><input type="text" inputmode="decimal" id="cofor_rentalIncome" placeholder="e.g. 8,000" /></td>
-            <td><input type="text" inputmode="decimal" id="cofor_rentalIncome_annual" placeholder="e.g. 96,000" /></td>
+            <td><input type="text" inputmode="decimal" id="cofor_rentalIncome_annual" aria-label="Gross rental income (annual)" placeholder="e.g. 96,000" /></td>
           </tr>
           <tr>
-            <td class="input-row-label">Deductible Expenses</td>
+            <td class="input-row-label"><label for="cofor_expenses">Deductible Expenses</label></td>
             <td></td>
             <td>
               <input type="text" inputmode="decimal" id="cofor_expenses" placeholder="0" />
@@ -1214,7 +1230,7 @@
             </td>
           </tr>
           <tr>
-            <td class="input-row-label">Shareholder's Other Annual Income</td>
+            <td class="input-row-label"><label for="cofor_otherIncome">Shareholder's Other Annual Income</label></td>
             <td></td>
             <td><input type="text" inputmode="decimal" id="cofor_otherIncome" placeholder="0" /></td>
           </tr>
@@ -1235,7 +1251,7 @@
         </div>
       </div>
 
-      <div style="display:grid; grid-template-columns:1fr 1fr; gap:1.25rem 2rem; margin-top:1.5rem; align-items:start;">
+      <div class="opt-grid">
         <div>
           <label for="cofor_ownershipPct" style="font-size:.84rem; font-weight:600; color:var(--text); display:block; margin-bottom:.4rem;">Ownership Share (%)</label>
           <div class="income-wrap">
