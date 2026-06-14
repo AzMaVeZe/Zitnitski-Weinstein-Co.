@@ -1276,13 +1276,128 @@
       </div>
     </div><!-- /card -->
 
-    <!-- Output stub -->
+    <!-- Output -->
     <div id="cofor_output" class="track-section">
-      <div class="track-section-header">
-        <h2>Estimated Tax</h2>
-        <p>Tax calculation coming soon.</p>
+
+      <!-- Regular (non-transparent) foreign-company result -->
+      <div id="cofor_output_regular">
+        <div class="track-section-header">
+          <h2>Foreign Company — Estimated Tax</h2>
+          <p>Taxed on: <strong id="cofor_baseDisplay">—</strong></p>
+        </div>
+
+        <div class="track-cards track-cards-2">
+
+          <div class="track-card track-recommended">
+            <div class="track-card-name"><span class="track-letter">1</span>Israeli Corporate Tax</div>
+            <div class="track-card-rate">23%</div>
+            <hr class="track-divider" />
+            <div class="track-result-row">
+              <span class="track-result-label">Tax due</span>
+              <span class="track-result-val" id="cofor_taxDisplay">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Effective rate on gross</span>
+              <span class="track-result-val" id="cofor_effectiveDisplay">—</span>
+            </div>
+            <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">A foreign company is taxed on its rental profit at the corporate rate.</div>
+          </div>
+
+          <div class="track-card">
+            <div class="track-card-name"><span class="track-letter">2</span>Distribution to Foreign Shareholder</div>
+            <div class="track-card-rate">0%</div>
+            <hr class="track-divider" />
+            <div class="track-result-row">
+              <span class="track-result-label">Israeli dividend tax</span>
+              <span class="track-result-val" id="cofor_divDisplay">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Combined effective rate</span>
+              <span class="track-result-val" id="cofor_combinedDisplay">—</span>
+            </div>
+            <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">Foreign shareholders are exempt from Israeli tax on dividends from a foreign company, so distribution adds no Israeli tax and the combined effective Israeli rate equals the corporate tax shown.</div>
+          </div>
+
+        </div>
+
+        <p class="track-verdict" id="cofor_verdict">Enter rental income above to see estimates.</p>
+        <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. Figures assume a foreign company taxed on net profit at the corporate rate, with no Israeli dividend tax on distribution to foreign shareholders. Consult a tax advisor for your exact liability.</p>
       </div>
-      <p class="track-verdict" style="color:var(--muted); font-style:italic;">Enter rental income above to see estimates.</p>
+
+      <!-- Transparent House Company result -->
+      <div id="cofor_output_transparent" style="display:none;">
+        <div class="track-section-header">
+          <h2>Transparent House Company — Which Track Is Better?</h2>
+          <p>A House Company's rental income is attributed to the individual shareholder and taxed once at the individual level. Attributed income: <strong id="cofor_tr_attrDisplay">—</strong></p>
+        </div>
+
+        <div class="track-cards">
+
+          <div class="track-card" id="cofor_tr_exemptCard">
+            <div class="track-card-name"><span class="track-letter">A</span>Standard Exemption</div>
+            <div class="track-card-rate">Marginal</div>
+            <hr class="track-divider" />
+            <div class="track-result-row">
+              <span class="track-result-label">Annual tax</span>
+              <span class="track-result-val" id="cofor_tr_exemptAnnual">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Monthly equivalent</span>
+              <span class="track-result-val" id="cofor_tr_exemptMonthly">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Effective rate</span>
+              <span class="track-result-val" id="cofor_tr_exemptEffective">—</span>
+            </div>
+            <div class="track-badge-area" id="cofor_tr_exemptBadge"></div>
+          </div>
+
+          <div class="track-card" id="cofor_tr_flatCard">
+            <div class="track-card-name"><span class="track-letter">B</span>Flat Rate</div>
+            <div class="track-card-rate">10%</div>
+            <hr class="track-divider" />
+            <div class="track-result-row">
+              <span class="track-result-label">Annual tax</span>
+              <span class="track-result-val" id="cofor_tr_flatAnnual">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Monthly equivalent</span>
+              <span class="track-result-val" id="cofor_tr_flatMonthly">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Effective rate</span>
+              <span class="track-result-val" id="cofor_tr_flatEffective">—</span>
+            </div>
+            <div class="track-badge-area" id="cofor_tr_flatBadge"></div>
+          </div>
+
+          <div class="track-card" id="cofor_tr_progCard">
+            <div class="track-card-name"><span class="track-letter track-letter-c">C</span>Progressive Rate</div>
+            <div class="track-card-rate">Marginal</div>
+            <hr class="track-divider" />
+            <div class="track-result-row">
+              <span class="track-result-label">Annual tax</span>
+              <span class="track-result-val" id="cofor_tr_progAnnual">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Monthly equivalent</span>
+              <span class="track-result-val" id="cofor_tr_progMonthly">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Effective rate</span>
+              <span class="track-result-val" id="cofor_tr_progEffective">—</span>
+            </div>
+            <div class="track-badge-area" id="cofor_tr_progBadge"></div>
+            <div class="bl-note"> Track C may incur up to ~12% Bituach Leumi on net rental income. Tracks A &amp; B are exempt.</div>
+          </div>
+
+        </div>
+
+        <p class="track-verdict" id="cofor_tr_verdict"></p>
+        <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">Even on a transparent election, the Israeli payer still <strong>withholds 23% on the gross rent at source</strong> unless the company obtains an exemption certificate from the tax authority — any excess over the track liability shown here is recovered by filing an Israeli return.</p>
+        <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. Foreign residents do not receive Israeli credit points, so the flat track is often cheaper than the progressive track at higher rents. Consult a tax advisor for your exact liability.</p>
+      </div>
+
     </div>
 
   </div><!-- /Co_FOR_RE_Inc -->
@@ -2529,12 +2644,19 @@
 
   // ── Foreign Company · Real Estate · Rental Income ─────────────────
   function initCoFORREInc() {
+    const CORP_RATE = 0.23;
+
     const saved  = JSON.parse(sessionStorage.getItem('taxForm') || '{}');
     // Seed the in-section Property Type dropdown from Page 1 if it was set there;
-    // otherwise it stays at its default (Residential). The §64-election logic will
-    // read residential/commercial from this dropdown rather than sessionStorage.
+    // otherwise it stays at its default (Residential). The transparent-entity path
+    // (coming soon) will read residential/commercial from this dropdown.
     if ((saved.property || '').trim() === 'commercial') {
       document.getElementById('cofor_propertyType').value = 'commercial';
+    }
+
+    function pn(id) {
+      const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
+      return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity from stray input
     }
 
     function syncPair(monthlyId, annualId) {
@@ -2548,6 +2670,226 @@
       document.getElementById(annualId).addEventListener('input', function () { mirror(this, monthlyId, 1 / 12); });
     }
     syncPair('cofor_rentalIncome', 'cofor_rentalIncome_annual');
+
+    // ── Regular (non-transparent) foreign-company path ──
+    const COFOR_OUTPUT_IDS = [
+      'cofor_baseDisplay', 'cofor_taxDisplay', 'cofor_effectiveDisplay',
+      'cofor_divDisplay', 'cofor_combinedDisplay',
+    ];
+
+    function resetCoFORCards() {
+      COFOR_OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
+      document.getElementById('cofor_verdict').textContent = '';
+    }
+
+    // Deductible Expenses only matter when filing a return; grey the field out on
+    // the withholding basis, where it has no effect on the tax.
+    function syncExpensesEnabled() {
+      const onWithholding = document.getElementById('cofor_taxBasis').value === 'withholding';
+      const exp = document.getElementById('cofor_expenses');
+      exp.disabled      = onWithholding;
+      exp.style.opacity = onWithholding ? '0.5' : '';
+    }
+
+    function runCoFORRegCalc() {
+      if (document.getElementById('cofor_output_regular').style.display === 'none') return;
+
+      const gross    = pn('cofor_rentalIncome_annual');
+      const expenses = pn('cofor_expenses');
+      const basis    = document.getElementById('cofor_taxBasis').value;
+
+      if (!gross) {
+        resetCoFORCards();
+        document.getElementById('cofor_verdict').textContent = 'Enter rental income above to see estimates.';
+        return;
+      }
+
+      // Withholding basis: 23% of gross, expenses ignored (advance / de facto final tax).
+      // Return basis: 23% of net, floored at zero — the point of filing.
+      const base      = basis === 'withholding' ? gross : Math.max(0, gross - expenses);
+      const tax       = CORP_RATE * base;
+      const effective = gross > 0 ? tax / gross : 0;   // 23% on withholding, lower on a return
+
+      document.getElementById('cofor_baseDisplay').textContent      = fmt(base);
+      document.getElementById('cofor_taxDisplay').textContent       = fmt(tax);
+      document.getElementById('cofor_effectiveDisplay').textContent = (effective * 100).toFixed(1) + '%';
+      // Foreign shareholders pay no Israeli dividend tax, so distribution is 0% and the
+      // combined effective Israeli rate equals the corporate tax shown.
+      document.getElementById('cofor_divDisplay').textContent       = fmt(0);
+      document.getElementById('cofor_combinedDisplay').textContent  = (effective * 100).toFixed(1) + '%';
+
+      if (basis === 'withholding') {
+        document.getElementById('cofor_verdict').textContent =
+          'Statutory withholding of ' + fmt(tax) + ' (23% of gross ' + fmt(gross) + ') is deducted at source — an advance that becomes a de facto final tax if no Israeli return is filed. '
+          + 'Foreign shareholders owe no Israeli dividend tax on distribution, so the combined effective Israeli rate stays ' + (effective * 100).toFixed(1) + '%.';
+      } else {
+        document.getElementById('cofor_verdict').textContent =
+          'Filing an Israeli return taxes 23% of net (' + fmt(base) + ') — ' + fmt(tax) + ', an effective ' + (effective * 100).toFixed(1) + '% of gross, below the 23% gross withholding. '
+          + 'Foreign shareholders owe no Israeli dividend tax on distribution, so the combined effective Israeli rate equals the corporate tax shown.';
+      }
+    }
+
+    // ── Transparent path (House Company) — reuses computeTracks ──
+    const COFOR_TR_OUTPUT_IDS = [
+      'cofor_tr_exemptAnnual','cofor_tr_exemptMonthly','cofor_tr_exemptEffective',
+      'cofor_tr_flatAnnual','cofor_tr_flatMonthly','cofor_tr_flatEffective',
+      'cofor_tr_progAnnual','cofor_tr_progMonthly','cofor_tr_progEffective',
+    ];
+
+    function resetTransparentCards() {
+      COFOR_TR_OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
+      document.getElementById('cofor_tr_attrDisplay').textContent = '—';
+      document.getElementById('cofor_tr_verdict').textContent     = '';
+      ['cofor_tr_exemptBadge','cofor_tr_flatBadge','cofor_tr_progBadge'].forEach(id => {
+        document.getElementById(id).innerHTML = '';
+      });
+      ['cofor_tr_exemptCard','cofor_tr_flatCard','cofor_tr_progCard'].forEach(id => {
+        document.getElementById(id).classList.remove('track-recommended','track-ineligible');
+      });
+    }
+
+    function grayTransparentTrack(cardId, badgeId, valIds) {
+      document.getElementById(cardId).classList.add('track-ineligible');
+      valIds.forEach(id => { document.getElementById(id).textContent = 'N/A'; });
+      document.getElementById(badgeId).innerHTML = '<span class="badge badge-warning">Residential only</span>';
+    }
+
+    function runCoFORTransparentCalc() {
+      if (document.getElementById('cofor_output_transparent').style.display === 'none') return;
+
+      const THRESHOLD = 500;
+
+      const grossRent     = pn('cofor_rentalIncome_annual');
+      const expenses      = pn('cofor_expenses');
+      const otherIncome   = pn('cofor_otherIncome');
+      const over60        = document.getElementById('cofor_over60').checked;
+      const ownershipPct  = Math.min(100, Math.max(0, pn('cofor_ownershipPct') || 100));
+      const isResidential = document.getElementById('cofor_propertyType').value !== 'commercial';
+
+      if (!grossRent) { resetTransparentCards(); return; }
+
+      // Attribution: scale gross rent and expenses by ownership share, kept
+      // separate so each track applies its own expense rule (flat ignores
+      // expenses; progressive deducts them).
+      const ownership    = ownershipPct / 100;
+      const attrGross    = grossRent * ownership;
+      const attrExpenses = expenses  * ownership;
+
+      const { flatTax, exemptTax, fullyExempt, progTax } = computeTracks({
+        grossAnnual:       attrGross,
+        otherAnnualIncome: otherIncome,
+        annualExpenses:    attrExpenses,
+        over60,
+        isResidential,
+      });
+
+      const progTotal = progTax;
+
+      resetTransparentCards();
+
+      document.getElementById('cofor_tr_attrDisplay').textContent =
+        fmt(attrGross) + ' (' + ownershipPct + '% of ' + fmt(grossRent) + ')';
+
+      // ── Tracks A & B — residential only ──
+      if (isResidential) {
+        document.getElementById('cofor_tr_exemptAnnual').textContent    = fullyExempt ? fmt(0) : fmt(exemptTax);
+        document.getElementById('cofor_tr_exemptMonthly').textContent   = fullyExempt ? fmt(0) : fmt(exemptTax / 12);
+        document.getElementById('cofor_tr_exemptEffective').textContent = fullyExempt ? '0.0%' : ((exemptTax / attrGross) * 100).toFixed(1) + '%';
+
+        document.getElementById('cofor_tr_flatAnnual').textContent    = fmt(flatTax);
+        document.getElementById('cofor_tr_flatMonthly').textContent   = fmt(flatTax / 12);
+        document.getElementById('cofor_tr_flatEffective').textContent = ((flatTax / attrGross) * 100).toFixed(1) + '%';
+      } else {
+        grayTransparentTrack('cofor_tr_exemptCard', 'cofor_tr_exemptBadge',
+          ['cofor_tr_exemptAnnual','cofor_tr_exemptMonthly','cofor_tr_exemptEffective']);
+        grayTransparentTrack('cofor_tr_flatCard', 'cofor_tr_flatBadge',
+          ['cofor_tr_flatAnnual','cofor_tr_flatMonthly','cofor_tr_flatEffective']);
+      }
+
+      // ── Track C — always available ──
+      document.getElementById('cofor_tr_progAnnual').textContent    = fmt(progTotal);
+      document.getElementById('cofor_tr_progMonthly').textContent   = fmt(progTotal / 12);
+      document.getElementById('cofor_tr_progEffective').textContent = ((progTotal / attrGross) * 100).toFixed(1) + '%';
+
+      // ── Recommendation ──
+      if (!isResidential) {
+        document.getElementById('cofor_tr_progCard').classList.add('track-recommended');
+        document.getElementById('cofor_tr_progBadge').innerHTML =
+          '<span class="badge badge-recommended">Only available track ✓</span>';
+        document.getElementById('cofor_tr_verdict').textContent =
+          'Residential-only tracks A & B are unavailable; commercial income must use the progressive track (C) — '
+          + fmt(progTotal) + '/year'
+          + '. Factor in potential Bituach Leumi before deciding.';
+        return;
+      }
+
+      if (fullyExempt) {
+        document.getElementById('cofor_tr_exemptCard').classList.add('track-recommended');
+        document.getElementById('cofor_tr_exemptBadge').innerHTML =
+          '<span class="badge badge-recommended">Fully Exempt ✓</span>';
+        document.getElementById('cofor_tr_verdict').textContent =
+          'Attributed income is fully exempt on Track A — ₪0 tax owed.';
+        return;
+      }
+
+      const tracks = [
+        { id: 'cofor_tr_exemptCard', badge: 'cofor_tr_exemptBadge', tax: exemptTax, label: 'Track A' },
+        { id: 'cofor_tr_flatCard',   badge: 'cofor_tr_flatBadge',   tax: flatTax,   label: 'Track B' },
+        { id: 'cofor_tr_progCard',   badge: 'cofor_tr_progBadge',   tax: progTotal, label: 'Track C' },
+      ];
+
+      const sorted   = [...tracks].sort((a, b) => a.tax - b.tax);
+      const cheapest = sorted[0];
+      const runnerUp = sorted[1];
+      const margin   = runnerUp.tax - cheapest.tax;
+
+      if (margin <= THRESHOLD) {
+        tracks.forEach(t => {
+          if (t.tax - cheapest.tax <= THRESHOLD) {
+            document.getElementById(t.badge).innerHTML = '<span class="badge badge-close">Too close to call</span>';
+          }
+        });
+        document.getElementById('cofor_tr_verdict').textContent =
+          'Results are within ' + fmt(THRESHOLD) + '/year — review all tracks carefully.';
+      } else if (cheapest.label === 'Track C') {
+        document.getElementById('cofor_tr_progCard').classList.add('track-recommended');
+        document.getElementById('cofor_tr_progBadge').innerHTML = '<span class="badge badge-recommended">Verify after Bituach Leumi ✓</span>';
+        document.getElementById('cofor_tr_verdict').textContent =
+          'Track C appears cheapest, but factor in potential Bituach Leumi before deciding.';
+      } else {
+        document.getElementById(cheapest.id).classList.add('track-recommended');
+        document.getElementById(cheapest.badge).innerHTML = '<span class="badge badge-recommended">Recommended ✓</span>';
+        document.getElementById('cofor_tr_verdict').textContent =
+          cheapest.label + ' is cheapest at ' + fmt(cheapest.tax) + '/year — saving you ' + fmt(margin) + ' vs. the next best option.';
+      }
+    }
+
+    function runCoFORCalc() {
+      runCoFORRegCalc();
+      runCoFORTransparentCalc();
+    }
+
+    function updateCoFORPanel() {
+      const isTransparent = document.getElementById('cofor_transparent').checked;
+      document.getElementById('cofor_output_regular').style.display     = isTransparent ? 'none' : '';
+      document.getElementById('cofor_output_transparent').style.display = isTransparent ? ''     : 'none';
+      runCoFORCalc();
+    }
+
+    syncExpensesEnabled();
+
+    ['cofor_rentalIncome', 'cofor_rentalIncome_annual', 'cofor_expenses', 'cofor_otherIncome', 'cofor_ownershipPct'].forEach(id =>
+      document.getElementById(id).addEventListener('input', runCoFORCalc)
+    );
+    document.getElementById('cofor_taxBasis').addEventListener('change', function () {
+      syncExpensesEnabled();
+      runCoFORCalc();
+    });
+    document.getElementById('cofor_over60').addEventListener('change', runCoFORCalc);
+    document.getElementById('cofor_propertyType').addEventListener('change', runCoFORCalc);
+    document.getElementById('cofor_transparent').addEventListener('change', updateCoFORPanel);
+
+    updateCoFORPanel();
   }
 
   document.addEventListener('DOMContentLoaded', showSection);
