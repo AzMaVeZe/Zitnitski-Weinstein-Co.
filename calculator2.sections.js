@@ -30,6 +30,30 @@
     return d ? { state: 'ok', date: d } : { state: 'invalid', date: null };
   }
 
+  // ── Shared input/DOM helpers (used by every section) ──────────────
+  // Parse a numeric field: strip commas; 0 for blank/non-numeric (never NaN/±Infinity).
+  function pn(id) {
+    const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
+    return Number.isFinite(v) ? v : 0;
+  }
+
+  // Two-way monthly↔annual mirror for a paired set of currency inputs.
+  function syncPair(monthlyId, annualId) {
+    function mirror(fromEl, toId, factor) {
+      const v = parseFloat((fromEl.value || '').replace(/,/g, ''));
+      document.getElementById(toId).value = Number.isFinite(v)
+        ? (+(v * factor).toFixed(2)).toLocaleString('en-IL', { maximumFractionDigits: 2 })
+        : '';
+    }
+    document.getElementById(monthlyId).addEventListener('input', function () { mirror(this, annualId, 12); });
+    document.getElementById(annualId).addEventListener('input', function () { mirror(this, monthlyId, 1 / 12); });
+  }
+
+  // Reset helpers: blank result fields to '—', empty badge slots, drop recommend/ineligible flags.
+  function blank(ids)           { ids.forEach(id => { document.getElementById(id).textContent = '—'; }); }
+  function clearBadges(ids)     { ids.forEach(id => { document.getElementById(id).innerHTML = ''; }); }
+  function clearTrackFlags(ids) { ids.forEach(id => { document.getElementById(id).classList.remove('track-recommended', 'track-ineligible'); }); }
+
   // ── Section router ────────────────────────────────────────────────
   function showSection() {
     // Routing data may be absent (direct visit), malformed (corrupted JSON),
@@ -139,45 +163,25 @@
     });
 
     // Monthly ↔ Annual sync for each row
-    function syncPair(monthlyId, annualId) {
-      function mirror(fromEl, toId, factor) {
-        const v = parseFloat((fromEl.value || '').replace(/,/g, ''));
-        document.getElementById(toId).value = Number.isFinite(v)
-          ? (+(v * factor).toFixed(2)).toLocaleString('en-IL', { maximumFractionDigits: 2 })
-          : '';
-      }
-      document.getElementById(monthlyId).addEventListener('input', function () { mirror(this, annualId, 12); });
-      document.getElementById(annualId).addEventListener('input', function () { mirror(this, monthlyId, 1 / 12); });
-    }
     syncPair('rentalIncome',  'rentalIncome_annual');
     syncPair('expensesInput', 'expensesInput_annual');
     syncPair('otherIncome',   'otherIncome_annual');
 
     function runTrackCalc() {
-      function num(id) {
-        const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
-        return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity
-      }
-      const rental   = num('rentalIncome');
+      const rental   = pn('rentalIncome');
       const hasOther = document.getElementById('hasOtherIncome').checked;
-      const other    = hasOther ? num('otherIncome') : 0;
-      const expenses = num('expensesInput');
+      const other    = hasOther ? pn('otherIncome') : 0;
+      const expenses = pn('expensesInput');
       const over60 = document.getElementById('over60Check').checked;
 
       const R = rental * 12;
 
       if (!R || R <= 0) {
-        ['flatAnnual','flatMonthly','flatEffective',
-         'exemptAnnual','exemptMonthly','exemptEffective',
-         'progAnnual','progMonthly','progEffective'].forEach(id => {
-          document.getElementById(id).textContent = '—';
-        });
-        ['flatBadge','exemptBadge','progBadge'].forEach(id => {
-          document.getElementById(id).innerHTML = '';
-        });
-        ['flatCard','exemptCard','progCard'].forEach(id => {
-          document.getElementById(id).classList.remove('track-recommended');
-        });
+        blank(['flatAnnual','flatMonthly','flatEffective',
+               'exemptAnnual','exemptMonthly','exemptEffective',
+               'progAnnual','progMonthly','progEffective']);
+        clearBadges(['flatBadge','exemptBadge','progBadge']);
+        clearTrackFlags(['flatCard','exemptCard','progCard']);
         document.getElementById('trackVerdict').textContent = '';
         return;
       }
@@ -275,10 +279,6 @@
       document.getElementById('cg_res_foreignNotice').style.display = '';
     }
 
-    function pn(id) {
-      const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
-      return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity from stray input
-    }
 
     // ── Owned ≥ 18 months flag ────────────────────────────────────
     function updateOwnedFlag() {
@@ -310,21 +310,15 @@
 
     // ── Reset all output elements to blank ───────────────────────
     function resetCGResCards() {
-      ['cg_res_A_tax','cg_res_A_effective','cg_res_A_total',
-       'cg_res_B_tax','cg_res_B_effective','cg_res_B_total',
-       'cg_res_gainDisplay'].forEach(id => {
-        document.getElementById(id).textContent = '—';
-      });
+      blank(['cg_res_A_tax','cg_res_A_effective','cg_res_A_total',
+             'cg_res_B_tax','cg_res_B_effective','cg_res_B_total',
+             'cg_res_gainDisplay']);
       document.getElementById('cg_res_A_note').textContent           = '';
       document.getElementById('cg_res_verdict').textContent          = '';
       document.getElementById('cg_res_noDateWarn').style.display     = 'none';
       document.getElementById('cg_res_badDateWarn').style.display    = 'none';
-      ['cg_res_A_badge','cg_res_B_badge'].forEach(id => {
-        document.getElementById(id).innerHTML = '';
-      });
-      ['cg_res_A_card','cg_res_B_card'].forEach(id => {
-        document.getElementById(id).classList.remove('track-recommended','track-ineligible');
-      });
+      clearBadges(['cg_res_A_badge','cg_res_B_badge']);
+      clearTrackFlags(['cg_res_A_card','cg_res_B_card']);
     }
 
     // ── Main calculation ─────────────────────────────────────────
@@ -540,10 +534,6 @@
 
     document.getElementById('cg_com_saleDate').value = formatDMY(new Date());
 
-    function pn(id) {
-      const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
-      return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity from stray input
-    }
 
     const ALL_OUTPUT_IDS = [
       'cg_com_pre2001Gain','cg_com_pre2001Tax',
@@ -555,7 +545,7 @@
     ];
 
     function resetComCards() {
-      ALL_OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
+      blank(ALL_OUTPUT_IDS);
       document.getElementById('cg_com_verdict').textContent       = '';
       document.getElementById('cg_com_noDateWarn').style.display  = 'none';
       document.getElementById('cg_com_badDateWarn').style.display = 'none';
@@ -669,10 +659,6 @@
 
   // ── Individual · Shares (Dividends) ──────────────────────────────
   function initIndShares() {
-    function pn(id) {
-      const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
-      return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity from stray input
-    }
 
     const OUTPUT_IDS = [
       'shares_dividendDisplay', 'shares_taxDisplay', 'shares_effective',
@@ -680,7 +666,7 @@
     ];
 
     function resetSharesCards() {
-      OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
+      blank(OUTPUT_IDS);
       document.getElementById('shares_ftcBreakdown').style.display = 'none';
       document.getElementById('shares_note').style.display = 'none';
       const verdict = document.getElementById('shares_verdict');
@@ -795,21 +781,7 @@
       document.getElementById('coil_propertyType').value = 'commercial';
     }
 
-    function pn(id) {
-      const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
-      return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity from stray input
-    }
 
-    function syncPair(monthlyId, annualId) {
-      function mirror(fromEl, toId, factor) {
-        const v = parseFloat((fromEl.value || '').replace(/,/g, ''));
-        document.getElementById(toId).value = Number.isFinite(v)
-          ? (+(v * factor).toFixed(2)).toLocaleString('en-IL', { maximumFractionDigits: 2 })
-          : '';
-      }
-      document.getElementById(monthlyId).addEventListener('input', function () { mirror(this, annualId, 12); });
-      document.getElementById(annualId).addEventListener('input', function () { mirror(this, monthlyId, 1 / 12); });
-    }
     syncPair('coil_rentalIncome', 'coil_rentalIncome_annual');
 
     const REG_OUTPUT_IDS = [
@@ -819,15 +791,11 @@
     ];
 
     function resetRegCards() {
-      REG_OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
+      blank(REG_OUTPUT_IDS);
       document.getElementById('coil_reg_netDisplay').textContent = '—';
       document.getElementById('coil_reg_verdict').textContent    = '';
-      ['coil_reg_retainBadge','coil_reg_distBadge'].forEach(id => {
-        document.getElementById(id).innerHTML = '';
-      });
-      ['coil_reg_retainCard','coil_reg_distCard'].forEach(id => {
-        document.getElementById(id).classList.remove('track-recommended');
-      });
+      clearBadges(['coil_reg_retainBadge','coil_reg_distBadge']);
+      clearTrackFlags(['coil_reg_retainCard','coil_reg_distCard']);
     }
 
     function runCoILRegCalc() {
@@ -893,15 +861,11 @@
     ];
 
     function resetTransparentCards() {
-      TR_OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
+      blank(TR_OUTPUT_IDS);
       document.getElementById('coil_tr_attrDisplay').textContent = '—';
       document.getElementById('coil_tr_verdict').textContent     = '';
-      ['coil_tr_exemptBadge','coil_tr_flatBadge','coil_tr_progBadge'].forEach(id => {
-        document.getElementById(id).innerHTML = '';
-      });
-      ['coil_tr_exemptCard','coil_tr_flatCard','coil_tr_progCard'].forEach(id => {
-        document.getElementById(id).classList.remove('track-recommended','track-ineligible');
-      });
+      clearBadges(['coil_tr_exemptBadge','coil_tr_flatBadge','coil_tr_progBadge']);
+      clearTrackFlags(['coil_tr_exemptCard','coil_tr_flatCard','coil_tr_progCard']);
     }
 
     function grayTransparentTrack(cardId, badgeId, valIds) {
@@ -1054,21 +1018,7 @@
       document.getElementById('cofor_propertyType').value = 'commercial';
     }
 
-    function pn(id) {
-      const v = parseFloat((document.getElementById(id).value || '').replace(/,/g, ''));
-      return Number.isFinite(v) ? v : 0;   // never NaN or ±Infinity from stray input
-    }
 
-    function syncPair(monthlyId, annualId) {
-      function mirror(fromEl, toId, factor) {
-        const v = parseFloat((fromEl.value || '').replace(/,/g, ''));
-        document.getElementById(toId).value = Number.isFinite(v)
-          ? (+(v * factor).toFixed(2)).toLocaleString('en-IL', { maximumFractionDigits: 2 })
-          : '';
-      }
-      document.getElementById(monthlyId).addEventListener('input', function () { mirror(this, annualId, 12); });
-      document.getElementById(annualId).addEventListener('input', function () { mirror(this, monthlyId, 1 / 12); });
-    }
     syncPair('cofor_rentalIncome', 'cofor_rentalIncome_annual');
 
     // ── Regular (non-transparent) foreign-company path ──
@@ -1078,7 +1028,7 @@
     ];
 
     function resetCoFORCards() {
-      COFOR_OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
+      blank(COFOR_OUTPUT_IDS);
       document.getElementById('cofor_verdict').textContent = '';
     }
 
@@ -1137,15 +1087,11 @@
     ];
 
     function resetTransparentCards() {
-      COFOR_TR_OUTPUT_IDS.forEach(id => { document.getElementById(id).textContent = '—'; });
+      blank(COFOR_TR_OUTPUT_IDS);
       document.getElementById('cofor_tr_attrDisplay').textContent = '—';
       document.getElementById('cofor_tr_verdict').textContent     = '';
-      ['cofor_tr_exemptBadge','cofor_tr_flatBadge','cofor_tr_progBadge'].forEach(id => {
-        document.getElementById(id).innerHTML = '';
-      });
-      ['cofor_tr_exemptCard','cofor_tr_flatCard','cofor_tr_progCard'].forEach(id => {
-        document.getElementById(id).classList.remove('track-recommended','track-ineligible');
-      });
+      clearBadges(['cofor_tr_exemptBadge','cofor_tr_flatBadge','cofor_tr_progBadge']);
+      clearTrackFlags(['cofor_tr_exemptCard','cofor_tr_flatCard','cofor_tr_progCard']);
     }
 
     function grayTransparentTrack(cardId, badgeId, valIds) {

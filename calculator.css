@@ -207,33 +207,6 @@
     }
     .metric-val.accent { color: var(--blue); font-size: 1.45rem; }
 
-    /* BRACKET CHART */
-    .bracket-chart { display: flex; flex-direction: column; gap: .7rem; }
-    .b-row { cursor: default; }
-    .b-meta {
-      display: flex; justify-content: space-between; align-items: baseline;
-      margin-bottom: .25rem;
-    }
-    .b-range { font-size: .78rem; color: var(--muted); }
-    .b-rate  { font-size: .82rem; font-weight: 700; color: var(--text); }
-    .b-track {
-      height: 22px; background: var(--bg);
-      border-radius: 5px; border: 1px solid var(--border);
-      overflow: hidden;
-    }
-    .b-fill {
-      height: 100%; border-radius: 5px;
-      background: var(--blue-light);
-      transition: background .25s;
-    }
-    .b-row.active .b-range { color: var(--blue); font-weight: 600; }
-    .b-row.active .b-rate  { color: var(--blue); }
-    .b-row.active .b-track { border-color: var(--blue-mid); }
-    .b-row.active .b-fill  { background: var(--blue); }
-    .b-row.active .b-meta::after {
-      content: '← your bracket';
-      font-size: .72rem; color: var(--blue-mid); font-style: italic;
-    }
     /* CHECKBOX ROW */
     .checkbox-row {
       display: flex; align-items: center; gap: .55rem;
