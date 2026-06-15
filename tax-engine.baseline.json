@@ -1,0 +1,187 @@
+{
+  "BRACKETS :: table (2024, monthly NIS)": [
+    {
+      "min": 0,
+      "max": 7010,
+      "rate": 0.1,
+      "label": "₪0 – ₪7,010"
+    },
+    {
+      "min": 7010,
+      "max": 10060,
+      "rate": 0.14,
+      "label": "₪7,011 – ₪10,060"
+    },
+    {
+      "min": 10060,
+      "max": 16150,
+      "rate": 0.2,
+      "label": "₪10,061 – ₪16,150"
+    },
+    {
+      "min": 16150,
+      "max": 22440,
+      "rate": 0.31,
+      "label": "₪16,151 – ₪22,440"
+    },
+    {
+      "min": 22440,
+      "max": 46690,
+      "rate": 0.35,
+      "label": "₪22,441 – ₪46,690"
+    },
+    {
+      "min": 46690,
+      "max": "Infinity",
+      "rate": 0.47,
+      "label": "Above ₪46,690"
+    }
+  ],
+  "calcTaxPassive :: income 0": 0,
+  "calcTaxPassive :: income 50000": 15500,
+  "calcTaxPassive :: income 84120": 26077.2,
+  "calcTaxPassive :: income 269280": 83476.8,
+  "calcTaxPassive :: income 269281": 83477.15,
+  "calcTaxPassive :: income 400000": 129228.8,
+  "calcTaxPassive :: income 560280": 185326.8,
+  "calcTaxPassive :: income 700000": 250995.2,
+  "calcTaxActive :: income 0": 0,
+  "calcTaxActive :: income 50000": 5000,
+  "calcTaxActive :: income 84120": 8412,
+  "calcTaxActive :: income 200000": 30074,
+  "calcTaxActive :: income 269280": 51550.8,
+  "calcTaxActive :: income 560280": 153400.8,
+  "calcTaxActive :: income 700000": 219069.2,
+  "computeTracks :: residential | gross<C_EXEMPT | no other | under60": {
+    "flatTax": 5000,
+    "exemptTax": 0,
+    "fullyExempt": true,
+    "progTax": 15500
+  },
+  "computeTracks :: residential | gross=C_EXEMPT | no other | under60": {
+    "flatTax": 6784.8,
+    "exemptTax": 0,
+    "fullyExempt": true,
+    "progTax": 21032.88
+  },
+  "computeTracks :: residential | gross>C_EXEMPT (<2x) | no other | under60": {
+    "flatTax": 10000,
+    "exemptTax": 19934.24,
+    "fullyExempt": false,
+    "progTax": 31000
+  },
+  "computeTracks :: residential | gross=2*C_EXEMPT | no other | under60": {
+    "flatTax": 13569.6,
+    "exemptTax": 42065.76,
+    "fullyExempt": false,
+    "progTax": 42065.76
+  },
+  "computeTracks :: residential | gross>2*C_EXEMPT | no other | under60": {
+    "flatTax": 20000,
+    "exemptTax": 62000,
+    "fullyExempt": false,
+    "progTax": 62000
+  },
+  "computeTracks :: residential | gross>C_EXEMPT | other 300k | under60": {
+    "flatTax": 10000,
+    "exemptTax": 22506.4,
+    "fullyExempt": false,
+    "progTax": 35000
+  },
+  "computeTracks :: residential | gross>C_EXEMPT | other 600k | under60": {
+    "flatTax": 10000,
+    "exemptTax": 30222.88,
+    "fullyExempt": false,
+    "progTax": 47000
+  },
+  "computeTracks :: residential | gross>C_EXEMPT | no other | OVER60": {
+    "flatTax": 10000,
+    "exemptTax": 6430.4,
+    "fullyExempt": false,
+    "progTax": 10635.2
+  },
+  "computeTracks :: residential | gross>2*C_EXEMPT | no other | OVER60": {
+    "flatTax": 20000,
+    "exemptTax": 62000,
+    "fullyExempt": false,
+    "progTax": 30074
+  },
+  "computeTracks :: residential | gross>C_EXEMPT | expenses 40k | under60": {
+    "flatTax": 10000,
+    "exemptTax": 11960.544,
+    "fullyExempt": false,
+    "progTax": 18600
+  },
+  "computeTracks :: commercial | gross>C_EXEMPT | no other | under60": {
+    "flatTax": null,
+    "exemptTax": null,
+    "fullyExempt": false,
+    "progTax": 31000
+  },
+  "computeTracks :: commercial | gross>C_EXEMPT | other 600k | under60": {
+    "flatTax": null,
+    "exemptTax": null,
+    "fullyExempt": false,
+    "progTax": 47000
+  },
+  "computeTracks :: commercial | gross>C_EXEMPT | no other | OVER60": {
+    "flatTax": null,
+    "exemptTax": null,
+    "fullyExempt": false,
+    "progTax": 10635.2
+  },
+  "computeTracks :: commercial | gross<C_EXEMPT | no other | under60": {
+    "flatTax": null,
+    "exemptTax": null,
+    "fullyExempt": false,
+    "progTax": 15500
+  },
+  "adjustedBasis :: price 1.0M, depr 50k, improv 200k": 1150000,
+  "adjustedBasis :: price 1.0M, no depr/improv": 1000000,
+  "nominalGain :: sale 2.0M − 30k − 20k − basis 1.15M": 800000,
+  "nominalGain :: underwater (floored at 0)": 0,
+  "realGain :: CPI override 500k present": {
+    "value": 500000,
+    "isNominal": false
+  },
+  "realGain :: no override → nominal flagged": {
+    "value": 800000,
+    "isNominal": true
+  },
+  "realGain :: negative override ignored": {
+    "value": 800000,
+    "isNominal": true
+  },
+  "linearSplit :: 2010→2020, cutoff 2014": [
+    {
+      "from": "01/01/2010",
+      "to": "01/01/2014",
+      "days": 1461,
+      "gain": 320043.81161
+    },
+    {
+      "from": "01/01/2014",
+      "to": "01/01/2020",
+      "days": 2191,
+      "gain": 479956.18839
+    }
+  ],
+  "linearSplit :: cutoff before purchase (ignored)": [
+    {
+      "from": "01/01/2016",
+      "to": "01/01/2020",
+      "days": 1461,
+      "gain": 800000
+    }
+  ],
+  "linearSplit :: sale before purchase → []": [],
+  "linearSplit :: same day → []": [],
+  "parseDMY :: '15/06/2020' valid": "15/06/2020",
+  "parseDMY :: '31/02/2020' invalid": null,
+  "parseDMY :: '' empty": null,
+  "daysBetween :: 01/01/2020 → 31/01/2020": 30,
+  "fmt :: 1234567": "₪1,234,567",
+  "fmt :: 0": "₪0",
+  "fmt :: -5000": "₪-5,000",
+  "fmt :: NaN": "₪NaN"
+}
