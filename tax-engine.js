@@ -80,7 +80,12 @@
       exemptTax = 0;
       fullyExempt = true;
     } else if (R >= 2 * C_EXEMPT) {
-      exemptTax = calcTaxPassive(Net);
+      // Above 2x the ceiling the standard exemption is fully phased out, so the
+      // rent is taxed exactly like the progressive track (Track C) — the full
+      // ladder for an over-60, other-income stacking otherwise — not the under-60
+      // passive floor (per ITA, rental income of an individual aged 60+ uses the
+      // personal-exertion starting brackets).
+      exemptTax = progTax;
     } else {
       let T;
       if (O > 0) {

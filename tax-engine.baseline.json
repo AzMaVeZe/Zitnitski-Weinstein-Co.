@@ -102,7 +102,7 @@
   },
   "computeTracks :: residential | gross>2*C_EXEMPT | no other | OVER60": {
     "flatTax": 20000,
-    "exemptTax": 62000,
+    "exemptTax": 30074,
     "fullyExempt": false,
     "progTax": 30074
   },
