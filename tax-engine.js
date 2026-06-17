@@ -34,7 +34,9 @@
     return tax;
   }
 
-  function fmt(n) { return '₪' + Math.round(n).toLocaleString('en-IL'); }
+  // Non-finite input (NaN / ±Infinity) renders as the empty-state em-dash
+  // rather than "₪NaN", matching the UI's blank-field convention.
+  function fmt(n) { return Number.isFinite(n) ? '₪' + Math.round(n).toLocaleString('en-IL') : '—'; }
 
   // ── Three-track rental tax (pure: no DOM read/write) ─────────────
   // Inputs are ANNUAL figures. Returns { flatTax, exemptTax, fullyExempt, progTax }.

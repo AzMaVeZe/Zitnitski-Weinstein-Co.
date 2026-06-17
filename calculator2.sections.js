@@ -37,6 +37,20 @@
     return Number.isFinite(v) ? v : 0;
   }
 
+  // Like pn(), but applies `dflt` only when the field is blank/non-numeric.
+  // A genuinely entered 0 is respected — unlike `pn(id) || dflt`, where pn()'s
+  // 0-for-blank makes a real 0 (e.g. 0% ownership) collapse to the default.
+  function pnOr(id, dflt) {
+    const raw = (document.getElementById(id).value || '').replace(/,/g, '').trim();
+    if (raw === '') return dflt;
+    const v = parseFloat(raw);
+    return Number.isFinite(v) ? v : dflt;
+  }
+
+  // Effective-rate display "NN.N%". Shows 0.0% when the base is 0 (e.g. 0%
+  // attributed gross) instead of computing tax/0 → "NaN%".
+  function effPct(tax, base) { return (base > 0 ? (tax / base) * 100 : 0).toFixed(1) + '%'; }
+
   // Two-way monthly↔annual mirror for a paired set of currency inputs.
   function syncPair(monthlyId, annualId) {
     function mirror(fromEl, toId, factor) {
@@ -803,7 +817,7 @@
 
       const grossRent    = pn('coil_rentalIncome_annual');
       const expenses     = pn('coil_expenses');
-      const ownershipPct = Math.min(100, Math.max(0, pn('coil_ownershipPct') || 100));
+      const ownershipPct = Math.min(100, Math.max(0, pnOr('coil_ownershipPct', 100)));
 
       if (!grossRent) { resetRegCards(); return; }
 
@@ -883,7 +897,7 @@
       const expenses     = pn('coil_expenses');
       const otherIncome  = pn('coil_otherIncome');
       const over60       = document.getElementById('coil_over60').checked;
-      const ownershipPct = Math.min(100, Math.max(0, pn('coil_ownershipPct') || 100));
+      const ownershipPct = Math.min(100, Math.max(0, pnOr('coil_ownershipPct', 100)));
       const isResidential = document.getElementById('coil_propertyType').value !== 'commercial';
 
       if (!grossRent) { resetTransparentCards(); return; }
@@ -912,11 +926,11 @@
       if (isResidential) {
         document.getElementById('coil_tr_exemptAnnual').textContent    = fullyExempt ? fmt(0) : fmt(exemptTax);
         document.getElementById('coil_tr_exemptMonthly').textContent   = fullyExempt ? fmt(0) : fmt(exemptTax / 12);
-        document.getElementById('coil_tr_exemptEffective').textContent = fullyExempt ? '0.0%' : ((exemptTax / attrGross) * 100).toFixed(1) + '%';
+        document.getElementById('coil_tr_exemptEffective').textContent = fullyExempt ? '0.0%' : effPct(exemptTax, attrGross);
 
         document.getElementById('coil_tr_flatAnnual').textContent    = fmt(flatTax);
         document.getElementById('coil_tr_flatMonthly').textContent   = fmt(flatTax / 12);
-        document.getElementById('coil_tr_flatEffective').textContent = ((flatTax / attrGross) * 100).toFixed(1) + '%';
+        document.getElementById('coil_tr_flatEffective').textContent = effPct(flatTax, attrGross);
       } else {
         grayTransparentTrack('coil_tr_exemptCard', 'coil_tr_exemptBadge',
           ['coil_tr_exemptAnnual','coil_tr_exemptMonthly','coil_tr_exemptEffective']);
@@ -927,7 +941,7 @@
       // ── Track C — always available ──
       document.getElementById('coil_tr_progAnnual').textContent    = fmt(progTotal);
       document.getElementById('coil_tr_progMonthly').textContent   = fmt(progTotal / 12);
-      document.getElementById('coil_tr_progEffective').textContent = ((progTotal / attrGross) * 100).toFixed(1) + '%';
+      document.getElementById('coil_tr_progEffective').textContent = effPct(progTotal, attrGross);
 
       // ── Recommendation ──
       if (!isResidential) {
@@ -1109,7 +1123,7 @@
       const expenses      = pn('cofor_expenses');
       const otherIncome   = pn('cofor_otherIncome');
       const over60        = document.getElementById('cofor_over60').checked;
-      const ownershipPct  = Math.min(100, Math.max(0, pn('cofor_ownershipPct') || 100));
+      const ownershipPct  = Math.min(100, Math.max(0, pnOr('cofor_ownershipPct', 100)));
       const isResidential = document.getElementById('cofor_propertyType').value !== 'commercial';
 
       if (!grossRent) { resetTransparentCards(); return; }
@@ -1140,11 +1154,11 @@
       if (isResidential) {
         document.getElementById('cofor_tr_exemptAnnual').textContent    = fullyExempt ? fmt(0) : fmt(exemptTax);
         document.getElementById('cofor_tr_exemptMonthly').textContent   = fullyExempt ? fmt(0) : fmt(exemptTax / 12);
-        document.getElementById('cofor_tr_exemptEffective').textContent = fullyExempt ? '0.0%' : ((exemptTax / attrGross) * 100).toFixed(1) + '%';
+        document.getElementById('cofor_tr_exemptEffective').textContent = fullyExempt ? '0.0%' : effPct(exemptTax, attrGross);
 
         document.getElementById('cofor_tr_flatAnnual').textContent    = fmt(flatTax);
         document.getElementById('cofor_tr_flatMonthly').textContent   = fmt(flatTax / 12);
-        document.getElementById('cofor_tr_flatEffective').textContent = ((flatTax / attrGross) * 100).toFixed(1) + '%';
+        document.getElementById('cofor_tr_flatEffective').textContent = effPct(flatTax, attrGross);
       } else {
         grayTransparentTrack('cofor_tr_exemptCard', 'cofor_tr_exemptBadge',
           ['cofor_tr_exemptAnnual','cofor_tr_exemptMonthly','cofor_tr_exemptEffective']);
@@ -1155,7 +1169,7 @@
       // ── Track C — always available ──
       document.getElementById('cofor_tr_progAnnual').textContent    = fmt(progTotal);
       document.getElementById('cofor_tr_progMonthly').textContent   = fmt(progTotal / 12);
-      document.getElementById('cofor_tr_progEffective').textContent = ((progTotal / attrGross) * 100).toFixed(1) + '%';
+      document.getElementById('cofor_tr_progEffective').textContent = effPct(progTotal, attrGross);
 
       // ── Recommendation ──
       if (!isResidential) {
