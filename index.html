@@ -248,6 +248,23 @@
     .accordion-body li { margin-bottom: .4rem; }
     .accordion-body strong { color: var(--text); }
 
+    /* ── COLLAPSE-FROM-BOTTOM CONTROL (injected by JS into each open section) ── */
+    .collapse-btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      background: transparent; border: 1px solid var(--border);
+      color: var(--blue); cursor: pointer;
+      font: inherit; font-size: .85rem; font-weight: 600;
+      padding: .45rem .9rem; border-radius: var(--radius);
+      transition: background .2s, border-color .2s, color .2s;
+    }
+    .collapse-btn:hover { background: var(--blue-light); border-color: var(--blue-mid); color: var(--blue-mid); }
+    .collapse-btn:focus-visible { outline: 3px solid rgba(37,99,176,.35); outline-offset: 2px; }
+    .collapse-btn .collapse-arrow { font-size: 1rem; line-height: 1; }
+    /* In a section accordion: sits below the section content, right-aligned. */
+    .section-acc-body > .collapse-btn { margin-top: 2rem; }
+    /* In a FAQ answer: smaller top gap to stay snug under the answer text. */
+    .accordion-body > .collapse-btn { margin-top: 1rem; }
+
     /* ── TWO-COL INFO ── */
     .two-col {
       display: grid;
@@ -1005,6 +1022,49 @@
         body.classList.add('open');
       }
     });
+  });
+
+  // ── Collapse-from-bottom controls ──
+  // Each open section gets a "Collapse ↑" button at the end of its content so
+  // the reader can close it without scrolling back up to the header. After
+  // closing, the section's own header (summary/trigger) is smoothly scrolled to
+  // just below the sticky nav rather than left hidden underneath it.
+  function scrollHeaderBelowNav(headerEl) {
+    const nav  = document.querySelector('nav');
+    const navH = nav ? nav.getBoundingClientRect().height : 0;
+    const top  = headerEl.getBoundingClientRect().top + window.pageYOffset - navH - 12;
+    window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }
+  function makeCollapseBtn(ariaLabel, onCollapse) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'collapse-btn';
+    b.setAttribute('aria-label', ariaLabel);
+    b.innerHTML = 'Collapse <span class="collapse-arrow" aria-hidden="true">↑</span>';
+    b.addEventListener('click', onCollapse);
+    return b;
+  }
+  // Top-level section accordions (native <details>): close, then scroll.
+  document.querySelectorAll('.section-acc').forEach(acc => {
+    const body    = acc.querySelector('.section-acc-body');
+    const summary = acc.querySelector('.section-summary');
+    if (!body || !summary) return;
+    body.appendChild(makeCollapseBtn('Collapse section', () => {
+      acc.open = false;
+      summary.focus({ preventScroll: true });   // keyboard focus lands on the header…
+      scrollHeaderBelowNav(summary);             // …while we control the scroll ourselves
+    }));
+  });
+  // FAQ items: reuse the trigger's own toggle (it's open, so a click closes it).
+  document.querySelectorAll('.accordion-item').forEach(item => {
+    const trigger = item.querySelector('.accordion-trigger');
+    const body    = item.querySelector('.accordion-body');
+    if (!trigger || !body) return;
+    body.appendChild(makeCollapseBtn('Collapse answer', () => {
+      trigger.click();
+      trigger.focus({ preventScroll: true });
+      scrollHeaderBelowNav(trigger);
+    }));
   });
 
   // ── Active nav link on scroll ──
