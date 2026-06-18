@@ -113,17 +113,6 @@
     return Math.max(0, salePrice - saleExpenses - acquisitionExpenses - basis);
   }
 
-  // If the CPI-override field is filled (> 0), use it as the real gain.
-  // Otherwise fall back to nominalGain and flag it so the UI can display
-  // a "nominal — not CPI-indexed" label.
-  // Returns { value: number, isNominal: boolean }
-  function realGain(cpiGainOverride, nominalGainVal) {
-    if (cpiGainOverride > 0) {
-      return { value: cpiGainOverride, isNominal: false };
-    }
-    return { value: nominalGainVal, isNominal: true };
-  }
-
   // ── Company (corporate) tax helpers ──────────────────────────────
   // Pure mirrors of the inline corporate math in calculator2.sections.js
   // (runCoILRegCalc / runCoFORRegCalc) so the company real-estate CG section
@@ -162,22 +151,48 @@
   }
 
   // A company's Israeli real-estate capital gain is taxed at the FLAT corporate
-  // rate (23%) on the REAL gain — no individual-style §48A 47/20/25 historical
-  // split and no single-residence exemption, regardless of holding period;
-  // residential and commercial are computationally identical for a company.
-  // Distribution then follows the rental rules above (Israeli → +30% dividend
-  // to a substantial shareholder; foreign → no Israeli dividend tax).
+  // rate (23%) on the nominal gain (inflation indexing is not applied) — no
+  // individual-style §48A 47/20/25 historical split and no single-residence
+  // exemption, regardless of holding period; residential and commercial are
+  // computationally identical for a company. Distribution then follows the
+  // rental rules above (Israeli → +30% dividend to a substantial shareholder;
+  // foreign → no Israeli dividend tax).
   function companyRealEstateCG({ purchasePrice = 0, depreciation = 0, improvements = 0,
-      salePrice = 0, saleExpenses = 0, acqExpenses = 0, cpiGainOverride = 0,
+      salePrice = 0, saleExpenses = 0, acqExpenses = 0,
       israeli = true, ownershipPct = 100 }) {
-    const basis   = adjustedBasis(purchasePrice, depreciation, improvements);
-    const nominal = nominalGain(salePrice, saleExpenses, acqExpenses, basis);
-    const rg      = realGain(cpiGainOverride, nominal);
-    const gain    = rg.value;
+    const basis = adjustedBasis(purchasePrice, depreciation, improvements);
+    const gain  = nominalGain(salePrice, saleExpenses, acqExpenses, basis);
     const corp = israeli
       ? corporateIsraeli({ grossAnnual: gain, annualExpenses: 0, ownershipPct })
       : corporateForeign({ grossAnnual: gain, annualExpenses: 0, withholdingBasis: false });
-    return { gain, isNominal: rg.isNominal, ...corp };
+    return { gain, ...corp };
+  }
+
+  // Israeli company receiving a dividend on shares it holds.
+  // A dividend out of another ISRAELI company's Israeli-source income is excluded
+  // from the recipient company's taxable income — 0% corporate (ITO §126(b)). A
+  // FOREIGN-source dividend is included at the 23% corporate rate (ITO §126(c)),
+  // with a DIRECT foreign tax credit for foreign withholding (excess is not
+  // refunded). An indirect/underlying FTC election can further offset the foreign
+  // corporate tax — NOT computed here (disclosed in the UI). Distributing the
+  // after-tax amount to a substantial individual shareholder then adds 30% (§125B).
+  function companyDividendIsraeli({ dividend, source = 'israeli', foreignWithheldPct = 0, ownershipPct = 100 }) {
+    const CORP_RATE     = 0.23;
+    const DIVIDEND_RATE = 0.30;
+    const own = Math.min(100, Math.max(0, ownershipPct)) / 100;
+    let corpTax = 0, foreignWithheld = 0;
+    if (source !== 'israeli') {
+      foreignWithheld = (Math.min(100, Math.max(0, foreignWithheldPct)) / 100) * dividend;
+      const gross = CORP_RATE * dividend;              // §126(c): included at 23%
+      corpTax = Math.max(0, gross - foreignWithheld);  // direct FTC, no refund of excess
+    }
+    const companyBurden = corpTax + foreignWithheld;
+    const afterTax      = Math.max(0, dividend - companyBurden);
+    const distributed   = afterTax * own;
+    const divTax        = DIVIDEND_RATE * distributed; // 30% to substantial individual
+    const combined      = companyBurden + divTax;
+    const combinedEffective = dividend > 0 ? combined / dividend : 0;
+    return { corpTax, foreignWithheld, companyBurden, afterTax, distributed, divTax, combined, combinedEffective };
   }
 
   // ── DD/MM/YYYY (Israeli format) date helpers ─────────────────────

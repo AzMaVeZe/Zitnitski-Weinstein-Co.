@@ -49,6 +49,7 @@ When adding or editing factual claims, note the source in a code comment or in t
 
 - **`index.html` is single-file** — all CSS and JS inline. Keep it that way unless the user explicitly asks to split it.
 - **The calculator is intentionally split across files** (not a rule violation): `calculator.html` (Step 1) and `calculator2.html` (Step 2) share one stylesheet, `calculator.css`, and the Step-2 logic lives in `tax-engine.js` (pure, DOM-free engine) + `calculator2.sections.js` (DOM/UI layer). These load as **classic `<script src>` tags in order — engine first** (they share global scope; do **not** convert to ES modules, which break over `file://`). `calculator.css` is calc2's CSS plus calc1-only rules; calc1's two divergent card-spacing rules are preserved via `body.step1` overrides, so editing shared rules can affect both pages.
+- **Capital gains are computed on the nominal gain.** The CPI-indexed real-gain override was intentionally removed from every CG scenario (signed-off simplification) — do not reintroduce it or a `realGain`/`cpiGain` field.
 - **No frameworks, CDN dependencies, or build step** — vanilla HTML, CSS, and JS only, referenced by relative paths. The site must work offline (opened directly via `file://`).
 - **No cookies, no tracking, no external requests** — do not add analytics, fonts from CDN, or any third-party scripts.
 - **Responsive** — must work on mobile. The current layout uses CSS Grid with `auto-fit` columns; maintain this pattern.

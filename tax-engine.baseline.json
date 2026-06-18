@@ -140,18 +140,6 @@
   "adjustedBasis :: price 1.0M, no depr/improv": 1000000,
   "nominalGain :: sale 2.0M − 30k − 20k − basis 1.15M": 800000,
   "nominalGain :: underwater (floored at 0)": 0,
-  "realGain :: CPI override 500k present": {
-    "value": 500000,
-    "isNominal": false
-  },
-  "realGain :: no override → nominal flagged": {
-    "value": 800000,
-    "isNominal": true
-  },
-  "realGain :: negative override ignored": {
-    "value": 800000,
-    "isNominal": true
-  },
   "linearSplit :: 2010→2020, cutoff 2014": [
     {
       "from": "01/01/2010",
@@ -178,7 +166,6 @@
   "linearSplit :: same day → []": [],
   "companyRealEstateCG :: israeli | sale 2.0M / basis 1.0M | 100% own": {
     "gain": 1000000,
-    "isNominal": true,
     "net": 1000000,
     "corpTax": 230000,
     "afterTax": 770000,
@@ -188,7 +175,6 @@
   },
   "companyRealEstateCG :: israeli | sale 2.0M / basis 1.0M | 50% own": {
     "gain": 1000000,
-    "isNominal": true,
     "net": 1000000,
     "corpTax": 230000,
     "afterTax": 770000,
@@ -198,22 +184,51 @@
   },
   "companyRealEstateCG :: foreign | sale 2.0M / basis 1.0M": {
     "gain": 1000000,
-    "isNominal": true,
     "base": 1000000,
     "tax": 230000,
     "effective": 0.23,
     "dividendTax": 0,
     "combinedEffective": 0.23
   },
-  "companyRealEstateCG :: israeli | CPI override 600k (real gain 600k) | 100% own": {
-    "gain": 600000,
-    "isNominal": false,
-    "net": 600000,
-    "corpTax": 138000,
-    "afterTax": 462000,
-    "divTax": 138600,
-    "combined": 276600,
+  "companyDividendIsraeli :: domestic | dividend 100k | own 100%": {
+    "corpTax": 0,
+    "foreignWithheld": 0,
+    "companyBurden": 0,
+    "afterTax": 100000,
+    "distributed": 100000,
+    "divTax": 30000,
+    "combined": 30000,
+    "combinedEffective": 0.3
+  },
+  "companyDividendIsraeli :: domestic | dividend 100k | own 50%": {
+    "corpTax": 0,
+    "foreignWithheld": 0,
+    "companyBurden": 0,
+    "afterTax": 100000,
+    "distributed": 50000,
+    "divTax": 15000,
+    "combined": 15000,
+    "combinedEffective": 0.15
+  },
+  "companyDividendIsraeli :: foreign | 100k | withholding 15% | own 100%": {
+    "corpTax": 8000,
+    "foreignWithheld": 15000,
+    "companyBurden": 23000,
+    "afterTax": 77000,
+    "distributed": 77000,
+    "divTax": 23100,
+    "combined": 46100,
     "combinedEffective": 0.461
+  },
+  "companyDividendIsraeli :: foreign | 100k | withholding 30% | own 100%": {
+    "corpTax": 0,
+    "foreignWithheld": 30000,
+    "companyBurden": 30000,
+    "afterTax": 70000,
+    "distributed": 70000,
+    "divTax": 21000,
+    "combined": 51000,
+    "combinedEffective": 0.51
   },
   "parseDMY :: '15/06/2020' valid": "15/06/2020",
   "parseDMY :: '31/02/2020' invalid": null,

@@ -212,16 +212,6 @@
               <div class="input-hint">Subtracted from your purchase price, which raises the taxable gain</div>
             </td>
           </tr>
-          <tr>
-            <td class="input-row-label" style="color:var(--muted); font-weight:500">
-              <label for="cg_res_cpiGain">CPI-Indexed Real Gain</label>
-              <div style="font-size:.76rem; font-weight:400; margin-top:.15rem">(optional override)</div>
-            </td>
-            <td>
-              <input type="text" inputmode="decimal" id="cg_res_cpiGain" placeholder="optional" />
-              <div class="input-hint">Leave blank to estimate from the figures above (nominal, not inflation-adjusted)</div>
-            </td>
-          </tr>
         </tbody>
       </table>
 
@@ -256,7 +246,7 @@
     <div class="track-section">
       <div class="track-section-header">
         <h2>Which Track Is Better For You?</h2>
-        <p>Real gain: <strong id="cg_res_gainDisplay">—</strong></p>
+        <p>Gain: <strong id="cg_res_gainDisplay">—</strong></p>
       </div>
 
       <div id="cg_res_badDateWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
@@ -312,7 +302,7 @@
       </div>
 
       <p class="track-verdict" id="cg_res_verdict"></p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. They exclude the betterment levy and VAT, and the real gain is nominal unless you entered a CPI-indexed value — true Mas Shevach indexes the cost basis to CPI. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. They exclude the betterment levy and VAT, and the gain shown is the nominal gain — inflation indexing of the cost basis is not applied. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div><!-- /Ind_RE_CG_Res -->
@@ -373,16 +363,6 @@
             <td>
               <input type="text" inputmode="decimal" id="cg_com_depreciation" placeholder="0" />
               <div class="input-hint">Subtracted from your purchase price, which raises the taxable gain</div>
-            </td>
-          </tr>
-          <tr>
-            <td class="input-row-label" style="color:var(--muted); font-weight:500">
-              <label for="cg_com_cpiGain">CPI-Indexed Real Gain</label>
-              <div style="font-size:.76rem; font-weight:400; margin-top:.15rem">(optional override)</div>
-            </td>
-            <td>
-              <input type="text" inputmode="decimal" id="cg_com_cpiGain" placeholder="optional" />
-              <div class="input-hint">Leave blank to estimate from the figures above (nominal, not inflation-adjusted)</div>
             </td>
           </tr>
         </tbody>
@@ -456,7 +436,7 @@
 
       <p class="track-verdict" id="cg_com_verdict"></p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">Casual sales to a registered dealer may also trigger VAT — verify separately.</p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. They exclude the betterment levy and VAT, and the real gain is nominal unless you entered a CPI-indexed value — true Mas Shevach indexes the cost basis to CPI. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. They exclude the betterment levy and VAT, and the gain shown is the nominal gain — inflation indexing of the cost basis is not applied. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div><!-- /Ind_RE_CG_Com -->
@@ -775,7 +755,7 @@
 
   <!-- ═══ Co_IL_RE_CG_Res: Israeli Company · Real Estate · CG · Residential ══════ -->
   <!-- For a company, residential and commercial CG are computationally identical
-       (flat 23% corporate rate on the real gain, no holding-period split), so this
+       (flat 23% corporate rate on the gain, no holding-period split), so this
        section and Co_IL_RE_CG_Com share one init (initCoILRECG) — they differ only
        in heading text and element-id prefix (coilcg_res_ / coilcg_com_). -->
   <div class="calc-section" id="Co_IL_RE_CG_Res" style="display:none">
@@ -783,7 +763,7 @@
     <div class="card">
       <div class="card-header">
         <h2>Israeli Company — Residential Capital Gain</h2>
-        <p>Enter the details of the company's property sale. A company pays the flat corporate rate on the real gain regardless of how long it held the property, so no purchase or sale dates are needed.</p>
+        <p>Enter the details of the company's property sale. A company pays the flat corporate rate on the gain regardless of how long it held the property, so no purchase or sale dates are needed.</p>
       </div>
 
       <table class="input-table">
@@ -827,16 +807,6 @@
               <div class="input-hint">Subtracted from the purchase price, which raises the taxable gain</div>
             </td>
           </tr>
-          <tr>
-            <td class="input-row-label" style="color:var(--muted); font-weight:500">
-              <label for="coilcg_res_cpiGain">CPI-Indexed Real Gain</label>
-              <div style="font-size:.76rem; font-weight:400; margin-top:.15rem">(optional override)</div>
-            </td>
-            <td>
-              <input type="text" inputmode="decimal" id="coilcg_res_cpiGain" placeholder="optional" />
-              <div class="input-hint">Leave blank to estimate from the figures above (nominal, not inflation-adjusted)</div>
-            </td>
-          </tr>
         </tbody>
       </table>
 
@@ -857,7 +827,7 @@
     <div class="track-section">
       <div class="track-section-header">
         <h2>Estimated Capital Gains Tax</h2>
-        <p>Real gain: <strong id="coilcg_res_gainDisplay">—</strong></p>
+        <p>Gain: <strong id="coilcg_res_gainDisplay">—</strong></p>
       </div>
 
       <div class="track-cards track-cards-2">
@@ -908,9 +878,9 @@
       </div>
 
       <p class="track-verdict" id="coilcg_res_verdict"></p>
-      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the real gain whether the property is residential or commercial, and regardless of how long it was held — there is no holding-period split and no residential exemption.</p>
+      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the gain whether the property is residential or commercial, and regardless of how long it was held — there is no holding-period split and no residential exemption.</p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Not computed here: any inflationary portion of the gain that accrued before 1994 is taxed at 10% (inflationary gain accrued from 1994 onward is exempt), and a capital-income surtax may apply above the high-income threshold.</p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results exclude the betterment levy and VAT, and the real gain is nominal unless you entered a CPI-indexed value. Figures assume a substantial shareholder (10% or greater holding) at the 30% dividend rate. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results exclude the betterment levy and VAT, and the gain shown is the nominal gain (inflation indexing is not applied). Figures assume a substantial shareholder (10% or greater holding) at the 30% dividend rate. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div>
@@ -922,7 +892,7 @@
     <div class="card">
       <div class="card-header">
         <h2>Israeli Company — Commercial Capital Gain</h2>
-        <p>Enter the details of the company's property sale. A company pays the flat corporate rate on the real gain regardless of how long it held the property, so no purchase or sale dates are needed.</p>
+        <p>Enter the details of the company's property sale. A company pays the flat corporate rate on the gain regardless of how long it held the property, so no purchase or sale dates are needed.</p>
       </div>
 
       <table class="input-table">
@@ -966,16 +936,6 @@
               <div class="input-hint">Subtracted from the purchase price, which raises the taxable gain</div>
             </td>
           </tr>
-          <tr>
-            <td class="input-row-label" style="color:var(--muted); font-weight:500">
-              <label for="coilcg_com_cpiGain">CPI-Indexed Real Gain</label>
-              <div style="font-size:.76rem; font-weight:400; margin-top:.15rem">(optional override)</div>
-            </td>
-            <td>
-              <input type="text" inputmode="decimal" id="coilcg_com_cpiGain" placeholder="optional" />
-              <div class="input-hint">Leave blank to estimate from the figures above (nominal, not inflation-adjusted)</div>
-            </td>
-          </tr>
         </tbody>
       </table>
 
@@ -996,7 +956,7 @@
     <div class="track-section">
       <div class="track-section-header">
         <h2>Estimated Capital Gains Tax</h2>
-        <p>Real gain: <strong id="coilcg_com_gainDisplay">—</strong></p>
+        <p>Gain: <strong id="coilcg_com_gainDisplay">—</strong></p>
       </div>
 
       <div class="track-cards track-cards-2">
@@ -1047,20 +1007,168 @@
       </div>
 
       <p class="track-verdict" id="coilcg_com_verdict"></p>
-      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the real gain whether the property is residential or commercial, and regardless of how long it was held — there is no holding-period split and no residential exemption.</p>
+      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the gain whether the property is residential or commercial, and regardless of how long it was held — there is no holding-period split and no residential exemption.</p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Not computed here: any inflationary portion of the gain that accrued before 1994 is taxed at 10% (inflationary gain accrued from 1994 onward is exempt), and a capital-income surtax may apply above the high-income threshold.</p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results exclude the betterment levy and VAT, and the real gain is nominal unless you entered a CPI-indexed value. Figures assume a substantial shareholder (10% or greater holding) at the 30% dividend rate. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results exclude the betterment levy and VAT, and the gain shown is the nominal gain (inflation indexing is not applied). Figures assume a substantial shareholder (10% or greater holding) at the 30% dividend rate. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div>
 
   <!-- ═══ Co_IL_Shares: Israeli Company · Shares ══════════════════════════════════ -->
+  <!-- One section, two income types (dividend received / capital gain on sale)
+       toggled by #coilsh_incomeType; both feed the same Retained/Distributed
+       output cards. Dividend → companyDividendIsraeli; capital gain →
+       corporateIsraeli on the real gain. See initCoILShares. -->
   <div class="calc-section" id="Co_IL_Shares" style="display:none">
-    <div class="fallback">
-      <p><strong>Israeli Company — Shares</strong></p>
-      <p>Content for this combination is coming soon.</p>
-      <a href="calculator.html">← Go back to Step 1</a>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Israeli Company — Shares</h2>
+        <p>Choose whether the company received a dividend on shares it holds, or sold shares at a gain. Enter the figures below.</p>
+      </div>
+
+      <div class="fields">
+        <div class="field">
+          <label for="coilsh_incomeType">Income Type</label>
+          <select id="coilsh_incomeType">
+            <option value="dividend">Dividend received</option>
+            <option value="capital_gain">Capital gain on sale</option>
+          </select>
+        </div>
+        <div class="field">
+          <label for="coilsh_ownershipPct">Ownership Share (%)</label>
+          <div class="income-wrap">
+            <input type="number" id="coilsh_ownershipPct" min="0" max="100" value="100" style="padding:.65rem .9rem;" />
+          </div>
+          <div class="input-hint">The individual shareholder's share — scales the dividend tax shown on full distribution</div>
+        </div>
+      </div>
+
+      <!-- Dividend inputs -->
+      <div id="coilsh_dividendInputs">
+        <div class="fields">
+          <div class="field full">
+            <label for="coilsh_dividend">Dividend Amount</label>
+            <div class="income-wrap">
+              <span class="income-prefix">₪</span>
+              <input type="text" id="coilsh_dividend" inputmode="decimal" placeholder="e.g. 100,000" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="coilsh_source">Dividend Source</label>
+            <select id="coilsh_source">
+              <option value="israeli">Israeli company</option>
+              <option value="foreign">Foreign company</option>
+            </select>
+          </div>
+          <div class="field" id="coilsh_foreignWhtRow" style="display:none">
+            <label for="coilsh_foreignWithheld">Foreign tax withheld (%)</label>
+            <div class="income-wrap">
+              <input type="number" id="coilsh_foreignWithheld" min="0" max="100" placeholder="0" style="padding:.65rem .9rem;" />
+            </div>
+            <div class="input-hint">Tax already withheld abroad — credited against the Israeli company tax (direct foreign tax credit)</div>
+          </div>
+        </div>
+        <p class="input-hint" style="margin-top:.75rem">A dividend from another Israeli company (out of its Israeli-source income) is excluded from the recipient company's taxable income; a foreign-source dividend is taxed at the corporate rate, less a credit for foreign tax withheld.</p>
+      </div>
+
+      <!-- Capital-gain inputs -->
+      <div id="coilsh_cgInputs" style="display:none">
+        <table class="input-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th style="text-align:left">Amount (₪)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="input-row-label"><label for="coilsh_cg_proceeds">Sale Proceeds</label></td>
+              <td><input type="text" inputmode="decimal" id="coilsh_cg_proceeds" placeholder="0" /></td>
+            </tr>
+            <tr>
+              <td class="input-row-label"><label for="coilsh_cg_cost">Cost Basis</label></td>
+              <td><input type="text" inputmode="decimal" id="coilsh_cg_cost" placeholder="0" /></td>
+            </tr>
+            <tr>
+              <td class="input-row-label"><label for="coilsh_cg_acqExpenses">Acquisition Expenses</label></td>
+              <td>
+                <input type="text" inputmode="decimal" id="coilsh_cg_acqExpenses" placeholder="0" />
+                <div class="input-hint">Brokerage and legal fees at purchase</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="input-row-label"><label for="coilsh_cg_saleExpenses">Sale Expenses</label></td>
+              <td>
+                <input type="text" inputmode="decimal" id="coilsh_cg_saleExpenses" placeholder="0" />
+                <div class="input-hint">Brokerage and legal fees at sale</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p class="input-hint" style="margin-top:.75rem">A regular Israeli company pays the flat corporate rate on the gain — no participation exemption and no substantial-shareholder distinction.</p>
+      </div>
+    </div><!-- /card -->
+
+    <!-- Shared output panel — Retained / Distributed -->
+    <div class="track-section">
+      <div class="track-section-header">
+        <h2>Estimated Israeli Company Tax</h2>
+        <p><span id="coilsh_baseLabel">Amount</span>: <strong id="coilsh_baseDisplay">—</strong></p>
+      </div>
+
+      <div class="track-cards track-cards-2">
+
+        <div class="track-card" id="coilsh_retainCard">
+          <div class="track-card-name"><span class="track-letter">1</span>Retained in company</div>
+          <div class="track-card-rate" id="coilsh_retainRate">—</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Company-level tax</span>
+            <span class="track-result-val" id="coilsh_companyTax">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">After-tax retained</span>
+            <span class="track-result-val" id="coilsh_afterTax">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate</span>
+            <span class="track-result-val" id="coilsh_retainEffective">—</span>
+          </div>
+          <div class="track-badge-area" id="coilsh_retainBadge"></div>
+          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">This is the floor — company-level tax applies whether or not the after-tax amount is distributed.</div>
+        </div>
+
+        <div class="track-card" id="coilsh_distCard">
+          <div class="track-card-name"><span class="track-letter">2</span>Distributed to shareholder</div>
+          <div class="track-card-rate" style="font-size:1.3rem;">+ 30%</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Company-level tax</span>
+            <span class="track-result-val" id="coilsh_companyTax2">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Dividend tax (30%)</span>
+            <span class="track-result-val" id="coilsh_divTax">—</span>
+          </div>
+          <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+            <span class="track-result-label">Combined total</span>
+            <span class="track-result-val" id="coilsh_combined">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Combined rate</span>
+            <span class="track-result-val" id="coilsh_combinedEffective">—</span>
+          </div>
+          <div class="track-badge-area" id="coilsh_distBadge"></div>
+        </div>
+
+      </div>
+
+      <p class="track-verdict" id="coilsh_verdict"></p>
+      <p id="coilsh_ftcNote" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">For a foreign dividend, an indirect foreign tax credit election may further reduce the company-level tax by crediting the foreign subsidiary's own underlying corporate tax — not computed here.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. Figures assume distribution to a substantial individual shareholder (10% or greater holding) at the 30% dividend rate. Consult a tax advisor for your exact liability.</p>
     </div>
+
   </div>
 
   <!-- ═══ Co_FOR_RE_Inc: Foreign Company · Real Estate · Rental Income ════════════ -->
@@ -1269,7 +1377,7 @@
 
   <!-- ═══ Co_FOR_RE_CG_Res: Foreign Company · Real Estate · CG · Residential ═══════ -->
   <!-- Residential and commercial are computationally identical for a company
-       (flat 23% corporate on the real gain, no holding-period split), so this
+       (flat 23% corporate on the gain, no holding-period split), so this
        section and Co_FOR_RE_CG_Com share one init (initCoFORRECG), differing only
        in heading text and element-id prefix (coforcg_res_ / coforcg_com_).
        Single output card: foreign shareholders owe no Israeli dividend tax, so
@@ -1279,7 +1387,7 @@
     <div class="card">
       <div class="card-header">
         <h2>Foreign Company — Residential Capital Gain</h2>
-        <p>Enter the details of the company's property sale. A company pays the flat corporate rate on the real gain regardless of how long it held the property, so no purchase or sale dates are needed.</p>
+        <p>Enter the details of the company's property sale. A company pays the flat corporate rate on the gain regardless of how long it held the property, so no purchase or sale dates are needed.</p>
       </div>
 
       <table class="input-table">
@@ -1323,16 +1431,6 @@
               <div class="input-hint">Subtracted from the purchase price, which raises the taxable gain</div>
             </td>
           </tr>
-          <tr>
-            <td class="input-row-label" style="color:var(--muted); font-weight:500">
-              <label for="coforcg_res_cpiGain">CPI-Indexed Real Gain</label>
-              <div style="font-size:.76rem; font-weight:400; margin-top:.15rem">(optional override)</div>
-            </td>
-            <td>
-              <input type="text" inputmode="decimal" id="coforcg_res_cpiGain" placeholder="optional" />
-              <div class="input-hint">Leave blank to estimate from the figures above (nominal, not inflation-adjusted)</div>
-            </td>
-          </tr>
         </tbody>
       </table>
 
@@ -1343,7 +1441,7 @@
     <div class="track-section">
       <div class="track-section-header">
         <h2>Estimated Capital Gains Tax</h2>
-        <p>Real gain: <strong id="coforcg_res_gainDisplay">—</strong></p>
+        <p>Gain: <strong id="coforcg_res_gainDisplay">—</strong></p>
       </div>
 
       <div class="track-cards" style="grid-template-columns: minmax(0, 520px); justify-content: center;">
@@ -1364,9 +1462,9 @@
       </div>
 
       <p class="track-verdict" id="coforcg_res_verdict"></p>
-      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the real gain whether the property is residential or commercial, and regardless of how long it was held — there is no holding-period split and no residential exemption.</p>
+      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the gain whether the property is residential or commercial, and regardless of how long it was held — there is no holding-period split and no residential exemption.</p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Not computed here: any inflationary portion of the gain that accrued before 1994 is taxed at 10% (inflationary gain accrued from 1994 onward is exempt), and a capital-income surtax may apply above the high-income threshold.</p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results exclude the betterment levy and VAT, and the real gain is nominal unless you entered a CPI-indexed value. They assume a foreign company taxed on the real gain at the corporate rate, with no Israeli dividend tax on distribution to foreign shareholders. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results exclude the betterment levy and VAT, and the gain shown is the nominal gain (inflation indexing is not applied). They assume a foreign company taxed on the gain at the corporate rate, with no Israeli dividend tax on distribution to foreign shareholders. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div>
@@ -1378,7 +1476,7 @@
     <div class="card">
       <div class="card-header">
         <h2>Foreign Company — Commercial Capital Gain</h2>
-        <p>Enter the details of the company's property sale. A company pays the flat corporate rate on the real gain regardless of how long it held the property, so no purchase or sale dates are needed.</p>
+        <p>Enter the details of the company's property sale. A company pays the flat corporate rate on the gain regardless of how long it held the property, so no purchase or sale dates are needed.</p>
       </div>
 
       <table class="input-table">
@@ -1422,16 +1520,6 @@
               <div class="input-hint">Subtracted from the purchase price, which raises the taxable gain</div>
             </td>
           </tr>
-          <tr>
-            <td class="input-row-label" style="color:var(--muted); font-weight:500">
-              <label for="coforcg_com_cpiGain">CPI-Indexed Real Gain</label>
-              <div style="font-size:.76rem; font-weight:400; margin-top:.15rem">(optional override)</div>
-            </td>
-            <td>
-              <input type="text" inputmode="decimal" id="coforcg_com_cpiGain" placeholder="optional" />
-              <div class="input-hint">Leave blank to estimate from the figures above (nominal, not inflation-adjusted)</div>
-            </td>
-          </tr>
         </tbody>
       </table>
 
@@ -1442,7 +1530,7 @@
     <div class="track-section">
       <div class="track-section-header">
         <h2>Estimated Capital Gains Tax</h2>
-        <p>Real gain: <strong id="coforcg_com_gainDisplay">—</strong></p>
+        <p>Gain: <strong id="coforcg_com_gainDisplay">—</strong></p>
       </div>
 
       <div class="track-cards" style="grid-template-columns: minmax(0, 520px); justify-content: center;">
@@ -1463,20 +1551,145 @@
       </div>
 
       <p class="track-verdict" id="coforcg_com_verdict"></p>
-      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the real gain whether the property is residential or commercial, and regardless of how long it was held — there is no holding-period split and no residential exemption.</p>
+      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the gain whether the property is residential or commercial, and regardless of how long it was held — there is no holding-period split and no residential exemption.</p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Not computed here: any inflationary portion of the gain that accrued before 1994 is taxed at 10% (inflationary gain accrued from 1994 onward is exempt), and a capital-income surtax may apply above the high-income threshold.</p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results exclude the betterment levy and VAT, and the real gain is nominal unless you entered a CPI-indexed value. They assume a foreign company taxed on the real gain at the corporate rate, with no Israeli dividend tax on distribution to foreign shareholders. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results exclude the betterment levy and VAT, and the gain shown is the nominal gain (inflation indexing is not applied). They assume a foreign company taxed on the gain at the corporate rate, with no Israeli dividend tax on distribution to foreign shareholders. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div>
 
   <!-- ═══ Co_FOR_Shares: Foreign Company · Shares ═════════════════════════════════ -->
+  <!-- One section, two income types (dividend from an Israeli company / capital gain
+       on Israeli shares) toggled by #coforsh_incomeType; single Israeli-tax card.
+       Distribution to foreign shareholders is outside Israeli tax, so there is no
+       second tier. See initCoFORShares. -->
   <div class="calc-section" id="Co_FOR_Shares" style="display:none">
-    <div class="fallback">
-      <p><strong>Foreign Company — Shares</strong></p>
-      <p>Content for this combination is coming soon.</p>
-      <a href="calculator.html">← Go back to Step 1</a>
+
+    <div class="card">
+      <div class="card-header">
+        <h2>Foreign Company — Israeli Shares</h2>
+        <p>Choose whether the foreign company received a dividend from an Israeli company, or sold Israeli shares at a gain.</p>
+      </div>
+
+      <div class="fields">
+        <div class="field">
+          <label for="coforsh_incomeType">Income Type</label>
+          <select id="coforsh_incomeType">
+            <option value="dividend">Dividend from Israeli company</option>
+            <option value="capital_gain">Capital gain on Israeli shares</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Dividend inputs -->
+      <div id="coforsh_dividendInputs">
+        <div class="fields">
+          <div class="field full">
+            <label for="coforsh_dividend">Dividend Amount</label>
+            <div class="income-wrap">
+              <span class="income-prefix">₪</span>
+              <input type="text" id="coforsh_dividend" inputmode="decimal" placeholder="e.g. 100,000" />
+            </div>
+          </div>
+          <div class="field">
+            <label for="coforsh_treatyPct">Treaty withholding rate (%)</label>
+            <div class="income-wrap">
+              <input type="number" id="coforsh_treatyPct" min="0" max="100" placeholder="optional" style="padding:.65rem .9rem;" />
+            </div>
+            <div class="input-hint">Optional — enter your treaty's reduced rate to see the lower withholding</div>
+          </div>
+        </div>
+        <div class="cg-extras">
+          <label class="checkbox-row">
+            <input type="checkbox" id="coforsh_substantial" />
+            <span>The company holds 10% or more of the Israeli company (substantial shareholder)</span>
+          </label>
+        </div>
+      </div>
+
+      <!-- Capital-gain inputs -->
+      <div id="coforsh_cgInputs" style="display:none">
+        <table class="input-table">
+          <thead>
+            <tr>
+              <th></th>
+              <th style="text-align:left">Amount (₪)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="input-row-label"><label for="coforsh_cg_proceeds">Sale Proceeds</label></td>
+              <td><input type="text" inputmode="decimal" id="coforsh_cg_proceeds" placeholder="0" /></td>
+            </tr>
+            <tr>
+              <td class="input-row-label"><label for="coforsh_cg_cost">Cost Basis</label></td>
+              <td><input type="text" inputmode="decimal" id="coforsh_cg_cost" placeholder="0" /></td>
+            </tr>
+            <tr>
+              <td class="input-row-label"><label for="coforsh_cg_acqExpenses">Acquisition Expenses</label></td>
+              <td>
+                <input type="text" inputmode="decimal" id="coforsh_cg_acqExpenses" placeholder="0" />
+                <div class="input-hint">Brokerage and legal fees at purchase</div>
+              </td>
+            </tr>
+            <tr>
+              <td class="input-row-label"><label for="coforsh_cg_saleExpenses">Sale Expenses</label></td>
+              <td>
+                <input type="text" inputmode="decimal" id="coforsh_cg_saleExpenses" placeholder="0" />
+                <div class="input-hint">Brokerage and legal fees at sale</div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <div class="cg-extras">
+          <label class="checkbox-row">
+            <input type="checkbox" id="coforsh_cgExempt" />
+            <span>Israeli capital-gains exemption applies</span>
+          </label>
+          <div class="input-hint" style="margin-top:.4rem;">Generally exempt (0%) when all of the following hold: the shares were acquired on or after 1 January 2009; the gain is not attributable to a permanent establishment in Israel; and the company is not mainly an Israeli real-estate-holding company. Otherwise the gain is taxed at the corporate rate.</div>
+        </div>
+      </div>
+    </div><!-- /card -->
+
+    <!-- Single Israeli-tax card (no distribution tier for foreign shareholders) -->
+    <div class="track-section">
+      <div class="track-section-header">
+        <h2>Estimated Israeli Tax</h2>
+        <p><span id="coforsh_baseLabel">Amount</span>: <strong id="coforsh_baseDisplay">—</strong></p>
+      </div>
+
+      <div class="track-cards" style="grid-template-columns: minmax(0, 520px); justify-content: center;">
+        <div class="track-card track-recommended">
+          <div class="track-card-name"><span class="track-letter">1</span>Israeli Tax</div>
+          <div class="track-card-rate" id="coforsh_rate">—</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label" id="coforsh_taxLabel">Israeli tax</span>
+            <span class="track-result-val" id="coforsh_taxDisplay">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate</span>
+            <span class="track-result-val" id="coforsh_effectiveDisplay">—</span>
+          </div>
+          <div id="coforsh_treatyRow" style="display:none">
+            <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+              <span class="track-result-label">Treaty-reduced withholding</span>
+              <span class="track-result-val" id="coforsh_treatyDisplay">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Treaty effective rate</span>
+              <span class="track-result-val" id="coforsh_treatyEffective">—</span>
+            </div>
+          </div>
+          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">Distribution to foreign shareholders is outside Israeli tax — no further Israeli tax applies on distribution, so this is the total Israeli tax.</div>
+        </div>
+      </div>
+
+      <p class="track-verdict" id="coforsh_verdict"></p>
+      <p id="coforsh_treatyNote" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A treaty commonly reduces the withholding to about 5% for a foreign company holding 10% or more, or about 15% otherwise — the exact rate depends on the specific treaty. Enter it above to see the reduced figure.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before the high-income surtax. Treaty relief and the share-gain exemption depend on conditions specific to your facts and treaty. Consult a tax advisor for your exact liability.</p>
     </div>
+
   </div>
 
   <!-- ═══ fallback ════════════════════════════════════════════════════════════════ -->

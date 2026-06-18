@@ -24,13 +24,13 @@ const path = require('path');
 const engineSrc = fs.readFileSync(path.join(__dirname, 'tax-engine.js'), 'utf8');
 const engine = new Function(engineSrc + `
   ; return { BRACKETS, calcTaxPassive, calcTaxActive, fmt, computeTracks,
-             adjustedBasis, nominalGain, realGain,
-             corporateIsraeli, corporateForeign, companyRealEstateCG,
+             adjustedBasis, nominalGain,
+             corporateIsraeli, corporateForeign, companyRealEstateCG, companyDividendIsraeli,
              parseDMY, formatDMY, daysBetween, linearSplit };`)();
 const {
   BRACKETS, calcTaxPassive, calcTaxActive, fmt, computeTracks,
-  adjustedBasis, nominalGain, realGain,
-  corporateIsraeli, corporateForeign, companyRealEstateCG,
+  adjustedBasis, nominalGain,
+  corporateIsraeli, corporateForeign, companyRealEstateCG, companyDividendIsraeli,
   parseDMY, formatDMY, daysBetween, linearSplit,
 } = engine;
 
@@ -205,18 +205,6 @@ const EXPECT = {
   "adjustedBasis :: price 1.0M, no depr/improv": 1000000,
   "nominalGain :: sale 2.0M − 30k − 20k − basis 1.15M": 800000,
   "nominalGain :: underwater (floored at 0)": 0,
-  "realGain :: CPI override 500k present": {
-    "value": 500000,
-    "isNominal": false
-  },
-  "realGain :: no override → nominal flagged": {
-    "value": 800000,
-    "isNominal": true
-  },
-  "realGain :: negative override ignored": {
-    "value": 800000,
-    "isNominal": true
-  },
   "linearSplit :: 2010→2020, cutoff 2014": [
     {
       "from": "01/01/2010",
@@ -243,7 +231,6 @@ const EXPECT = {
   "linearSplit :: same day → []": [],
   "companyRealEstateCG :: israeli | sale 2.0M / basis 1.0M | 100% own": {
     "gain": 1000000,
-    "isNominal": true,
     "net": 1000000,
     "corpTax": 230000,
     "afterTax": 770000,
@@ -253,7 +240,6 @@ const EXPECT = {
   },
   "companyRealEstateCG :: israeli | sale 2.0M / basis 1.0M | 50% own": {
     "gain": 1000000,
-    "isNominal": true,
     "net": 1000000,
     "corpTax": 230000,
     "afterTax": 770000,
@@ -263,22 +249,51 @@ const EXPECT = {
   },
   "companyRealEstateCG :: foreign | sale 2.0M / basis 1.0M": {
     "gain": 1000000,
-    "isNominal": true,
     "base": 1000000,
     "tax": 230000,
     "effective": 0.23,
     "dividendTax": 0,
     "combinedEffective": 0.23
   },
-  "companyRealEstateCG :: israeli | CPI override 600k (real gain 600k) | 100% own": {
-    "gain": 600000,
-    "isNominal": false,
-    "net": 600000,
-    "corpTax": 138000,
-    "afterTax": 462000,
-    "divTax": 138600,
-    "combined": 276600,
+  "companyDividendIsraeli :: domestic | dividend 100k | own 100%": {
+    "corpTax": 0,
+    "foreignWithheld": 0,
+    "companyBurden": 0,
+    "afterTax": 100000,
+    "distributed": 100000,
+    "divTax": 30000,
+    "combined": 30000,
+    "combinedEffective": 0.3
+  },
+  "companyDividendIsraeli :: domestic | dividend 100k | own 50%": {
+    "corpTax": 0,
+    "foreignWithheld": 0,
+    "companyBurden": 0,
+    "afterTax": 100000,
+    "distributed": 50000,
+    "divTax": 15000,
+    "combined": 15000,
+    "combinedEffective": 0.15
+  },
+  "companyDividendIsraeli :: foreign | 100k | withholding 15% | own 100%": {
+    "corpTax": 8000,
+    "foreignWithheld": 15000,
+    "companyBurden": 23000,
+    "afterTax": 77000,
+    "distributed": 77000,
+    "divTax": 23100,
+    "combined": 46100,
     "combinedEffective": 0.461
+  },
+  "companyDividendIsraeli :: foreign | 100k | withholding 30% | own 100%": {
+    "corpTax": 0,
+    "foreignWithheld": 30000,
+    "companyBurden": 30000,
+    "afterTax": 70000,
+    "distributed": 70000,
+    "divTax": 21000,
+    "combined": 51000,
+    "combinedEffective": 0.51
   },
   "parseDMY :: '15/06/2020' valid": "15/06/2020",
   "parseDMY :: '31/02/2020' invalid": null,
@@ -340,24 +355,31 @@ add('adjustedBasis', 'price 1.0M, depr 50k, improv 200k', adjustedBasis(1000000,
 add('adjustedBasis', 'price 1.0M, no depr/improv',         adjustedBasis(1000000, 0, 0));
 add('nominalGain',   'sale 2.0M − 30k − 20k − basis 1.15M', nominalGain(2000000, 30000, 20000, 1150000));
 add('nominalGain',   'underwater (floored at 0)',           nominalGain(1000000, 0, 0, 1200000));
-add('realGain',      'CPI override 500k present',            realGain(500000, 800000));
-add('realGain',      'no override → nominal flagged',        realGain(0, 800000));
-add('realGain',      'negative override ignored',            realGain(-5, 800000));
 add('linearSplit',   '2010→2020, cutoff 2014',  sp(linearSplit(800000, D(2010,1,1), D(2020,1,1), [D(2014,1,1)])));
 add('linearSplit',   'cutoff before purchase (ignored)', sp(linearSplit(800000, D(2016,1,1), D(2020,1,1), [D(2014,1,1)])));
 add('linearSplit',   'sale before purchase → []', sp(linearSplit(800000, D(2020,1,1), D(2010,1,1), [D(2014,1,1)])));
 add('linearSplit',   'same day → []',             sp(linearSplit(800000, D(2014,1,1), D(2014,1,1), [D(2014,1,1)])));
 
 // ===== companyRealEstateCG — flat 23% corporate CG; distribution per rental rules =====
-//   sale 2.0M / basis 1.0M (no depr/improv/expenses) → nominal real gain 1.0M
+//   sale 2.0M / basis 1.0M (no depr/improv/expenses) → nominal gain 1.0M
 add('companyRealEstateCG', 'israeli | sale 2.0M / basis 1.0M | 100% own',
   companyRealEstateCG({ purchasePrice: 1000000, salePrice: 2000000, israeli: true, ownershipPct: 100 }));
 add('companyRealEstateCG', 'israeli | sale 2.0M / basis 1.0M | 50% own',
   companyRealEstateCG({ purchasePrice: 1000000, salePrice: 2000000, israeli: true, ownershipPct: 50 }));
 add('companyRealEstateCG', 'foreign | sale 2.0M / basis 1.0M',
   companyRealEstateCG({ purchasePrice: 1000000, salePrice: 2000000, israeli: false }));
-add('companyRealEstateCG', 'israeli | CPI override 600k (real gain 600k) | 100% own',
-  companyRealEstateCG({ purchasePrice: 1000000, salePrice: 2000000, cpiGainOverride: 600000, israeli: true, ownershipPct: 100 }));
+
+// ===== companyDividendIsraeli — Israeli company receiving a dividend on shares =====
+//   domestic (§126(b) 0% corporate) vs foreign (§126(c) 23% with direct FTC), then
+//   §125B 30% on distribution to a substantial individual shareholder
+add('companyDividendIsraeli', 'domestic | dividend 100k | own 100%',
+  companyDividendIsraeli({ dividend: 100000, source: 'israeli', ownershipPct: 100 }));
+add('companyDividendIsraeli', 'domestic | dividend 100k | own 50%',
+  companyDividendIsraeli({ dividend: 100000, source: 'israeli', ownershipPct: 50 }));
+add('companyDividendIsraeli', 'foreign | 100k | withholding 15% | own 100%',
+  companyDividendIsraeli({ dividend: 100000, source: 'foreign', foreignWithheldPct: 15, ownershipPct: 100 }));
+add('companyDividendIsraeli', 'foreign | 100k | withholding 30% | own 100%',
+  companyDividendIsraeli({ dividend: 100000, source: 'foreign', foreignWithheldPct: 30, ownershipPct: 100 }));
 
 // ===== date helpers (support linearSplit; included for coverage) =====
 add('parseDMY', "'15/06/2020' valid",   dmy('15/06/2020'));

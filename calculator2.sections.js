@@ -154,9 +154,11 @@
     else if (key === 'Co_IL_RE_Inc')  initCoILREInc();
     else if (key === 'Co_IL_RE_CG_Res') initCoILRECG('coilcg_res_');
     else if (key === 'Co_IL_RE_CG_Com') initCoILRECG('coilcg_com_');
+    else if (key === 'Co_IL_Shares')   initCoILShares();
     else if (key === 'Co_FOR_RE_Inc') initCoFORREInc();
     else if (key === 'Co_FOR_RE_CG_Res') initCoFORRECG('coforcg_res_');
     else if (key === 'Co_FOR_RE_CG_Com') initCoFORRECG('coforcg_com_');
+    else if (key === 'Co_FOR_Shares')  initCoFORShares();
   }
 
   // ── Individual + Real Estate + Income (Rental) — event wiring ────
@@ -347,7 +349,6 @@
       const saleExp      = pn('cg_res_saleExpenses');
       const improvements = pn('cg_res_improvements');
       const depreciation = pn('cg_res_depreciation');
-      const cpiOverride  = pn('cg_res_cpiGain');
       const pDate        = dateFieldState('cg_res_purchaseDate');
       const sDate        = dateFieldState('cg_res_saleDate');
       const purchaseDate = pDate.date;
@@ -366,10 +367,8 @@
 
       const noDate = !purchaseDate;
 
-      const basis   = adjustedBasis(purchPrice, depreciation, improvements);
-      const nominal = nominalGain(salePrice, saleExp, acqExp, basis);
-      const rg      = realGain(cpiOverride, nominal);
-      const gain    = rg.value;
+      const basis = adjustedBasis(purchPrice, depreciation, improvements);
+      const gain  = nominalGain(salePrice, saleExp, acqExp, basis);
 
       if (gain <= 0) {
         resetCGResCards();
@@ -443,7 +442,7 @@
       document.getElementById('cg_res_noDateWarn').style.display = noDate ? '' : 'none';
 
       document.getElementById('cg_res_gainDisplay').textContent =
-        fmt(gain) + (rg.isNominal ? ' (nominal — not CPI-indexed)' : ' (CPI-indexed)');
+        fmt(gain) + ' (nominal — inflation indexing not applied)';
 
       // Track A display
       if (ineligible) {
@@ -530,8 +529,7 @@
       })
     );
     ['cg_res_salePrice','cg_res_purchasePrice','cg_res_acqExpenses',
-     'cg_res_saleExpenses','cg_res_improvements','cg_res_depreciation',
-     'cg_res_cpiGain'].forEach(id =>
+     'cg_res_saleExpenses','cg_res_improvements','cg_res_depreciation'].forEach(id =>
       document.getElementById(id).addEventListener('input', runCGResCalc)
     );
     ['cg_res_onlyApt','cg_res_foreignCert'].forEach(id =>
@@ -576,7 +574,6 @@
       const saleExp      = pn('cg_com_saleExpenses');
       const improvements = pn('cg_com_improvements');
       const depreciation = pn('cg_com_depreciation');
-      const cpiOverride  = pn('cg_com_cpiGain');
       const pDate        = dateFieldState('cg_com_purchaseDate');
       const sDate        = dateFieldState('cg_com_saleDate');
       const purchaseDate = pDate.date;
@@ -594,10 +591,8 @@
       const noDate = !purchaseDate;
       document.getElementById('cg_com_noDateWarn').style.display = noDate ? '' : 'none';
 
-      const basis   = adjustedBasis(purchPrice, depreciation, improvements);
-      const nominal = nominalGain(salePrice, saleExp, acqExp, basis);
-      const rg      = realGain(cpiOverride, nominal);
-      const gain    = rg.value;
+      const basis = adjustedBasis(purchPrice, depreciation, improvements);
+      const gain  = nominalGain(salePrice, saleExp, acqExp, basis);
 
       if (gain <= 0) {
         resetComCards();
@@ -616,7 +611,7 @@
       }
 
       document.getElementById('cg_com_gainDisplay').textContent =
-        fmt(gain) + (rg.isNominal ? ' (nominal — not CPI-indexed)' : ' (CPI-indexed)');
+        fmt(gain) + ' (nominal — inflation indexing not applied)';
 
       // §48A linear split — or worst-case (full gain at PRE_RATE) if no purchase date
       let pre2001 = 0, mid = 0, post = 0;
@@ -660,8 +655,7 @@
     }
 
     ['cg_com_salePrice','cg_com_purchasePrice','cg_com_acqExpenses',
-     'cg_com_saleExpenses','cg_com_improvements','cg_com_depreciation',
-     'cg_com_cpiGain'].forEach(id =>
+     'cg_com_saleExpenses','cg_com_improvements','cg_com_depreciation'].forEach(id =>
       document.getElementById(id).addEventListener('input', runCGComCalc)
     );
     ['cg_com_purchaseDate','cg_com_saleDate'].forEach(id =>
@@ -1051,14 +1045,13 @@
       const saleExpenses    = pn(p + 'saleExpenses');
       const improvements    = pn(p + 'improvements');
       const depreciation    = pn(p + 'depreciation');
-      const cpiGainOverride = pn(p + 'cpiGain');
       const ownershipPct    = Math.min(100, Math.max(0, pnOr(p + 'ownershipPct', 100)));
 
       if (!salePrice) { resetCards(); return; }
 
       const r = companyRealEstateCG({
         purchasePrice, depreciation, improvements,
-        salePrice, saleExpenses, acqExpenses, cpiGainOverride,
+        salePrice, saleExpenses, acqExpenses,
         israeli: true, ownershipPct,
       });
 
@@ -1071,7 +1064,7 @@
       }
 
       document.getElementById(p + 'gainDisplay').textContent =
-        fmt(r.gain) + (r.isNominal ? ' (nominal — not CPI-indexed)' : ' (CPI-indexed)');
+        fmt(r.gain) + ' (nominal — inflation indexing not applied)';
 
       // Card 1 — Profits Retained (corporate tax only)
       document.getElementById(p + 'corpTax').textContent         = fmt(r.corpTax);
@@ -1093,13 +1086,13 @@
         '<span class="badge badge-warning">+' + fmt(r.divTax) + ' to access funds</span>';
 
       document.getElementById(p + 'verdict').textContent =
-        'Corporate tax: ' + fmt(r.corpTax) + ' (23% of the real gain). '
+        'Corporate tax: ' + fmt(r.corpTax) + ' (23% of the gain). '
         + 'Full distribution adds ' + fmt(r.divTax) + ' dividend tax'
         + ' — total ' + fmt(r.combined) + ' (' + effPct(r.combined, r.gain) + ' combined).';
     }
 
     [p + 'purchasePrice', p + 'salePrice', p + 'acqExpenses', p + 'saleExpenses',
-     p + 'improvements', p + 'depreciation', p + 'cpiGain', p + 'ownershipPct'].forEach(id =>
+     p + 'improvements', p + 'depreciation', p + 'ownershipPct'].forEach(id =>
       document.getElementById(id).addEventListener('input', runCalc)
     );
 
@@ -1360,14 +1353,13 @@
       const saleExpenses    = pn(p + 'saleExpenses');
       const improvements    = pn(p + 'improvements');
       const depreciation    = pn(p + 'depreciation');
-      const cpiGainOverride = pn(p + 'cpiGain');
 
       if (!salePrice) { resetCards(); return; }
 
-      // israeli:false → 23% corporate on the real gain, no dividend tier, no ownership
+      // israeli:false → 23% corporate on the nominal gain, no dividend tier, no ownership
       const r = companyRealEstateCG({
         purchasePrice, depreciation, improvements,
-        salePrice, saleExpenses, acqExpenses, cpiGainOverride,
+        salePrice, saleExpenses, acqExpenses,
         israeli: false,
       });
 
@@ -1380,23 +1372,252 @@
       }
 
       document.getElementById(p + 'gainDisplay').textContent =
-        fmt(r.gain) + (r.isNominal ? ' (nominal — not CPI-indexed)' : ' (CPI-indexed)');
+        fmt(r.gain) + ' (nominal — inflation indexing not applied)';
 
-      // Single card — Israeli corporate tax on the real gain
+      // Single card — Israeli corporate tax on the nominal gain
       document.getElementById(p + 'taxDisplay').textContent       = fmt(r.tax);
       document.getElementById(p + 'effectiveDisplay').textContent = effPct(r.tax, r.gain);
 
       document.getElementById(p + 'verdict').textContent =
-        'Corporate tax: ' + fmt(r.tax) + ' (23% of the real gain). '
+        'Corporate tax: ' + fmt(r.tax) + ' (23% of the gain). '
         + 'Distribution to foreign shareholders is outside Israeli tax, so the combined effective Israeli rate stays '
         + effPct(r.tax, r.gain) + '.';
     }
 
     [p + 'purchasePrice', p + 'salePrice', p + 'acqExpenses', p + 'saleExpenses',
-     p + 'improvements', p + 'depreciation', p + 'cpiGain'].forEach(id =>
+     p + 'improvements', p + 'depreciation'].forEach(id =>
       document.getElementById(id).addEventListener('input', runCalc)
     );
 
+    runCalc();
+  }
+
+  // ── Israeli Company · Shares (dividend received OR capital gain on sale) ──
+  // One section, two income types toggled by #coilsh_incomeType, both feeding the
+  // same Retained/Distributed cards:
+  //   • Dividend  → companyDividendIsraeli (0% on an Israeli-source dividend,
+  //     23% net of a direct FTC on a foreign one), then 30% on distribution.
+  //   • Capital gain → flat 23% corporate on the real gain via corporateIsraeli
+  //     (no participation exemption, no substantial-shareholder distinction),
+  //     then 30% on distribution.
+  function initCoILShares() {
+    const OUTPUT_IDS = [
+      'coilsh_baseDisplay',
+      'coilsh_retainRate', 'coilsh_companyTax', 'coilsh_afterTax', 'coilsh_retainEffective',
+      'coilsh_companyTax2', 'coilsh_divTax', 'coilsh_combined', 'coilsh_combinedEffective',
+    ];
+
+    function resetCards() {
+      blank(OUTPUT_IDS);
+      document.getElementById('coilsh_verdict').textContent  = '';
+      document.getElementById('coilsh_ftcNote').style.display = 'none';
+      clearBadges(['coilsh_retainBadge', 'coilsh_distBadge']);
+      clearTrackFlags(['coilsh_retainCard', 'coilsh_distCard']);
+    }
+
+    // Show the input group for the selected income type, and the foreign-
+    // withholding field only for a foreign-source dividend.
+    function syncVisibility() {
+      const isDiv = document.getElementById('coilsh_incomeType').value === 'dividend';
+      document.getElementById('coilsh_dividendInputs').style.display = isDiv ? '' : 'none';
+      document.getElementById('coilsh_cgInputs').style.display       = isDiv ? 'none' : '';
+      const foreign = document.getElementById('coilsh_source').value === 'foreign';
+      document.getElementById('coilsh_foreignWhtRow').style.display  = (isDiv && foreign) ? '' : 'none';
+    }
+
+    // Render the shared two-card layout from a normalized result. `nominalNote`
+    // appends the "nominal gain" note (capital-gain path); pass false for the
+    // dividend path, which has no such note.
+    function render(base, companyTax, afterTax, divTax, combined, baseLabel, nominalNote, showFtcNote) {
+      document.getElementById('coilsh_baseLabel').textContent   = baseLabel;
+      document.getElementById('coilsh_baseDisplay').textContent =
+        fmt(base) + (nominalNote ? ' (nominal — inflation indexing not applied)' : '');
+
+      // Card 1 — Retained in company
+      document.getElementById('coilsh_retainRate').textContent      = effPct(companyTax, base);
+      document.getElementById('coilsh_companyTax').textContent      = fmt(companyTax);
+      document.getElementById('coilsh_afterTax').textContent        = fmt(afterTax);
+      document.getElementById('coilsh_retainEffective').textContent = effPct(companyTax, base);
+
+      // Card 2 — Distributed to shareholder
+      document.getElementById('coilsh_companyTax2').textContent       = fmt(companyTax);
+      document.getElementById('coilsh_divTax').textContent            = fmt(divTax);
+      document.getElementById('coilsh_combined').textContent          = fmt(combined);
+      document.getElementById('coilsh_combinedEffective').textContent = effPct(combined, base);
+
+      clearTrackFlags(['coilsh_retainCard', 'coilsh_distCard']);
+      document.getElementById('coilsh_retainCard').classList.add('track-recommended');
+      document.getElementById('coilsh_retainBadge').innerHTML =
+        '<span class="badge badge-recommended">Lower current tax ✓</span>';
+      document.getElementById('coilsh_distBadge').innerHTML =
+        '<span class="badge badge-warning">+' + fmt(divTax) + ' to access funds</span>';
+
+      document.getElementById('coilsh_ftcNote').style.display = showFtcNote ? '' : 'none';
+
+      document.getElementById('coilsh_verdict').textContent =
+        'Company-level tax: ' + fmt(companyTax) + '. Full distribution to the individual shareholder adds '
+        + fmt(divTax) + ' dividend tax — total ' + fmt(combined) + ' (' + effPct(combined, base) + ' combined).';
+    }
+
+    function runCalc() {
+      const ownershipPct = Math.min(100, Math.max(0, pnOr('coilsh_ownershipPct', 100)));
+
+      if (document.getElementById('coilsh_incomeType').value === 'dividend') {
+        const dividend = pn('coilsh_dividend');
+        const source   = document.getElementById('coilsh_source').value;
+
+        if (dividend <= 0) { resetCards(); return; }   // guard before any rate division
+
+        const r = companyDividendIsraeli({
+          dividend, source, foreignWithheldPct: pn('coilsh_foreignWithheld'), ownershipPct,
+        });
+        render(dividend, r.companyBurden, r.afterTax, r.divTax, r.combined,
+               'Dividend received', false, source === 'foreign');
+      } else {
+        const proceeds = pn('coilsh_cg_proceeds');
+        if (!proceeds) { resetCards(); return; }
+
+        const basis = adjustedBasis(pn('coilsh_cg_cost'), 0, 0);   // shares: no depreciation/improvements
+        const gain  = nominalGain(proceeds, pn('coilsh_cg_saleExpenses'), pn('coilsh_cg_acqExpenses'), basis);
+
+        if (gain <= 0) {
+          resetCards();
+          document.getElementById('coilsh_baseLabel').textContent   = 'Gain';
+          document.getElementById('coilsh_baseDisplay').textContent = fmt(0) + ' (no taxable gain)';
+          document.getElementById('coilsh_verdict').textContent     = 'No taxable gain — no tax owed.';
+          return;
+        }
+
+        const r = corporateIsraeli({ grossAnnual: gain, ownershipPct });
+        render(gain, r.corpTax, r.afterTax, r.divTax, r.combined, 'Gain', true, false);
+      }
+    }
+
+    document.getElementById('coilsh_incomeType').addEventListener('change', function () { syncVisibility(); runCalc(); });
+    document.getElementById('coilsh_source').addEventListener('change', function () { syncVisibility(); runCalc(); });
+    ['coilsh_dividend', 'coilsh_foreignWithheld', 'coilsh_ownershipPct',
+     'coilsh_cg_proceeds', 'coilsh_cg_cost', 'coilsh_cg_acqExpenses',
+     'coilsh_cg_saleExpenses'].forEach(id =>
+      document.getElementById(id).addEventListener('input', runCalc)
+    );
+
+    syncVisibility();
+    runCalc();
+  }
+
+  // ── Foreign Company · Israeli Shares (dividend OR capital gain) ──
+  // One section, two income types toggled by #coforsh_incomeType, single
+  // Israeli-tax card (foreign shareholders owe no Israeli tax on distribution):
+  //   • Dividend  → statutory withholding on an Israeli-source dividend to a
+  //     foreign resident: 25%, or 30% for a substantial (≥10%) holder. Inlined
+  //     here (matching the individual Shares section) — not an engine helper.
+  //     An optional treaty rate, if entered, shows the reduced figure.
+  //   • Capital gain → a foreign resident's gain on Israeli shares is generally
+  //     exempt (0%) when the qualifying conditions hold; otherwise 23% on the
+  //     real gain via corporateForeign.
+  function initCoFORShares() {
+    const OUTPUT_IDS = [
+      'coforsh_baseDisplay', 'coforsh_rate', 'coforsh_taxDisplay',
+      'coforsh_effectiveDisplay', 'coforsh_treatyDisplay', 'coforsh_treatyEffective',
+    ];
+
+    function resetCard() {
+      blank(OUTPUT_IDS);
+      document.getElementById('coforsh_verdict').textContent     = '';
+      document.getElementById('coforsh_treatyRow').style.display = 'none';
+    }
+
+    // Show the input group for the selected income type; the treaty disclosure
+    // note is only relevant to the dividend path.
+    function syncVisibility() {
+      const isDiv = document.getElementById('coforsh_incomeType').value === 'dividend';
+      document.getElementById('coforsh_dividendInputs').style.display = isDiv ? '' : 'none';
+      document.getElementById('coforsh_cgInputs').style.display       = isDiv ? 'none' : '';
+      document.getElementById('coforsh_treatyNote').style.display     = isDiv ? '' : 'none';
+    }
+
+    function runDividend() {
+      const dividend = pn('coforsh_dividend');
+      if (dividend <= 0) { resetCard(); return; }   // guard before any rate division
+
+      const substantial = document.getElementById('coforsh_substantial').checked;
+      const rate        = substantial ? 0.30 : 0.25;   // statutory: 25%, or 30% if substantial
+      const statutory   = rate * dividend;
+
+      document.getElementById('coforsh_baseLabel').textContent   = 'Dividend received';
+      document.getElementById('coforsh_baseDisplay').textContent = fmt(dividend);
+      document.getElementById('coforsh_rate').textContent        = (rate * 100).toFixed(0) + '%';
+      document.getElementById('coforsh_taxLabel').textContent       = 'Statutory withholding';
+      document.getElementById('coforsh_taxDisplay').textContent      = fmt(statutory);
+      document.getElementById('coforsh_effectiveDisplay').textContent = effPct(statutory, dividend);
+
+      // Optional treaty override — show the reduced withholding if a rate is entered
+      const treatyPct = Math.min(100, Math.max(0, pn('coforsh_treatyPct')));
+      const treatyRow = document.getElementById('coforsh_treatyRow');
+      if (treatyPct > 0) {
+        const treaty = (treatyPct / 100) * dividend;
+        treatyRow.style.display = '';
+        document.getElementById('coforsh_treatyDisplay').textContent   = fmt(treaty);
+        document.getElementById('coforsh_treatyEffective').textContent = effPct(treaty, dividend);
+      } else {
+        treatyRow.style.display = 'none';
+        document.getElementById('coforsh_treatyDisplay').textContent   = '—';
+        document.getElementById('coforsh_treatyEffective').textContent = '—';
+      }
+
+      document.getElementById('coforsh_verdict').textContent =
+        'Statutory withholding: ' + fmt(statutory) + ' (' + (rate * 100).toFixed(0) + '% of the dividend). '
+        + 'Distribution to foreign shareholders is outside Israeli tax, so this is the total Israeli tax'
+        + (treatyPct > 0 ? '; a treaty rate of ' + treatyPct + '% would reduce it to ' + fmt((treatyPct / 100) * dividend) + '.' : '.');
+    }
+
+    function runCapitalGain() {
+      document.getElementById('coforsh_treatyRow').style.display = 'none';   // treaty applies to dividends only
+
+      const proceeds = pn('coforsh_cg_proceeds');
+      if (!proceeds) { resetCard(); return; }
+
+      const basis = adjustedBasis(pn('coforsh_cg_cost'), 0, 0);   // shares: no depreciation/improvements
+      const gain  = nominalGain(proceeds, pn('coforsh_cg_saleExpenses'), pn('coforsh_cg_acqExpenses'), basis);
+
+      if (gain <= 0) {
+        resetCard();
+        document.getElementById('coforsh_baseLabel').textContent   = 'Gain';
+        document.getElementById('coforsh_baseDisplay').textContent = fmt(0) + ' (no taxable gain)';
+        document.getElementById('coforsh_verdict').textContent     = 'No taxable gain — no Israeli tax owed.';
+        return;
+      }
+
+      const exempt = document.getElementById('coforsh_cgExempt').checked;
+      const tax    = exempt ? 0 : corporateForeign({ grossAnnual: gain, annualExpenses: 0 }).tax;
+
+      document.getElementById('coforsh_baseLabel').textContent   = 'Gain';
+      document.getElementById('coforsh_baseDisplay').textContent = fmt(gain) + ' (nominal — inflation indexing not applied)';
+      document.getElementById('coforsh_rate').textContent        = exempt ? '0%' : '23%';
+      document.getElementById('coforsh_taxLabel').textContent       = 'Israeli tax';
+      document.getElementById('coforsh_taxDisplay').textContent      = fmt(tax);
+      document.getElementById('coforsh_effectiveDisplay').textContent = effPct(tax, gain);
+
+      document.getElementById('coforsh_verdict').textContent = exempt
+        ? 'Exemption applied — a qualifying foreign resident’s gain on Israeli shares is not taxed in Israel (0%).'
+        : 'Israeli tax: ' + fmt(tax) + ' (23% of the gain). Distribution to foreign shareholders is outside Israeli tax.';
+    }
+
+    function runCalc() {
+      if (document.getElementById('coforsh_incomeType').value === 'dividend') runDividend();
+      else runCapitalGain();
+    }
+
+    document.getElementById('coforsh_incomeType').addEventListener('change', function () { syncVisibility(); runCalc(); });
+    document.getElementById('coforsh_substantial').addEventListener('change', runCalc);
+    document.getElementById('coforsh_cgExempt').addEventListener('change', runCalc);
+    ['coforsh_dividend', 'coforsh_treatyPct',
+     'coforsh_cg_proceeds', 'coforsh_cg_cost', 'coforsh_cg_acqExpenses',
+     'coforsh_cg_saleExpenses'].forEach(id =>
+      document.getElementById(id).addEventListener('input', runCalc)
+    );
+
+    syncVisibility();
     runCalc();
   }
 
