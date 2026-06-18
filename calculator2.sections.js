@@ -152,7 +152,11 @@
     else if (key === 'Ind_RE_CG_Com') initIndCGCom();
     else if (key === 'Ind_Shares')    initIndShares();
     else if (key === 'Co_IL_RE_Inc')  initCoILREInc();
+    else if (key === 'Co_IL_RE_CG_Res') initCoILRECG('coilcg_res_');
+    else if (key === 'Co_IL_RE_CG_Com') initCoILRECG('coilcg_com_');
     else if (key === 'Co_FOR_RE_Inc') initCoFORREInc();
+    else if (key === 'Co_FOR_RE_CG_Res') initCoFORRECG('coforcg_res_');
+    else if (key === 'Co_FOR_RE_CG_Com') initCoFORRECG('coforcg_com_');
   }
 
   // ── Individual + Real Estate + Income (Rental) — event wiring ────
@@ -1020,6 +1024,88 @@
     updateOutputPanel();
   }
 
+  // ── Israeli Company · Real Estate · Capital Gain (Residential = Commercial) ──
+  // One init drives both Co_IL_RE_CG_Res and Co_IL_RE_CG_Com — for a company the
+  // gain is taxed at the flat corporate rate (23%, ITO §126(a)) on the REAL gain
+  // with no §48A holding-period split and no residential exemption, so the two
+  // sections share this logic and differ only by element-id prefix.
+  // `p` is that prefix ('coilcg_res_' or 'coilcg_com_').
+  function initCoILRECG(p) {
+    const OUTPUT_IDS = [
+      p + 'gainDisplay',
+      p + 'corpTax',  p + 'afterTax',  p + 'retainEffective',
+      p + 'corpTax2', p + 'divTax',    p + 'combined', p + 'combinedEffective',
+    ];
+
+    function resetCards() {
+      blank(OUTPUT_IDS);
+      document.getElementById(p + 'verdict').textContent = '';
+      clearBadges([p + 'retainBadge', p + 'distBadge']);
+      clearTrackFlags([p + 'retainCard', p + 'distCard']);
+    }
+
+    function runCalc() {
+      const purchasePrice   = pn(p + 'purchasePrice');
+      const salePrice       = pn(p + 'salePrice');
+      const acqExpenses     = pn(p + 'acqExpenses');
+      const saleExpenses    = pn(p + 'saleExpenses');
+      const improvements    = pn(p + 'improvements');
+      const depreciation    = pn(p + 'depreciation');
+      const cpiGainOverride = pn(p + 'cpiGain');
+      const ownershipPct    = Math.min(100, Math.max(0, pnOr(p + 'ownershipPct', 100)));
+
+      if (!salePrice) { resetCards(); return; }
+
+      const r = companyRealEstateCG({
+        purchasePrice, depreciation, improvements,
+        salePrice, saleExpenses, acqExpenses, cpiGainOverride,
+        israeli: true, ownershipPct,
+      });
+
+      // No taxable gain (sale ≤ adjusted basis + expenses) → mirror the CG sections
+      if (r.gain <= 0) {
+        resetCards();
+        document.getElementById(p + 'gainDisplay').textContent = fmt(0) + ' (no taxable gain)';
+        document.getElementById(p + 'verdict').textContent     = 'No taxable gain — no capital gains tax owed.';
+        return;
+      }
+
+      document.getElementById(p + 'gainDisplay').textContent =
+        fmt(r.gain) + (r.isNominal ? ' (nominal — not CPI-indexed)' : ' (CPI-indexed)');
+
+      // Card 1 — Profits Retained (corporate tax only)
+      document.getElementById(p + 'corpTax').textContent         = fmt(r.corpTax);
+      document.getElementById(p + 'afterTax').textContent        = fmt(r.afterTax);
+      document.getElementById(p + 'retainEffective').textContent = effPct(r.corpTax, r.gain);
+
+      // Card 2 — Fully Distributed (adds the 30% dividend on the after-tax gain)
+      document.getElementById(p + 'corpTax2').textContent          = fmt(r.corpTax);
+      document.getElementById(p + 'divTax').textContent            = fmt(r.divTax);
+      document.getElementById(p + 'combined').textContent          = fmt(r.combined);
+      document.getElementById(p + 'combinedEffective').textContent = effPct(r.combined, r.gain);
+
+      // Card 1 is always the lower current tax; Card 2 shows the cost of access
+      clearTrackFlags([p + 'retainCard', p + 'distCard']);
+      document.getElementById(p + 'retainCard').classList.add('track-recommended');
+      document.getElementById(p + 'retainBadge').innerHTML =
+        '<span class="badge badge-recommended">Lower current tax ✓</span>';
+      document.getElementById(p + 'distBadge').innerHTML =
+        '<span class="badge badge-warning">+' + fmt(r.divTax) + ' to access funds</span>';
+
+      document.getElementById(p + 'verdict').textContent =
+        'Corporate tax: ' + fmt(r.corpTax) + ' (23% of the real gain). '
+        + 'Full distribution adds ' + fmt(r.divTax) + ' dividend tax'
+        + ' — total ' + fmt(r.combined) + ' (' + effPct(r.combined, r.gain) + ' combined).';
+    }
+
+    [p + 'purchasePrice', p + 'salePrice', p + 'acqExpenses', p + 'saleExpenses',
+     p + 'improvements', p + 'depreciation', p + 'cpiGain', p + 'ownershipPct'].forEach(id =>
+      document.getElementById(id).addEventListener('input', runCalc)
+    );
+
+    runCalc();
+  }
+
   // ── Foreign Company · Real Estate · Rental Income ─────────────────
   function initCoFORREInc() {
     const CORP_RATE = 0.23;
@@ -1250,6 +1336,68 @@
     document.getElementById('cofor_transparent').addEventListener('change', updateCoFORPanel);
 
     updateCoFORPanel();
+  }
+
+  // ── Foreign Company · Real Estate · Capital Gain (Residential = Commercial) ──
+  // One init drives both Co_FOR_RE_CG_Res and Co_FOR_RE_CG_Com — a foreign company
+  // pays the flat corporate rate (23%, ITO §126(a)) on the REAL gain with no §48A
+  // holding-period split and no residential exemption. There is no second tier:
+  // foreign shareholders owe no Israeli dividend tax on distribution, so a single
+  // corporate-tax card is shown. `p` is the element-id prefix
+  // ('coforcg_res_' or 'coforcg_com_').
+  function initCoFORRECG(p) {
+    const OUTPUT_IDS = [p + 'gainDisplay', p + 'taxDisplay', p + 'effectiveDisplay'];
+
+    function resetCards() {
+      blank(OUTPUT_IDS);
+      document.getElementById(p + 'verdict').textContent = '';
+    }
+
+    function runCalc() {
+      const purchasePrice   = pn(p + 'purchasePrice');
+      const salePrice       = pn(p + 'salePrice');
+      const acqExpenses     = pn(p + 'acqExpenses');
+      const saleExpenses    = pn(p + 'saleExpenses');
+      const improvements    = pn(p + 'improvements');
+      const depreciation    = pn(p + 'depreciation');
+      const cpiGainOverride = pn(p + 'cpiGain');
+
+      if (!salePrice) { resetCards(); return; }
+
+      // israeli:false → 23% corporate on the real gain, no dividend tier, no ownership
+      const r = companyRealEstateCG({
+        purchasePrice, depreciation, improvements,
+        salePrice, saleExpenses, acqExpenses, cpiGainOverride,
+        israeli: false,
+      });
+
+      // No taxable gain (sale ≤ adjusted basis + expenses) → mirror the CG sections
+      if (r.gain <= 0) {
+        resetCards();
+        document.getElementById(p + 'gainDisplay').textContent = fmt(0) + ' (no taxable gain)';
+        document.getElementById(p + 'verdict').textContent     = 'No taxable gain — no capital gains tax owed.';
+        return;
+      }
+
+      document.getElementById(p + 'gainDisplay').textContent =
+        fmt(r.gain) + (r.isNominal ? ' (nominal — not CPI-indexed)' : ' (CPI-indexed)');
+
+      // Single card — Israeli corporate tax on the real gain
+      document.getElementById(p + 'taxDisplay').textContent       = fmt(r.tax);
+      document.getElementById(p + 'effectiveDisplay').textContent = effPct(r.tax, r.gain);
+
+      document.getElementById(p + 'verdict').textContent =
+        'Corporate tax: ' + fmt(r.tax) + ' (23% of the real gain). '
+        + 'Distribution to foreign shareholders is outside Israeli tax, so the combined effective Israeli rate stays '
+        + effPct(r.tax, r.gain) + '.';
+    }
+
+    [p + 'purchasePrice', p + 'salePrice', p + 'acqExpenses', p + 'saleExpenses',
+     p + 'improvements', p + 'depreciation', p + 'cpiGain'].forEach(id =>
+      document.getElementById(id).addEventListener('input', runCalc)
+    );
+
+    runCalc();
   }
 
   document.addEventListener('DOMContentLoaded', showSection);

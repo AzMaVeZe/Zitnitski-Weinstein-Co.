@@ -176,6 +176,45 @@
   ],
   "linearSplit :: sale before purchase → []": [],
   "linearSplit :: same day → []": [],
+  "companyRealEstateCG :: israeli | sale 2.0M / basis 1.0M | 100% own": {
+    "gain": 1000000,
+    "isNominal": true,
+    "net": 1000000,
+    "corpTax": 230000,
+    "afterTax": 770000,
+    "divTax": 231000,
+    "combined": 461000,
+    "combinedEffective": 0.461
+  },
+  "companyRealEstateCG :: israeli | sale 2.0M / basis 1.0M | 50% own": {
+    "gain": 1000000,
+    "isNominal": true,
+    "net": 1000000,
+    "corpTax": 230000,
+    "afterTax": 770000,
+    "divTax": 115500,
+    "combined": 345500,
+    "combinedEffective": 0.3455
+  },
+  "companyRealEstateCG :: foreign | sale 2.0M / basis 1.0M": {
+    "gain": 1000000,
+    "isNominal": true,
+    "base": 1000000,
+    "tax": 230000,
+    "effective": 0.23,
+    "dividendTax": 0,
+    "combinedEffective": 0.23
+  },
+  "companyRealEstateCG :: israeli | CPI override 600k (real gain 600k) | 100% own": {
+    "gain": 600000,
+    "isNominal": false,
+    "net": 600000,
+    "corpTax": 138000,
+    "afterTax": 462000,
+    "divTax": 138600,
+    "combined": 276600,
+    "combinedEffective": 0.461
+  },
   "parseDMY :: '15/06/2020' valid": "15/06/2020",
   "parseDMY :: '31/02/2020' invalid": null,
   "parseDMY :: '' empty": null,

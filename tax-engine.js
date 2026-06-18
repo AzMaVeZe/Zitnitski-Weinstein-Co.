@@ -124,6 +124,62 @@
     return { value: nominalGainVal, isNominal: true };
   }
 
+  // ── Company (corporate) tax helpers ──────────────────────────────
+  // Pure mirrors of the inline corporate math in calculator2.sections.js
+  // (runCoILRegCalc / runCoFORRegCalc) so the company real-estate CG section
+  // can share one source of truth with the rental sections.
+
+  // Israeli company: flat corporate tax (ITO §126(a), 23%) on net company
+  // income, then a dividend on the after-tax profit distributed to a
+  // "substantial shareholder" (a ≥10% holder; ITO §125B(b), 30%). The dividend
+  // is taken in proportion to ownershipPct; full distribution at 100% gives the
+  // ~46.1% combined burden.
+  function corporateIsraeli({ grossAnnual = 0, annualExpenses = 0, ownershipPct = 100 }) {
+    const CORP_RATE     = 0.23;
+    const DIVIDEND_RATE = 0.30;
+    const net       = Math.max(0, grossAnnual - annualExpenses);
+    const ownership = Math.min(100, Math.max(0, ownershipPct)) / 100;
+    const corpTax   = net * CORP_RATE;
+    const afterTax  = net * (1 - CORP_RATE);
+    const divTax    = afterTax * ownership * DIVIDEND_RATE;
+    const combined  = corpTax + divTax;
+    const combinedEffective = net > 0 ? combined / net : 0;
+    return { net, corpTax, afterTax, divTax, combined, combinedEffective };
+  }
+
+  // Foreign company: corporate tax (ITO §126(a), 23%). On the withholding basis
+  // the 23% applies to gross (deductible expenses ignored); on a filed return it
+  // applies to net. Foreign shareholders owe no Israeli dividend tax on
+  // distribution, so dividendTax is 0 and the combined effective Israeli rate
+  // equals the corporate effective rate.
+  function corporateForeign({ grossAnnual = 0, annualExpenses = 0, withholdingBasis = false }) {
+    const CORP_RATE = 0.23;
+    const base        = withholdingBasis ? grossAnnual : Math.max(0, grossAnnual - annualExpenses);
+    const tax         = CORP_RATE * base;
+    const effective   = grossAnnual > 0 ? tax / grossAnnual : 0;
+    const dividendTax = 0;
+    return { base, tax, effective, dividendTax, combinedEffective: effective };
+  }
+
+  // A company's Israeli real-estate capital gain is taxed at the FLAT corporate
+  // rate (23%) on the REAL gain — no individual-style §48A 47/20/25 historical
+  // split and no single-residence exemption, regardless of holding period;
+  // residential and commercial are computationally identical for a company.
+  // Distribution then follows the rental rules above (Israeli → +30% dividend
+  // to a substantial shareholder; foreign → no Israeli dividend tax).
+  function companyRealEstateCG({ purchasePrice = 0, depreciation = 0, improvements = 0,
+      salePrice = 0, saleExpenses = 0, acqExpenses = 0, cpiGainOverride = 0,
+      israeli = true, ownershipPct = 100 }) {
+    const basis   = adjustedBasis(purchasePrice, depreciation, improvements);
+    const nominal = nominalGain(salePrice, saleExpenses, acqExpenses, basis);
+    const rg      = realGain(cpiGainOverride, nominal);
+    const gain    = rg.value;
+    const corp = israeli
+      ? corporateIsraeli({ grossAnnual: gain, annualExpenses: 0, ownershipPct })
+      : corporateForeign({ grossAnnual: gain, annualExpenses: 0, withholdingBasis: false });
+    return { gain, isNominal: rg.isNominal, ...corp };
+  }
+
   // ── DD/MM/YYYY (Israeli format) date helpers ─────────────────────
   // Parse "DD/MM/YYYY" → local-midnight Date.  Returns null if blank,
   // malformed, or a non-existent calendar date (e.g. 31/02/2020).
