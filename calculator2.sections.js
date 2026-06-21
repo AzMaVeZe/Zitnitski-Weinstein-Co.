@@ -815,7 +815,7 @@
 
       const grossRent    = pn('coil_rentalIncome_annual');
       const expenses     = pn('coil_expenses');
-      const ownershipPct = Math.min(100, Math.max(0, pnOr('coil_ownershipPct', 100)));
+      const ownershipPct = Math.min(100, Math.max(0, pnOr('coil_ownershipPct', 0)));
 
       if (!grossRent) { resetRegCards(); return; }
 
@@ -1045,7 +1045,7 @@
       const saleExpenses    = pn(p + 'saleExpenses');
       const improvements    = pn(p + 'improvements');
       const depreciation    = pn(p + 'depreciation');
-      const ownershipPct    = Math.min(100, Math.max(0, pnOr(p + 'ownershipPct', 100)));
+      const ownershipPct    = Math.min(100, Math.max(0, pnOr(p + 'ownershipPct', 0)));
 
       if (!salePrice) { resetCards(); return; }
 
@@ -1460,7 +1460,7 @@
     }
 
     function runCalc() {
-      const ownershipPct = Math.min(100, Math.max(0, pnOr('coilsh_ownershipPct', 100)));
+      const ownershipPct = Math.min(100, Math.max(0, pnOr('coilsh_ownershipPct', 0)));
 
       if (document.getElementById('coilsh_incomeType').value === 'dividend') {
         const dividend = pn('coilsh_dividend');
