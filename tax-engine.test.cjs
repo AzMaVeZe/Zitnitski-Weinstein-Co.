@@ -24,12 +24,12 @@ const path = require('path');
 const engineSrc = fs.readFileSync(path.join(__dirname, 'tax-engine.js'), 'utf8');
 const engine = new Function(engineSrc + `
   ; return { BRACKETS, calcTaxPassive, calcTaxActive, fmt, computeTracks,
-             adjustedBasis, nominalGain,
+             adjustedBasis, nominalGain, interestIndividual,
              corporateIsraeli, corporateForeign, companyRealEstateCG, companyDividendIsraeli,
              parseDMY, formatDMY, daysBetween, linearSplit };`)();
 const {
   BRACKETS, calcTaxPassive, calcTaxActive, fmt, computeTracks,
-  adjustedBasis, nominalGain,
+  adjustedBasis, nominalGain, interestIndividual,
   corporateIsraeli, corporateForeign, companyRealEstateCG, companyDividendIsraeli,
   parseDMY, formatDMY, daysBetween, linearSplit,
 } = engine;
@@ -295,6 +295,150 @@ const EXPECT = {
     "combined": 51000,
     "combinedEffective": 0.51
   },
+  "interestIndividual :: foreign | israeli-source | other | no treaty": {
+    "amount": 100000,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 25000,
+    "treatyTax": null,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.25,
+    "modeled": true,
+    "branch": "foreign_resident_israeli_source"
+  },
+  "interestIndividual :: foreign | israeli-source | other | treaty 15%": {
+    "amount": 100000,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 15000,
+    "treatyTax": 15000,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.15,
+    "modeled": true,
+    "branch": "foreign_resident_israeli_source"
+  },
+  "interestIndividual :: foreign | israeli-source | traded_bond": {
+    "amount": 100000,
+    "exempt": true,
+    "statutoryTax": 0,
+    "israeliTax": 0,
+    "treatyTax": null,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0,
+    "modeled": true,
+    "branch": "exempt_traded_bond_15D"
+  },
+  "interestIndividual :: foreign | foreign-source": {
+    "amount": 100000,
+    "exempt": false,
+    "statutoryTax": 0,
+    "israeliTax": 0,
+    "treatyTax": null,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0,
+    "modeled": true,
+    "branch": "foreign_resident_foreign_source"
+  },
+  "interestIndividual :: israeli | israeli-source | unlinked | no rechar": {
+    "amount": 100000,
+    "exempt": false,
+    "statutoryTax": 15000,
+    "israeliTax": 15000,
+    "treatyTax": null,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.15,
+    "modeled": true,
+    "branch": "israeli_resident_unlinked_15"
+  },
+  "interestIndividual :: israeli | israeli-source | linked | no rechar": {
+    "amount": 100000,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 25000,
+    "treatyTax": null,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.25,
+    "modeled": true,
+    "branch": "israeli_resident_linked_25"
+  },
+  "interestIndividual :: israeli | israeli-source | recharacterize | under60 | no other": {
+    "amount": 100000,
+    "exempt": false,
+    "statutoryTax": 31000,
+    "israeliTax": 31000,
+    "treatyTax": null,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.31,
+    "modeled": true,
+    "branch": "recharacterized_marginal"
+  },
+  "interestIndividual :: israeli | israeli-source | recharacterize | over60 | no other": {
+    "amount": 100000,
+    "exempt": false,
+    "statutoryTax": 10635.2,
+    "israeliTax": 10635.2,
+    "treatyTax": null,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.106352,
+    "modeled": true,
+    "branch": "recharacterized_marginal"
+  },
+  "interestIndividual :: oleh | foreign-source": {
+    "amount": 100000,
+    "exempt": true,
+    "statutoryTax": 0,
+    "israeliTax": 0,
+    "treatyTax": null,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0,
+    "modeled": true,
+    "branch": "oleh_foreign_source_exempt"
+  },
+  "interestIndividual :: israeli | foreign-source | non-oleh | fw 15%": {
+    "amount": 100000,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 10000,
+    "treatyTax": null,
+    "foreignWithheld": 15000,
+    "ftcActive": true,
+    "effective": 0.25,
+    "modeled": true,
+    "branch": "israeli_resident_foreign_source"
+  },
+  "interestIndividual :: israeli | foreign-source | non-oleh | fw 30%": {
+    "amount": 100000,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 0,
+    "treatyTax": null,
+    "foreignWithheld": 30000,
+    "ftcActive": true,
+    "effective": 0.3,
+    "modeled": true,
+    "branch": "israeli_resident_foreign_source"
+  },
+  "interestIndividual :: israeli | foreign-source | non-oleh | recharacterize | under60 | no other | fw 0": {
+    "amount": 100000,
+    "exempt": false,
+    "statutoryTax": 31000,
+    "israeliTax": 31000,
+    "treatyTax": null,
+    "foreignWithheld": 0,
+    "ftcActive": true,
+    "effective": 0.31,
+    "modeled": true,
+    "branch": "israeli_resident_foreign_source_recharacterized"
+  },
   "parseDMY :: '15/06/2020' valid": "15/06/2020",
   "parseDMY :: '31/02/2020' invalid": null,
   "parseDMY :: '' empty": null,
@@ -380,6 +524,37 @@ add('companyDividendIsraeli', 'foreign | 100k | withholding 15% | own 100%',
   companyDividendIsraeli({ dividend: 100000, source: 'foreign', foreignWithheldPct: 15, ownershipPct: 100 }));
 add('companyDividendIsraeli', 'foreign | 100k | withholding 30% | own 100%',
   companyDividendIsraeli({ dividend: 100000, source: 'foreign', foreignWithheldPct: 30, ownershipPct: 100 }));
+
+// ===== interestIndividual — §125C individual interest (amount 100k) =====
+//   one case per branch; modeled:false on the Israeli-resident foreign-source ASSUMPTION
+add('interestIndividual', 'foreign | israeli-source | other | no treaty',
+  interestIndividual({ amount: 100000, residency: 'foreign', source: 'israeli', instrument: 'other' }));
+add('interestIndividual', 'foreign | israeli-source | other | treaty 15%',
+  interestIndividual({ amount: 100000, residency: 'foreign', source: 'israeli', instrument: 'other', treatyRatePct: 15 }));
+add('interestIndividual', 'foreign | israeli-source | traded_bond',
+  interestIndividual({ amount: 100000, residency: 'foreign', source: 'israeli', instrument: 'traded_bond' }));
+add('interestIndividual', 'foreign | israeli-source | fx_deposit',
+  interestIndividual({ amount: 100000, residency: 'foreign', source: 'israeli', instrument: 'fx_deposit' }));
+add('interestIndividual', 'foreign | foreign-source',
+  interestIndividual({ amount: 100000, residency: 'foreign', source: 'foreign' }));
+add('interestIndividual', 'israeli | israeli-source | unlinked | no rechar',
+  interestIndividual({ amount: 100000, residency: 'israeli', source: 'israeli', linked: false }));
+add('interestIndividual', 'israeli | israeli-source | linked | no rechar',
+  interestIndividual({ amount: 100000, residency: 'israeli', source: 'israeli', linked: true }));
+add('interestIndividual', 'israeli | israeli-source | recharacterize | under60 | no other',
+  interestIndividual({ amount: 100000, residency: 'israeli', source: 'israeli', recharacterize: true }));
+add('interestIndividual', 'israeli | israeli-source | recharacterize | over60 | no other',
+  interestIndividual({ amount: 100000, residency: 'israeli', source: 'israeli', recharacterize: true, over60: true }));
+add('interestIndividual', 'oleh | foreign-source',
+  interestIndividual({ amount: 100000, residency: 'israeli', source: 'foreign', oleh: true }));
+add('interestIndividual', 'israeli | foreign-source | non-oleh (ASSUMPTION, modeled:false)',
+  interestIndividual({ amount: 100000, residency: 'israeli', source: 'foreign', oleh: false, foreignWithheldPct: 10 }));
+add('interestIndividual', 'israeli | foreign-source | non-oleh | fw 15%',
+  interestIndividual({ amount: 100000, residency: 'israeli', source: 'foreign', oleh: false, foreignWithheldPct: 15 }));
+add('interestIndividual', 'israeli | foreign-source | non-oleh | fw 30%',
+  interestIndividual({ amount: 100000, residency: 'israeli', source: 'foreign', oleh: false, foreignWithheldPct: 30 }));
+add('interestIndividual', 'israeli | foreign-source | non-oleh | recharacterize | under60 | no other | fw 0',
+  interestIndividual({ amount: 100000, residency: 'israeli', source: 'foreign', oleh: false, recharacterize: true }));
 
 // ===== date helpers (support linearSplit; included for coverage) =====
 add('parseDMY', "'15/06/2020' valid",   dmy('15/06/2020'));

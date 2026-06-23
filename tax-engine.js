@@ -113,6 +113,132 @@
     return Math.max(0, salePrice - saleExpenses - acquisitionExpenses - basis);
   }
 
+  // ── Individual interest income (§125C two-rate regime) ───────────
+  // INDIVIDUALS ONLY. Israeli-source interest of an individual is taxed under
+  // ITO §125C at 25% when the principal is CPI- or FX-linked, else 15%.
+  // Foreign residents are exempt on interest from a traded Israeli bond
+  // (ITO §15D) and on certain foreign-currency deposits; their other
+  // Israeli-source interest bears 25% statutory withholding, which a treaty may
+  // reduce. New-immigrant / returning-resident relief (ITO §14, §9(15)) exempts
+  // foreign-source interest. Interest paid to a substantial shareholder, an
+  // employee, or under special relations is recharacterized and taxed on the
+  // marginal ladder (mirrors computeTracks Track C; reuses calcTaxActive /
+  // calcTaxPassive). Companies use the ordinary corporate pipeline, not this
+  // helper. Statute refs live in comments only — never in a return value.
+  function interestIndividual({
+    amount = 0,
+    residency = 'foreign',          // 'foreign' | 'israeli'
+    source = 'israeli',             // 'israeli' | 'foreign'
+    instrument = 'other',           // 'traded_bond' | 'fx_deposit' | 'other'
+    linked = false,                 // CPI/FX-linked → 25%; unlinked → 15%
+    recharacterize = false,         // substantial shareholder / employee / special relations
+    oleh = false,
+    over60 = false,
+    otherAnnualIncome = 0,          // stacking for the recharacterized progressive branch
+    treatyRatePct = null,           // foreign-resident Israeli-source 'other' override
+    foreignWithheldPct = 0,         // FTC input for the Israeli-resident foreign-source branch
+  }) {
+    const clampPct = (p) => Math.min(100, Math.max(0, p));
+
+    let exempt          = false;
+    let statutoryTax    = 0;
+    let israeliTax      = 0;
+    let treatyTax       = null;
+    let foreignWithheld = 0;
+    let ftcActive       = false;
+    let modeled         = true;
+    let branch          = 'none';
+
+    // No interest → all-zero result (guards effective against 0/0).
+    if (amount <= 0) {
+      return { amount, exempt, statutoryTax, israeliTax, treatyTax,
+               foreignWithheld, ftcActive, effective: 0, modeled, branch };
+    }
+
+    if (residency === 'foreign') {
+      if (source !== 'israeli') {
+        // Foreign-source interest of a foreign resident is outside Israeli tax.
+        branch = 'foreign_resident_foreign_source';
+      } else if (instrument === 'traded_bond') {
+        // §15D: foreign resident exempt on interest from a traded Israeli bond.
+        exempt = true;
+        branch = 'exempt_traded_bond_15D';
+      } else if (instrument === 'fx_deposit') {
+        // Foreign resident exempt on qualifying foreign-currency deposit interest.
+        exempt = true;
+        branch = 'exempt_fx_deposit';
+      } else {
+        // Foreign resident, Israeli-source 'other' interest: 25% statutory
+        // withholding, optionally reduced by a user-supplied treaty rate
+        // (capped at the 25% statutory rate).
+        statutoryTax = 0.25 * amount;
+        israeliTax   = statutoryTax;
+        if (treatyRatePct != null && treatyRatePct >= 0) {
+          const tRate = Math.min(0.25, clampPct(treatyRatePct) / 100);
+          treatyTax  = tRate * amount;
+          israeliTax = treatyTax;
+        }
+        branch = 'foreign_resident_israeli_source';
+      }
+    } else {   // Israeli resident
+      if (source !== 'israeli') {
+        if (oleh) {
+          // §14 / §9(15): new-immigrant exemption on foreign-source interest.
+          exempt = true;
+          branch = 'oleh_foreign_source_exempt';
+        } else {
+          // §125C: a foreign-currency exchange rate is a linkage index, so a foreign-currency
+          // interest asset is "linked" → the 25% cap applies (not 15%). Foreign tax relief is a
+          // direct FTC capped at the Israeli liability with no refund of excess, so the burden
+          // collapses to max(Israeli rate, foreign withholding). Recharacterization (≥10% holder
+          // in the foreign payer / employee / special relations) → marginal ladder, same as domestic.
+          const gross = recharacterize
+            ? (over60 ? calcTaxActive(amount)
+               : otherAnnualIncome > 0 ? (otherAnnualIncome <= 269280 ? 0.31 : otherAnnualIncome <= 560280 ? 0.35 : 0.47) * amount
+               : calcTaxPassive(amount))
+            : 0.25 * amount;
+          foreignWithheld = (clampPct(foreignWithheldPct) / 100) * amount;
+          statutoryTax    = gross;
+          israeliTax      = Math.max(0, gross - foreignWithheld);
+          ftcActive       = true;
+          branch = recharacterize ? 'israeli_resident_foreign_source_recharacterized'
+                                  : 'israeli_resident_foreign_source';
+        }
+      } else if (recharacterize) {
+        // Recharacterized interest (substantial shareholder / employee / special
+        // relations) is taxed on the marginal ladder — mirrors computeTracks
+        // Track C exactly.
+        if (over60) {
+          israeliTax = calcTaxActive(amount);
+        } else if (otherAnnualIncome > 0) {
+          const T = otherAnnualIncome <= 269280 ? 0.31
+                  : otherAnnualIncome <= 560280 ? 0.35
+                  : 0.47;
+          israeliTax = T * amount;
+        } else {
+          israeliTax = calcTaxPassive(amount);
+        }
+        statutoryTax = israeliTax;
+        branch = 'recharacterized_marginal';
+      } else {
+        // §125C: 25% if CPI/FX-linked, else 15%. (Oleh Israeli-source interest is
+        // taxed identically; any FX carve-out is a UI note only.)
+        const rate   = linked ? 0.25 : 0.15;
+        israeliTax   = rate * amount;
+        statutoryTax = israeliTax;
+        branch = linked ? 'israeli_resident_linked_25' : 'israeli_resident_unlinked_15';
+      }
+    }
+
+    let effective;
+    if (exempt)         effective = 0;
+    else if (ftcActive) effective = (foreignWithheld + israeliTax) / amount;
+    else                effective = israeliTax / amount;
+
+    return { amount, exempt, statutoryTax, israeliTax, treatyTax,
+             foreignWithheld, ftcActive, effective, modeled, branch };
+  }
+
   // ── Company (corporate) tax helpers ──────────────────────────────
   // Pure mirrors of the inline corporate math in calculator2.sections.js
   // (runCoILRegCalc / runCoFORRegCalc) so the company real-estate CG section
