@@ -137,6 +137,7 @@
     otherAnnualIncome = 0,          // stacking for the recharacterized progressive branch
     treatyRatePct = null,           // foreign-resident Israeli-source 'other' override
     foreignWithheldPct = 0,         // FTC input for the Israeli-resident foreign-source branch
+    connectedToIsraeliPE = false,   // effectively connected to an Israeli permanent establishment
   }) {
     const clampPct = (p) => Math.min(100, Math.max(0, p));
 
@@ -153,6 +154,16 @@
     if (amount <= 0) {
       return { amount, exempt, statutoryTax, israeliTax, treatyTax,
                foreignWithheld, ftcActive, effective: 0, modeled, branch };
+    }
+
+    // Permanent-establishment carve-out (takes precedence over every branch below):
+    // PE re-sources the income to Israel and taxes it as business profits
+    // attributable to the PE — outside this passive helper; disclosed in UI. This
+    // stops a blanket 0%/exempt path from silently misstating a PE-connected case.
+    if (connectedToIsraeliPE) {
+      return { amount, exempt: false, statutoryTax: 0, israeliTax: 0, treatyTax: null,
+               foreignWithheld: 0, ftcActive: false, effective: 0, modeled: false,
+               branch: 'pe_business_profits' };
     }
 
     if (residency === 'foreign') {

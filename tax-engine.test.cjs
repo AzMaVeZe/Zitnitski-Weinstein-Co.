@@ -555,6 +555,11 @@ add('interestIndividual', 'israeli | foreign-source | non-oleh | fw 30%',
   interestIndividual({ amount: 100000, residency: 'israeli', source: 'foreign', oleh: false, foreignWithheldPct: 30 }));
 add('interestIndividual', 'israeli | foreign-source | non-oleh | recharacterize | under60 | no other | fw 0',
   interestIndividual({ amount: 100000, residency: 'israeli', source: 'foreign', oleh: false, recharacterize: true }));
+// PE carve-out (drift-lock only; modeled:false, no computed liability)
+add('interestIndividual', 'foreign | israeli-source | other | PE-connected',
+  interestIndividual({ amount: 100000, residency: 'foreign', source: 'israeli', instrument: 'other', connectedToIsraeliPE: true }));
+add('interestIndividual', 'foreign | foreign-source | PE-connected',
+  interestIndividual({ amount: 100000, residency: 'foreign', source: 'foreign', connectedToIsraeliPE: true }));
 
 // ===== date helpers (support linearSplit; included for coverage) =====
 add('parseDMY', "'15/06/2020' valid",   dmy('15/06/2020'));

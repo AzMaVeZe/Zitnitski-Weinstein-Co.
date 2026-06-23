@@ -398,6 +398,30 @@
     "modeled": true,
     "branch": "israeli_resident_foreign_source_recharacterized"
   },
+  "interestIndividual :: foreign | israeli-source | other | PE-connected": {
+    "amount": 100000,
+    "exempt": false,
+    "statutoryTax": 0,
+    "israeliTax": 0,
+    "treatyTax": null,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0,
+    "modeled": false,
+    "branch": "pe_business_profits"
+  },
+  "interestIndividual :: foreign | foreign-source | PE-connected": {
+    "amount": 100000,
+    "exempt": false,
+    "statutoryTax": 0,
+    "israeliTax": 0,
+    "treatyTax": null,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0,
+    "modeled": false,
+    "branch": "pe_business_profits"
+  },
   "parseDMY :: '15/06/2020' valid": "15/06/2020",
   "parseDMY :: '31/02/2020' invalid": null,
   "parseDMY :: '' empty": null,
