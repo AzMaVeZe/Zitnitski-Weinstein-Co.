@@ -785,10 +785,147 @@
   }
 
   // ── Individual · Interest ────────────────────────────────────────
-  // TODO next-commit: build the Ind_Interest section UI on top of the
-  // interestIndividual engine helper. Temporary no-op so the route resolves
-  // without throwing.
-  function initIndInterest() {}
+  // Pure DOM/UI layer over interestIndividual(); all rates come from the engine.
+  function initIndInterest() {
+    const $ = (id) => document.getElementById(id);
+
+    // Branch → plain-English note (no statute numbers); '' means no note shown.
+    const NOTE = {
+      foreign_resident_israeli_source: "As a foreign resident, Israel withholds at the statutory rate. A treaty may reduce this, but the reduction isn't automatic — you must apply to the tax authority for a reduced-rate certificate; the full rate is withheld until one issues.",
+      exempt_traded_bond_15D: "Interest on Israeli traded and government bonds is generally exempt for foreign residents — provided the holding isn't through a business you operate in Israel.",
+      exempt_fx_deposit: "Interest on a foreign-currency deposit in an Israeli bank is generally exempt for foreign residents who meet the bank-declaration and no-Israeli-partner conditions.",
+      foreign_resident_foreign_source: "Foreign-source interest paid to a foreign resident isn't taxed by Israel.",
+      pe_business_profits: "Because this interest is connected to a business you operate in Israel, it's taxed as Israeli business profits rather than at the withholding rate — that calculation isn't covered here.",
+      israeli_resident_unlinked_15: "",
+      israeli_resident_linked_25: "",
+      recharacterized_marginal: "The capped rate doesn't apply here, so the interest is taxed at your marginal rate. If you have other Israeli income this may be higher — consult an advisor.",
+      oleh_foreign_source_exempt: "Within the 10-year new-immigrant exemption, foreign-source interest is fully exempt from Israeli tax. Tax withheld abroad isn't refundable.",
+      israeli_resident_foreign_source: "Israel taxes this foreign-source interest and credits the foreign tax already withheld, so you effectively pay the higher of the two rates.",
+      israeli_resident_foreign_source_recharacterized: "Israel taxes this foreign-source interest and credits the foreign tax already withheld, so you effectively pay the higher of the two rates.",
+    };
+
+    const OUTPUT_IDS = [
+      'intr_baseDisplay', 'intr_rate', 'intr_taxDisplay', 'intr_effectiveDisplay',
+      'intr_treatyDisplay', 'intr_treatyEffective',
+      'intr_grossTax', 'intr_foreignTax', 'intr_netTax', 'intr_totalBurden',
+    ];
+
+    function resetCard() {
+      blank(OUTPUT_IDS);
+      $('intr_treatyRow').style.display = 'none';
+      $('intr_ftcRow').style.display    = 'none';
+      $('intr_note').style.display      = 'none';
+      const v = $('intr_verdict');
+      v.style.display = '';
+      v.textContent   = 'Enter an interest amount above to see estimates.';
+    }
+
+    function showNote(branch) {
+      const note = $('intr_note');
+      const text = NOTE[branch] || '';
+      note.textContent   = text;
+      note.style.display = text ? '' : 'none';
+    }
+
+    // Hide a field/checkbox group and clear its inputs so stale values can't feed
+    // the calc (important e.g. for the PE flag when switching to an Israeli resident).
+    function setGroup(id, visible) {
+      const el = $(id);
+      el.style.display = visible ? '' : 'none';
+      if (!visible) {
+        el.querySelectorAll('input').forEach(i => { if (i.type === 'checkbox') i.checked = false; else i.value = ''; });
+        el.querySelectorAll('select').forEach(s => { s.selectedIndex = 0; });
+      }
+    }
+
+    // Show only the inputs relevant to the current residency/source (+ instrument/oleh).
+    function syncVisibility() {
+      const foreign    = $('intr_residency').value === 'foreign';
+      const ilSource   = $('intr_source').value === 'israeli';
+      const instrument = $('intr_instrument').value;
+
+      setGroup('intr_instrumentField',      foreign && ilSource);
+      setGroup('intr_treatyField',          foreign && ilSource && instrument === 'other');
+      setGroup('intr_peField',              foreign);
+      setGroup('intr_ilSourceExtras',      !foreign && ilSource);
+      setGroup('intr_forSourceExtras',     !foreign && !ilSource);
+      // Read oleh AFTER forSourceExtras may have cleared it, so it's never stale.
+      setGroup('intr_foreignWithheldField', !foreign && !ilSource && !$('intr_oleh').checked);
+    }
+
+    function runCalc() {
+      const amount = pn('intr_amount');
+      if (amount <= 0) { resetCard(); return; }
+
+      const foreignSource = $('intr_source').value === 'foreign';
+      const treatyRaw     = $('intr_treatyPct').value.trim();
+
+      const r = interestIndividual({
+        amount,
+        residency: $('intr_residency').value,
+        source: $('intr_source').value,
+        instrument: $('intr_instrument').value || 'other',
+        linked: $('intr_linked').checked,
+        recharacterize: (foreignSource ? $('intr_recharFOR') : $('intr_recharIL')).checked,
+        oleh: $('intr_oleh').checked,
+        over60: false,
+        otherAnnualIncome: 0,
+        treatyRatePct: treatyRaw !== '' ? pn('intr_treatyPct') : null,
+        foreignWithheldPct: pn('intr_foreignWithheld'),
+        connectedToIsraeliPE: $('intr_pe').checked,
+      });
+
+      // Conditional rows hidden unless this branch needs them.
+      $('intr_treatyRow').style.display = 'none';
+      $('intr_ftcRow').style.display    = 'none';
+      $('intr_verdict').style.display   = 'none';
+      $('intr_baseDisplay').textContent = fmt(r.amount);
+
+      // PE-connected: re-sourced to Israeli business profits — not estimated here.
+      if (!r.modeled && r.branch === 'pe_business_profits') {
+        $('intr_rate').textContent            = '—';
+        $('intr_taxDisplay').textContent      = '—';
+        $('intr_effectiveDisplay').textContent = '—';
+        showNote(r.branch);
+        return;
+      }
+
+      // Headline tax: when a treaty applies, the full statutory rate is the headline
+      // (withheld by default) and the reduced figure goes in the treaty row; in every
+      // other case the headline is the Israeli tax the engine returns.
+      const headlineTax = (r.treatyTax != null) ? r.statutoryTax : r.israeliTax;
+      $('intr_rate').textContent             = r.exempt ? 'Exempt' : effPct(headlineTax, r.amount);
+      $('intr_taxDisplay').textContent       = fmt(headlineTax);
+      $('intr_effectiveDisplay').textContent = effPct(headlineTax, r.amount);
+
+      if (r.treatyTax != null) {
+        $('intr_treatyRow').style.display       = '';
+        $('intr_treatyDisplay').textContent     = fmt(r.treatyTax);
+        $('intr_treatyEffective').textContent   = effPct(r.treatyTax, r.amount);
+      }
+
+      if (r.ftcActive) {
+        $('intr_ftcRow').style.display      = '';
+        $('intr_grossTax').textContent      = fmt(r.statutoryTax);
+        $('intr_foreignTax').textContent    = fmt(r.foreignWithheld);
+        $('intr_netTax').textContent        = fmt(r.israeliTax);
+        $('intr_totalBurden').textContent   = fmt(r.foreignWithheld + r.israeliTax);
+      }
+
+      showNote(r.branch);
+    }
+
+    // Visibility-affecting controls re-sync then recalc; the rest just recalc.
+    ['intr_residency', 'intr_source', 'intr_instrument', 'intr_oleh'].forEach(id =>
+      $(id).addEventListener('change', function () { syncVisibility(); runCalc(); }));
+    ['intr_amount', 'intr_treatyPct', 'intr_foreignWithheld'].forEach(id =>
+      $(id).addEventListener('input', runCalc));
+    ['intr_linked', 'intr_recharIL', 'intr_recharFOR', 'intr_pe'].forEach(id =>
+      $(id).addEventListener('change', runCalc));
+
+    syncVisibility();
+    runCalc();
+  }
 
   // ── Israeli Company · Real Estate · Rental Income ────────────────
   function initCoILREInc() {

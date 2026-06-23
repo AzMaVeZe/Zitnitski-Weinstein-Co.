@@ -538,14 +538,160 @@
     </div>
   </div>
 
-  <!-- ═══ Ind_Interest: Individual · Interest — placeholder (full body next commit) ═ -->
+  <!-- ═══ Ind_Interest: Individual · Interest ════════════════════════════════════ -->
+  <!-- Progressive disclosure (like Ind_Shares): only the inputs relevant to the
+       current residency/source show; the rest are hidden and cleared on switch.
+       All math is delegated to interestIndividual(); see initIndInterest. -->
   <div class="calc-section" id="Ind_Interest" style="display:none">
     <div class="card">
       <div class="card-header">
         <h2>Interest Income</h2>
-        <p>Section under construction.</p>
+        <p>Enter your annual interest income and the details below.</p>
       </div>
+
+      <div class="fields">
+        <div class="field full">
+          <label for="intr_amount">Annual Interest Amount</label>
+          <div class="income-wrap">
+            <span class="income-prefix">₪</span>
+            <input type="text" id="intr_amount" inputmode="decimal" placeholder="e.g. 100,000" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="intr_residency">Residency</label>
+          <select id="intr_residency">
+            <option value="foreign">Foreign resident</option>
+            <option value="israeli">Israeli resident</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="intr_source">Interest Source</label>
+          <select id="intr_source">
+            <option value="israeli">Israeli-source</option>
+            <option value="foreign">Foreign-source</option>
+          </select>
+        </div>
+
+        <!-- Foreign resident + Israeli-source: instrument type -->
+        <div class="field" id="intr_instrumentField" style="display:none">
+          <label for="intr_instrument">Interest Type</label>
+          <select id="intr_instrument">
+            <option value="traded_bond">Traded bond on the Tel Aviv exchange (incl. government bonds)</option>
+            <option value="fx_deposit">Foreign-currency deposit in an Israeli bank</option>
+            <option value="other">Other Israeli-source interest (private loan, non-traded debt)</option>
+          </select>
+        </div>
+
+        <!-- Foreign resident + Israeli-source + "other": treaty rate -->
+        <div class="field" id="intr_treatyField" style="display:none">
+          <label for="intr_treatyPct">Treaty rate (%)</label>
+          <div class="income-wrap">
+            <input type="number" id="intr_treatyPct" min="0" max="100" placeholder="optional" style="padding:.65rem .9rem;" />
+          </div>
+          <div class="input-hint">Optional — a tax treaty caps Israeli withholding. Enter your treaty rate to see the reduced figure.</div>
+        </div>
+
+        <!-- Israeli resident + Foreign-source + not oleh: foreign tax withheld -->
+        <div class="field" id="intr_foreignWithheldField" style="display:none">
+          <label for="intr_foreignWithheld">Foreign tax withheld (%)</label>
+          <div class="income-wrap">
+            <input type="number" id="intr_foreignWithheld" min="0" max="100" placeholder="0" style="padding:.65rem .9rem;" />
+          </div>
+          <div class="input-hint">Tax already withheld abroad — credited against the Israeli tax (foreign tax credit).</div>
+        </div>
+      </div>
+
+      <!-- Foreign resident (any source): permanent-establishment flag -->
+      <div class="cg-extras" id="intr_peField" style="display:none">
+        <label class="checkbox-row">
+          <input type="checkbox" id="intr_pe" />
+          <span>This interest is connected to a business I operate in Israel</span>
+        </label>
+      </div>
+
+      <!-- Israeli resident + Israeli-source: linkage + recharacterization -->
+      <div class="cg-extras" id="intr_ilSourceExtras" style="display:none">
+        <label class="checkbox-row">
+          <input type="checkbox" id="intr_linked" />
+          <span>Principal is CPI- or foreign-currency-linked</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="intr_recharIL" />
+          <span>I'm a 10%+ shareholder, employee, or have special relations with the payer</span>
+        </label>
+      </div>
+
+      <!-- Israeli resident + Foreign-source: oleh + recharacterization -->
+      <div class="cg-extras" id="intr_forSourceExtras" style="display:none">
+        <label class="checkbox-row">
+          <input type="checkbox" id="intr_oleh" />
+          <span>New immigrant within the 10-year exemption window</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="intr_recharFOR" />
+          <span>I'm a 10%+ shareholder, employee, or have special relations with the payer</span>
+        </label>
+      </div>
+    </div><!-- /card -->
+
+    <!-- Single Israeli-tax card (mirrors Co_FOR_Shares) -->
+    <div class="track-section">
+      <div class="track-section-header">
+        <h2>Estimated Israeli Tax</h2>
+        <p>Interest: <strong id="intr_baseDisplay">—</strong></p>
+      </div>
+
+      <div class="track-cards" style="grid-template-columns: minmax(0, 520px); justify-content: center;">
+        <div class="track-card track-recommended">
+          <div class="track-card-name"><span class="track-letter">1</span>Israeli Tax</div>
+          <div class="track-card-rate" id="intr_rate">—</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Israeli tax</span>
+            <span class="track-result-val" id="intr_taxDisplay">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate</span>
+            <span class="track-result-val" id="intr_effectiveDisplay">—</span>
+          </div>
+          <div id="intr_treatyRow" style="display:none">
+            <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+              <span class="track-result-label">Treaty-reduced withholding</span>
+              <span class="track-result-val" id="intr_treatyDisplay">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Treaty effective rate</span>
+              <span class="track-result-val" id="intr_treatyEffective">—</span>
+            </div>
+          </div>
+          <div id="intr_ftcRow" style="display:none">
+            <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+              <span class="track-result-label">Gross Israeli tax</span>
+              <span class="track-result-val" id="intr_grossTax">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Foreign tax credited</span>
+              <span class="track-result-val" id="intr_foreignTax">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Net Israeli tax owed</span>
+              <span class="track-result-val" id="intr_netTax">—</span>
+            </div>
+            <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+              <span class="track-result-label">Total tax paid (foreign + Israeli)</span>
+              <span class="track-result-val" id="intr_totalBurden">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="track-verdict" id="intr_verdict" style="color:var(--muted); font-style:italic;">Enter an interest amount above to see estimates.</p>
+      <p id="intr_note" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;"></p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. Consult a tax advisor for your exact liability.</p>
     </div>
+
   </div>
 
   <!-- ═══ Co_IL_RE_Inc: Israeli Company · Real Estate · Rental Income ════════════ -->
