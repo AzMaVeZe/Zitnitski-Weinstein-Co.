@@ -1029,11 +1029,40 @@
   // the reader can close it without scrolling back up to the header. After
   // closing, the section's own header (summary/trigger) is smoothly scrolled to
   // just below the sticky nav rather than left hidden underneath it.
-  function scrollHeaderBelowNav(headerEl) {
+  function scrollHeaderBelowNav(headerEl, extraLift = 0) {
     const nav  = document.querySelector('nav');
     const navH = nav ? nav.getBoundingClientRect().height : 0;
-    const top  = headerEl.getBoundingClientRect().top + window.pageYOffset - navH - 12;
+    const top  = headerEl.getBoundingClientRect().top + window.pageYOffset - navH - 12 - extraLift;
     window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+  }
+  // Smoothly shrink a native <details> body to 0 height, THEN set open=false. Native
+  // <details> can't tween its own open/close, so we animate max-height + padding to 0
+  // first and only flip .open once the shrink completes.
+  function smoothCloseSection(acc, body, onDone) {
+    if (acc.dataset.closing === '1') return;            // ignore re-clicks mid-animation
+    acc.dataset.closing = '1';
+    const startHeight = body.scrollHeight;
+    body.style.overflow  = 'hidden';
+    body.style.maxHeight = startHeight + 'px';
+    void body.offsetHeight;                             // commit start height before transitioning
+    const DURATION = '0.45s';                           // ← collapse speed knob (raise to slow further)
+    body.style.transition    = 'max-height ' + DURATION + ' ease, padding ' + DURATION + ' ease';
+    body.style.maxHeight     = '0px';
+    body.style.paddingTop    = '0px';
+    body.style.paddingBottom = '0px';
+    let done = false;
+    function finish() {
+      if (done) return; done = true;
+      body.removeEventListener('transitionend', onEnd);
+      acc.open = false;                                 // collapse only AFTER the shrink completes
+      body.style.transition = body.style.maxHeight = body.style.paddingTop =
+        body.style.paddingBottom = body.style.overflow = '';   // clear inline styles so re-open is clean
+      delete acc.dataset.closing;
+      if (onDone) onDone();
+    }
+    function onEnd(e) { if (e.propertyName === 'max-height') finish(); }
+    body.addEventListener('transitionend', onEnd);
+    setTimeout(finish, 700);                            // fallback if transitionend doesn't fire
   }
   function makeCollapseBtn(ariaLabel, onCollapse) {
     const b = document.createElement('button');
@@ -1050,9 +1079,8 @@
     const summary = acc.querySelector('.section-summary');
     if (!body || !summary) return;
     body.appendChild(makeCollapseBtn('Collapse section', () => {
-      acc.open = false;
-      summary.focus({ preventScroll: true });   // keyboard focus lands on the header…
-      scrollHeaderBelowNav(summary);             // …while we control the scroll ourselves
+      scrollHeaderBelowNav(summary, 100);   // ← one wheel notch higher up the page; tune this number
+      smoothCloseSection(acc, body, () => summary.focus({ preventScroll: true }));
     }));
   });
   // FAQ items: reuse the trigger's own toggle (it's open, so a click closes it).
