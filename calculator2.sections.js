@@ -107,6 +107,8 @@
           if (property === 'residential')     key = 'Ind_RE_CG_Res';
           else if (property === 'commercial') key = 'Ind_RE_CG_Com';
         }
+      } else if (asset === 'interest') {
+        key = 'Ind_Interest';
       }
     } else if (entity === 'company') {
       if (origin === 'israeli') {
@@ -151,6 +153,7 @@
     else if (key === 'Ind_RE_CG_Res') initIndCGRes();
     else if (key === 'Ind_RE_CG_Com') initIndCGCom();
     else if (key === 'Ind_Shares')    initIndShares();
+    else if (key === 'Ind_Interest')  initIndInterest();
     else if (key === 'Co_IL_RE_Inc')  initCoILREInc();
     else if (key === 'Co_IL_RE_CG_Res') initCoILRECG('coilcg_res_');
     else if (key === 'Co_IL_RE_CG_Com') initCoILRECG('coilcg_com_');
@@ -780,6 +783,12 @@
 
     runSharesCalc();
   }
+
+  // ── Individual · Interest ────────────────────────────────────────
+  // TODO next-commit: build the Ind_Interest section UI on top of the
+  // interestIndividual engine helper. Temporary no-op so the route resolves
+  // without throwing.
+  function initIndInterest() {}
 
   // ── Israeli Company · Real Estate · Rental Income ────────────────
   function initCoILREInc() {

@@ -53,6 +53,7 @@
           <option value="">— Select asset type —</option>
           <option value="real_estate">Real Estate</option>
           <option value="shares">Shares</option>
+          <option value="interest">Interest</option>
         </select>
       </div>
 
@@ -125,6 +126,16 @@
 
   document.getElementById('entityType').addEventListener('change', function () {
     setVisible('originField', 'companyOrigin', this.value === 'company');
+
+    // Interest is an individual-only asset: hide/disable it for a company and
+    // clear it if it was already selected, then re-validate so nextBtn is correct.
+    const assetSel    = document.getElementById('assetType');
+    const interestOpt = assetSel.querySelector('option[value="interest"]');
+    const isCompany   = this.value === 'company';
+    interestOpt.hidden   = isCompany;
+    interestOpt.disabled = isCompany;
+    if (isCompany && assetSel.value === 'interest') assetSel.value = '';
+    validate();
   });
 
   document.getElementById('assetType').addEventListener('change', function () {
