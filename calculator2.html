@@ -694,6 +694,132 @@
 
   </div>
 
+  <!-- ═══ Ind_Crypto: Individual · Crypto / Digital Assets ═══════════════════════ -->
+  <!-- Progressive disclosure (like Ind_Interest): the oleh-source select shows only
+       for an oleh, the foreign-tax-credit field only for an Israeli resident. All
+       math is delegated to cryptoIndividual(); see initIndCrypto. Crypto is §88
+       capital property — nominal gain only, no inflation indexing. -->
+  <div class="calc-section" id="Ind_Crypto" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <h2>Crypto / Digital Asset Gains</h2>
+        <p>Enter your disposal proceeds and cost basis below.</p>
+      </div>
+
+      <div class="fields">
+        <div class="field">
+          <label for="cryp_proceeds">Gross Proceeds</label>
+          <div class="income-wrap">
+            <span class="income-prefix">₪</span>
+            <input type="text" id="cryp_proceeds" inputmode="decimal" placeholder="e.g. 150,000" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="cryp_costBasis">Cost Basis (incl. fees)</label>
+          <div class="income-wrap">
+            <span class="income-prefix">₪</span>
+            <input type="text" id="cryp_costBasis" inputmode="decimal" placeholder="e.g. 50,000" />
+          </div>
+          <div class="input-hint">FIFO acquisition cost including purchase and disposal fees.</div>
+        </div>
+
+        <div class="field">
+          <label for="cryp_residency">Residency</label>
+          <select id="cryp_residency">
+            <option value="foreign">Foreign resident</option>
+            <option value="israeli">Israeli resident</option>
+            <option value="oleh">New immigrant (within 10-year window)</option>
+          </select>
+        </div>
+
+        <!-- Oleh only: foreign vs Israeli source determines the exemption -->
+        <div class="field" id="cryp_olehSourceField" style="display:none">
+          <label for="cryp_olehSource">Source of Gain</label>
+          <select id="cryp_olehSource">
+            <option value="foreign">Foreign-source</option>
+            <option value="israeli">Israeli-source</option>
+          </select>
+        </div>
+
+        <!-- Israeli resident: foreign tax credit -->
+        <div class="field" id="cryp_foreignWithheldField" style="display:none">
+          <label for="cryp_foreignWithheld">Foreign tax withheld</label>
+          <div class="income-wrap">
+            <span class="income-prefix">₪</span>
+            <input type="text" id="cryp_foreignWithheld" inputmode="decimal" placeholder="0" />
+          </div>
+          <div class="input-hint">Tax already paid abroad — credited against the Israeli tax (foreign tax credit).</div>
+        </div>
+      </div>
+
+      <!-- Security-token carve-out: standard crypto only is modeled; equity-like
+           tokens can attract a different rate (see cryptoIndividual doc comment). -->
+      <p class="input-hint" style="margin-top:1rem;">Security tokens: if your crypto represents an equity stake or rights in a corporation, a different rate may apply. Consult a tax advisor.</p>
+    </div><!-- /card -->
+
+    <!-- Single Israeli-tax card (mirrors Ind_Interest) -->
+    <div class="track-section">
+      <div class="track-section-header">
+        <h2>Estimated Israeli Tax</h2>
+        <p>Proceeds: <strong id="cryp_baseDisplay">—</strong></p>
+      </div>
+
+      <div class="track-cards" style="grid-template-columns: minmax(0, 520px); justify-content: center;">
+        <div class="track-card track-recommended">
+          <div class="track-card-name"><span class="track-letter">1</span>Capital Gains Tax</div>
+          <div class="track-card-rate" id="cryp_rate">—</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Gross proceeds</span>
+            <span class="track-result-val" id="cryp_proceedsDisplay">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Cost basis</span>
+            <span class="track-result-val" id="cryp_costDisplay">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Capital gain</span>
+            <span class="track-result-val" id="cryp_gainDisplay">—</span>
+          </div>
+          <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+            <span class="track-result-label">Tax owed</span>
+            <span class="track-result-val" id="cryp_taxDisplay">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate</span>
+            <span class="track-result-val" id="cryp_effectiveDisplay">—</span>
+          </div>
+          <!-- Foreign tax credit breakdown — Israeli resident with foreign tax withheld -->
+          <div id="cryp_ftcRow" style="display:none">
+            <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+              <span class="track-result-label">Gross Israeli tax</span>
+              <span class="track-result-val" id="cryp_grossTax">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Foreign tax credited</span>
+              <span class="track-result-val" id="cryp_foreignTax">—</span>
+            </div>
+            <div class="track-result-row">
+              <span class="track-result-label">Net Israeli tax owed</span>
+              <span class="track-result-val" id="cryp_netTax">—</span>
+            </div>
+            <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+              <span class="track-result-label">Total tax paid (foreign + Israeli)</span>
+              <span class="track-result-val" id="cryp_totalBurden">—</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <p class="track-verdict" id="cryp_verdict" style="color:var(--muted); font-style:italic;">Enter your proceeds and cost basis above to see estimates.</p>
+      <p id="cryp_note" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;"></p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">A surtax applies on total income above ₪721,560 — consult a tax advisor.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.4rem; text-align:center;">Gain is nominal (inflation indexing not applied) and shown before personal tax credit points (נקודות זיכוי). Consult a tax advisor for your exact liability.</p>
+    </div>
+
+  </div>
+
   <!-- ═══ Co_IL_RE_Inc: Israeli Company · Real Estate · Rental Income ════════════ -->
   <div class="calc-section" id="Co_IL_RE_Inc" style="display:none">
 

@@ -109,6 +109,8 @@
         }
       } else if (asset === 'interest') {
         key = 'Ind_Interest';
+      } else if (asset === 'crypto') {
+        key = 'Ind_Crypto';
       }
     } else if (entity === 'company') {
       if (origin === 'israeli') {
@@ -154,6 +156,7 @@
     else if (key === 'Ind_RE_CG_Com') initIndCGCom();
     else if (key === 'Ind_Shares')    initIndShares();
     else if (key === 'Ind_Interest')  initIndInterest();
+    else if (key === 'Ind_Crypto')    initIndCrypto();
     else if (key === 'Co_IL_RE_Inc')  initCoILREInc();
     else if (key === 'Co_IL_RE_CG_Res') initCoILRECG('coilcg_res_');
     else if (key === 'Co_IL_RE_CG_Com') initCoILRECG('coilcg_com_');
@@ -922,6 +925,123 @@
       $(id).addEventListener('input', runCalc));
     ['intr_linked', 'intr_recharIL', 'intr_recharFOR', 'intr_pe'].forEach(id =>
       $(id).addEventListener('change', runCalc));
+
+    syncVisibility();
+    runCalc();
+  }
+
+  // ── Individual · Crypto / Digital Assets ─────────────────────────
+  // Pure DOM/UI layer over cryptoIndividual(); all rates come from the engine.
+  // Crypto is capital property: nominal gain (proceeds − basis) taxed at the
+  // capital-gains rate, with the oleh foreign-source exemption and an FTC for an
+  // Israeli resident's foreign tax.
+  function initIndCrypto() {
+    const $ = (id) => document.getElementById(id);
+
+    // Branch → plain-English note (no statute numbers); '' means no note shown.
+    const NOTE = {
+      foreign_resident_crypto: "As a foreign resident, Israel taxes the gain on a digital-asset disposal at the standard capital-gains rate. Your country's tax treaty may affect this — consult an advisor.",
+      israeli_resident_crypto: "Israel taxes the gain and credits the foreign tax already paid, so you effectively pay the higher of the two rates.",
+      oleh_foreign_source_exempt: "Within the 10-year new-immigrant exemption, gains on foreign-source digital assets are exempt from Israeli tax. Tax paid abroad isn't refundable.",
+      oleh_israeli_source_crypto: "The 10-year exemption doesn't cover Israeli-source gains — the standard rate applies from day one.",
+    };
+
+    const OUTPUT_IDS = [
+      'cryp_baseDisplay', 'cryp_proceedsDisplay', 'cryp_costDisplay', 'cryp_gainDisplay',
+      'cryp_rate', 'cryp_taxDisplay', 'cryp_effectiveDisplay',
+      'cryp_grossTax', 'cryp_foreignTax', 'cryp_netTax', 'cryp_totalBurden',
+    ];
+
+    function resetCard() {
+      blank(OUTPUT_IDS);
+      $('cryp_ftcRow').style.display = 'none';
+      $('cryp_note').style.display   = 'none';
+      const v = $('cryp_verdict');
+      v.style.display = '';
+      v.textContent   = 'Enter your proceeds and cost basis above to see estimates.';
+    }
+
+    function showNote(branch) {
+      const note = $('cryp_note');
+      const text = NOTE[branch] || '';
+      note.textContent   = text;
+      note.style.display = text ? '' : 'none';
+    }
+
+    // Hide a field group and clear its inputs so a stale value can't feed the calc
+    // (e.g. the foreign-tax field when switching away from an Israeli resident).
+    function setGroup(id, visible) {
+      const el = $(id);
+      el.style.display = visible ? '' : 'none';
+      if (!visible) {
+        el.querySelectorAll('input').forEach(i => { if (i.type === 'checkbox') i.checked = false; else i.value = ''; });
+        el.querySelectorAll('select').forEach(s => { s.selectedIndex = 0; });
+      }
+    }
+
+    // Oleh-source select shows only for an oleh; the foreign-tax-credit field only
+    // for an Israeli resident.
+    function syncVisibility() {
+      const residency = $('cryp_residency').value;
+      setGroup('cryp_olehSourceField',      residency === 'oleh');
+      setGroup('cryp_foreignWithheldField', residency === 'israeli');
+    }
+
+    function runCalc() {
+      const proceeds  = pn('cryp_proceeds');
+      const costBasis = pn('cryp_costBasis');
+      if (proceeds <= 0) { resetCard(); return; }
+
+      const residency = $('cryp_residency').value;
+      const r = cryptoIndividual({
+        amount: proceeds,
+        costBasis,
+        residency,
+        source: residency === 'oleh' ? $('cryp_olehSource').value : 'foreign',
+        foreignWithheld: pn('cryp_foreignWithheld'),
+      });
+
+      $('cryp_ftcRow').style.display  = 'none';
+      $('cryp_verdict').style.display = 'none';
+
+      $('cryp_baseDisplay').textContent     = fmt(r.amount);
+      $('cryp_proceedsDisplay').textContent = fmt(r.amount);
+      $('cryp_costDisplay').textContent     = fmt(r.costBasis);
+      $('cryp_gainDisplay').textContent     = fmt(r.gain);
+
+      // No taxable gain (underwater or break-even) → no tax owed, explain why.
+      if (r.gain <= 0) {
+        $('cryp_rate').textContent             = '—';
+        $('cryp_taxDisplay').textContent       = fmt(0);
+        $('cryp_effectiveDisplay').textContent = '0.0%';
+        const note = $('cryp_note');
+        note.textContent   = 'No taxable gain — no capital-gains tax owed on this disposal.';
+        note.style.display = '';
+        return;
+      }
+
+      // Tax Rate = the Israeli statutory CG rate; Tax Owed = net Israeli tax after
+      // any foreign credit; Effective Rate = total burden (foreign + Israeli) / gain.
+      $('cryp_rate').textContent             = r.exempt ? 'Exempt' : effPct(r.statutoryTax, r.gain);
+      $('cryp_taxDisplay').textContent       = fmt(r.israeliTax);
+      $('cryp_effectiveDisplay').textContent = (r.effective * 100).toFixed(1) + '%';
+
+      if (r.ftcActive) {
+        $('cryp_ftcRow').style.display    = '';
+        $('cryp_grossTax').textContent    = fmt(r.statutoryTax);
+        $('cryp_foreignTax').textContent  = fmt(r.foreignWithheld);
+        $('cryp_netTax').textContent      = fmt(r.israeliTax);
+        $('cryp_totalBurden').textContent = fmt(r.foreignWithheld + r.israeliTax);
+      }
+
+      showNote(r.branch);
+    }
+
+    // Visibility-affecting controls re-sync then recalc; the rest just recalc.
+    $('cryp_residency').addEventListener('change', function () { syncVisibility(); runCalc(); });
+    $('cryp_olehSource').addEventListener('change', runCalc);
+    ['cryp_proceeds', 'cryp_costBasis', 'cryp_foreignWithheld'].forEach(id =>
+      $(id).addEventListener('input', runCalc));
 
     syncVisibility();
     runCalc();
