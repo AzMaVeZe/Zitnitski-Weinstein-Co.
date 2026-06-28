@@ -634,6 +634,27 @@
           <span>I'm a 10%+ shareholder, employee, or have special relations with the payer</span>
         </label>
       </div>
+
+      <!-- Marginal-ladder inputs: the engine reads these only on the
+           recharacterized (marginal-rate) branch and ignores them on the flat-rate
+           / exempt branches, so they're shown at all times. -->
+      <div class="cg-extras">
+        <label class="checkbox-row">
+          <input type="checkbox" id="intr_over60" />
+          <span>I am over 60</span>
+        </label>
+      </div>
+
+      <div class="fields">
+        <div class="field full">
+          <label for="intr_otherIncome">Other annual income (NIS)</label>
+          <div class="income-wrap">
+            <span class="income-prefix">₪</span>
+            <input type="text" id="intr_otherIncome" inputmode="decimal" placeholder="0" />
+          </div>
+          <div class="input-hint">Used only when the capped rate does not apply — has no effect on the 15% / 25% flat-rate branches.</div>
+        </div>
+      </div>
     </div><!-- /card -->
 
     <!-- Single Israeli-tax card (mirrors Co_FOR_Shares) -->

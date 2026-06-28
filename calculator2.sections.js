@@ -871,8 +871,8 @@
         linked: $('intr_linked').checked,
         recharacterize: (foreignSource ? $('intr_recharFOR') : $('intr_recharIL')).checked,
         oleh: $('intr_oleh').checked,
-        over60: false,
-        otherAnnualIncome: 0,
+        over60: $('intr_over60').checked,
+        otherAnnualIncome: pn('intr_otherIncome'),   // field is annual NIS — no monthly→annual conversion
         treatyRatePct: treatyRaw !== '' ? pn('intr_treatyPct') : null,
         foreignWithheldPct: pn('intr_foreignWithheld'),
         connectedToIsraeliPE: $('intr_pe').checked,
@@ -921,9 +921,9 @@
     // Visibility-affecting controls re-sync then recalc; the rest just recalc.
     ['intr_residency', 'intr_source', 'intr_instrument', 'intr_oleh'].forEach(id =>
       $(id).addEventListener('change', function () { syncVisibility(); runCalc(); }));
-    ['intr_amount', 'intr_treatyPct', 'intr_foreignWithheld'].forEach(id =>
+    ['intr_amount', 'intr_treatyPct', 'intr_foreignWithheld', 'intr_otherIncome'].forEach(id =>
       $(id).addEventListener('input', runCalc));
-    ['intr_linked', 'intr_recharIL', 'intr_recharFOR', 'intr_pe'].forEach(id =>
+    ['intr_linked', 'intr_recharIL', 'intr_recharFOR', 'intr_pe', 'intr_over60'].forEach(id =>
       $(id).addEventListener('change', runCalc));
 
     syncVisibility();
