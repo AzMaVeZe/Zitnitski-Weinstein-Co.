@@ -24,12 +24,12 @@ const path = require('path');
 const engineSrc = fs.readFileSync(path.join(__dirname, 'tax-engine.js'), 'utf8');
 const engine = new Function(engineSrc + `
   ; return { BRACKETS, calcTaxPassive, calcTaxActive, fmt, computeTracks,
-             adjustedBasis, nominalGain, interestIndividual,
+             adjustedBasis, nominalGain, interestIndividual, cryptoIndividual,
              corporateIsraeli, corporateForeign, companyRealEstateCG, companyDividendIsraeli,
              parseDMY, formatDMY, daysBetween, linearSplit };`)();
 const {
   BRACKETS, calcTaxPassive, calcTaxActive, fmt, computeTracks,
-  adjustedBasis, nominalGain, interestIndividual,
+  adjustedBasis, nominalGain, interestIndividual, cryptoIndividual,
   corporateIsraeli, corporateForeign, companyRealEstateCG, companyDividendIsraeli,
   parseDMY, formatDMY, daysBetween, linearSplit,
 } = engine;
@@ -439,6 +439,97 @@ const EXPECT = {
     "modeled": true,
     "branch": "israeli_resident_foreign_source_recharacterized"
   },
+  "cryptoIndividual :: foreign | gain 100k": {
+    "amount": 150000,
+    "gain": 100000,
+    "costBasis": 50000,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 25000,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.25,
+    "modeled": true,
+    "branch": "foreign_resident_crypto"
+  },
+  "cryptoIndividual :: israeli | gain 100k | fw 0": {
+    "amount": 150000,
+    "gain": 100000,
+    "costBasis": 50000,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 25000,
+    "foreignWithheld": 0,
+    "ftcActive": true,
+    "effective": 0.25,
+    "modeled": true,
+    "branch": "israeli_resident_crypto"
+  },
+  "cryptoIndividual :: israeli | gain 100k | fw 15k": {
+    "amount": 150000,
+    "gain": 100000,
+    "costBasis": 50000,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 10000,
+    "foreignWithheld": 15000,
+    "ftcActive": true,
+    "effective": 0.25,
+    "modeled": true,
+    "branch": "israeli_resident_crypto"
+  },
+  "cryptoIndividual :: israeli | gain 100k | fw 30k (excess, no refund)": {
+    "amount": 150000,
+    "gain": 100000,
+    "costBasis": 50000,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 0,
+    "foreignWithheld": 30000,
+    "ftcActive": true,
+    "effective": 0.3,
+    "modeled": true,
+    "branch": "israeli_resident_crypto"
+  },
+  "cryptoIndividual :: oleh | foreign-source (exempt)": {
+    "amount": 150000,
+    "gain": 100000,
+    "costBasis": 50000,
+    "exempt": true,
+    "statutoryTax": 0,
+    "israeliTax": 0,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0,
+    "modeled": true,
+    "branch": "oleh_foreign_source_exempt"
+  },
+  "cryptoIndividual :: oleh | israeli-source (taxed day one)": {
+    "amount": 150000,
+    "gain": 100000,
+    "costBasis": 50000,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 25000,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.25,
+    "modeled": true,
+    "branch": "oleh_israeli_source_crypto"
+  },
+  "cryptoIndividual :: foreign | underwater (gain floored at 0)": {
+    "amount": 50000,
+    "gain": 0,
+    "costBasis": 80000,
+    "exempt": false,
+    "statutoryTax": 0,
+    "israeliTax": 0,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0,
+    "modeled": true,
+    "branch": "foreign_resident_crypto"
+  },
   "parseDMY :: '15/06/2020' valid": "15/06/2020",
   "parseDMY :: '31/02/2020' invalid": null,
   "parseDMY :: '' empty": null,
@@ -561,6 +652,23 @@ add('interestIndividual', 'foreign | israeli-source | other | PE-connected',
 add('interestIndividual', 'foreign | foreign-source | PE-connected',
   interestIndividual({ amount: 100000, residency: 'foreign', source: 'foreign', connectedToIsraeliPE: true }));
 
+// ===== cryptoIndividual — §88 individual crypto CG (proceeds 150k, basis 50k → gain 100k) =====
+//   one case per branch; nominal gain only; FTC capped at the Israeli liability
+add('cryptoIndividual', 'foreign | gain 100k',
+  cryptoIndividual({ amount: 150000, costBasis: 50000, residency: 'foreign' }));
+add('cryptoIndividual', 'israeli | gain 100k | fw 0',
+  cryptoIndividual({ amount: 150000, costBasis: 50000, residency: 'israeli' }));
+add('cryptoIndividual', 'israeli | gain 100k | fw 15k',
+  cryptoIndividual({ amount: 150000, costBasis: 50000, residency: 'israeli', foreignWithheld: 15000 }));
+add('cryptoIndividual', 'israeli | gain 100k | fw 30k (excess, no refund)',
+  cryptoIndividual({ amount: 150000, costBasis: 50000, residency: 'israeli', foreignWithheld: 30000 }));
+add('cryptoIndividual', 'oleh | foreign-source (exempt)',
+  cryptoIndividual({ amount: 150000, costBasis: 50000, residency: 'oleh', source: 'foreign' }));
+add('cryptoIndividual', 'oleh | israeli-source (taxed day one)',
+  cryptoIndividual({ amount: 150000, costBasis: 50000, residency: 'oleh', source: 'israeli' }));
+add('cryptoIndividual', 'foreign | underwater (gain floored at 0)',
+  cryptoIndividual({ amount: 50000, costBasis: 80000, residency: 'foreign' }));
+
 // ===== date helpers (support linearSplit; included for coverage) =====
 add('parseDMY', "'15/06/2020' valid",   dmy('15/06/2020'));
 add('parseDMY', "'31/02/2020' invalid", dmy('31/02/2020'));
@@ -590,7 +698,10 @@ function probes() {
 
 // ── Runner ───────────────────────────────────────────────────────────────────
 const baselinePath = path.join(__dirname, 'tax-engine.baseline.json');
-const haveBaseline = fs.existsSync(baselinePath);
+// `--recapture` rewrites the baseline from the current engine (same as deleting
+// the json), locking newly-added cases after their EXPECT checks have passed.
+const recapture    = process.argv.includes('--recapture');
+const haveBaseline = fs.existsSync(baselinePath) && !recapture;
 const baseline = haveBaseline ? JSON.parse(fs.readFileSync(baselinePath, 'utf8')) : {};
 const snapshot = {};
 

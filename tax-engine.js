@@ -250,6 +250,73 @@
              foreignWithheld, ftcActive, effective, modeled, branch };
   }
 
+  // ── Individual crypto / digital-asset capital gain (§88 property) ─
+  // INDIVIDUALS ONLY. A digital asset is "property" under ITO §88, not a bond, so
+  // a disposal is an ordinary capital gain taxed on the NOMINAL gain (no inflation
+  // indexing — see CLAUDE.md) at the §91/§121B 25% capital-gains rate. Source
+  // matters only for an oleh: the §14 new-immigrant relief exempts a FOREIGN-source
+  // gain for ten years, while an Israeli-source gain is taxed from day one. A
+  // foreign resident has no traded-bond / FX-deposit carve-out here (crypto is §88
+  // property, not §15D debt), so any crypto gain is Israeli-taxable at 25%. An
+  // Israeli resident's foreign tax is a direct FTC capped at the Israeli liability
+  // (no refund of excess), so the burden collapses to max(Israeli tax, foreign tax).
+  // Crypto has no permanent-establishment carve-out. A security token granting
+  // equity rights in a corporation can attract a different rate — that case is not
+  // modeled here (standard crypto only); it's disclosed in the UI. Statute refs
+  // live in comments only — never in a return value.
+  function cryptoIndividual({
+    amount = 0,                     // gross proceeds (NIS)
+    costBasis = 0,                  // FIFO cost basis incl. fees (NIS)
+    residency = 'foreign',          // 'foreign' | 'israeli' | 'oleh'
+    source = 'foreign',             // 'foreign' | 'israeli' — only distinguishes the oleh branch
+    foreignWithheld = 0,            // foreign tax withheld (NIS) — FTC input for the Israeli-resident branch
+  }) {
+    const RATE = 0.25;
+    const gain = Math.max(0, amount - costBasis);
+
+    let exempt    = false;
+    let rate      = RATE;
+    let ftcActive = false;
+    let fw        = 0;
+    const modeled = true;
+    let branch;
+
+    if (residency === 'oleh' && source === 'foreign') {
+      // §14: foreign-source crypto gain is exempt within the 10-year window.
+      exempt = true;
+      rate   = 0;
+      branch = 'oleh_foreign_source_exempt';
+    } else if (residency === 'foreign') {
+      // Foreign resident: 25% on any-source crypto gain (no §15D carve-out).
+      rate   = RATE;
+      branch = 'foreign_resident_crypto';
+    } else if (residency === 'israeli') {
+      // Israeli resident (non-oleh): 25%, direct FTC for foreign tax withheld.
+      rate      = RATE;
+      ftcActive = true;
+      branch    = 'israeli_resident_crypto';
+    } else {
+      // Oleh, Israeli-source crypto: taxed from day one at 25%.
+      rate   = RATE;
+      branch = 'oleh_israeli_source_crypto';
+    }
+
+    const statutoryTax = exempt ? 0 : rate * gain;
+    let israeliTax = statutoryTax;
+    if (ftcActive) {
+      fw         = Math.max(0, foreignWithheld);
+      israeliTax = Math.max(0, statutoryTax - fw);
+    }
+
+    let effective;
+    if (gain <= 0 || exempt) effective = 0;
+    else if (ftcActive)      effective = (fw + israeliTax) / gain;   // = max(statutory, foreign) / gain
+    else                     effective = israeliTax / gain;
+
+    return { amount, gain, costBasis, exempt, statutoryTax, israeliTax,
+             foreignWithheld: fw, ftcActive, effective, modeled, branch };
+  }
+
   // ── Company (corporate) tax helpers ──────────────────────────────
   // Pure mirrors of the inline corporate math in calculator2.sections.js
   // (runCoILRegCalc / runCoFORRegCalc) so the company real-estate CG section
