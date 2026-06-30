@@ -94,12 +94,15 @@
     const origin   = (saved.origin   || '').trim();
     const purpose  = (saved.purpose  || '').trim();
     const property = (saved.property || '').trim();
+    const shareActivity = (saved.shareActivity || '').trim();
 
     let key = 'fallback';
 
     if (entity === 'individual') {
       if (asset === 'shares') {
-        key = 'Ind_Shares';
+        // Dividend (or unspecified) keeps the existing dividend route; capital_gain
+        // routes to the new individual share-CG section.
+        key = shareActivity === 'capital_gain' ? 'Ind_Shares_CG' : 'Ind_Shares';
       } else if (asset === 'real_estate') {
         if (purpose === 'income') {
           key = 'Ind_RE_Inc';
@@ -157,6 +160,7 @@
     else if (key === 'Ind_RE_CG_Res') initIndCGRes();
     else if (key === 'Ind_RE_CG_Com') initIndCGCom();
     else if (key === 'Ind_Shares')    initIndShares();
+    else if (key === 'Ind_Shares_CG') initIndSharesCG();
     else if (key === 'Ind_Interest')  initIndInterest();
     else if (key === 'Ind_Crypto')    initIndCrypto();
     else if (key === 'StockOptions')  initStockOptions();
@@ -1045,6 +1049,140 @@
     $('cryp_olehSource').addEventListener('change', runCalc);
     ['cryp_proceeds', 'cryp_costBasis', 'cryp_foreignWithheld'].forEach(id =>
       $(id).addEventListener('input', runCalc));
+
+    syncVisibility();
+    runCalc();
+  }
+
+  // ── Individual · Share Capital Gain ──────────────────────────────
+  // Pure DOM/UI layer over sharesIndividualCG(); all rates come from the engine.
+  // Shares are capital property: nominal gain (proceeds − INDEXED cost basis) taxed
+  // at the capital-gains rate (25%, or 30% for a 10%+ holder). The user supplies an
+  // already-CPI-indexed cost basis — no inflation indexing happens in the engine.
+  // Foreign residents are exempt on ordinary Israeli shares (taxable on real-estate-
+  // association shares); an oleh's foreign-source gain is exempt; an Israeli resident
+  // is taxed on any source with an FTC for foreign tax on a foreign-source gain.
+  function initIndSharesCG() {
+    const $ = (id) => document.getElementById(id);
+
+    // Branch → plain-English note (no statute numbers); the Israeli-resident branch
+    // gets an extra FTC sentence appended in showNote when a credit is in play.
+    const NOTE = {
+      foreign_resident_foreign_source: "A foreign resident selling foreign-company shares is outside Israeli tax.",
+      foreign_resident_israeli_shares_exempt: "A foreign resident is generally exempt from Israeli tax on Israeli shares, and most treaties give the taxing right to your country of residence. Confirm your treaty position with an advisor.",
+      foreign_resident_israeli_real_estate_assoc: "Because the company's value comes mainly from Israeli real estate, the foreign-resident exemption does not apply and the gain is taxable in Israel.",
+      oleh_foreign_source_exempt: "Foreign-company shares fall under the new-immigrant exemption for the qualifying window.",
+      oleh_israeli_source: "The new-immigrant exemption does not cover Israeli-company shares — the gain is taxable from day one of residency.",
+      israeli_resident_shares: "The real gain is taxed at the capital-gains rate.",
+    };
+
+    const OUTPUT_IDS = [
+      'shcg_baseDisplay', 'shcg_proceedsDisplay', 'shcg_costDisplay', 'shcg_gainDisplay',
+      'shcg_rate', 'shcg_taxDisplay', 'shcg_effectiveDisplay',
+      'shcg_statutoryOut', 'shcg_foreignOut', 'shcg_netOut', 'shcg_totalBurdenOut',
+    ];
+
+    function resetCard() {
+      blank(OUTPUT_IDS);
+      $('shcg_ftcRow').style.display = 'none';
+      $('shcg_note').style.display = 'none';
+      const v = $('shcg_verdict');
+      v.style.display = '';
+      v.textContent   = 'Enter your sale proceeds above to see estimates.';
+    }
+
+    function showNote(r) {
+      let text = NOTE[r.branch] || '';
+      if (r.branch === 'israeli_resident_shares' && r.ftcActive) {
+        text += ' A credit is applied for the foreign tax you paid, capped at the Israeli tax on the same gain.';
+      }
+      const note = $('shcg_note');
+      note.textContent   = text;
+      note.style.display = text ? '' : 'none';
+    }
+
+    // Hide a field group and clear its inputs so a stale value can't feed the calc
+    // (e.g. the foreign-tax field when switching away from an Israeli-resident /
+    // foreign-source combination, or the real-estate-association flag).
+    function setGroup(id, visible) {
+      const el = $(id);
+      el.style.display = visible ? '' : 'none';
+      if (!visible) {
+        el.querySelectorAll('input').forEach(i => { if (i.type === 'checkbox') i.checked = false; else i.value = ''; });
+        el.querySelectorAll('select').forEach(s => { s.selectedIndex = 0; });
+      }
+    }
+
+    // Real-estate-association flag shows only for a foreign resident selling Israeli
+    // shares; the foreign-tax-credit field only for an Israeli resident with a
+    // foreign-source gain.
+    function syncVisibility() {
+      const residency = $('shcg_residency').value;
+      const source    = $('shcg_source').value;
+      setGroup('shcg_realEstateAssocField', residency === 'foreign' && source === 'israeli');
+      setGroup('shcg_foreignWithheldField', residency === 'israeli' && source === 'foreign');
+    }
+
+    function runCalc() {
+      const proceeds = pn('shcg_proceeds');
+      if (proceeds <= 0) { resetCard(); return; }
+
+      const r = sharesIndividualCG({
+        proceeds,
+        costBasis: pn('shcg_costBasis'),
+        residency: $('shcg_residency').value,
+        source: $('shcg_source').value,
+        substantialHolder: $('shcg_substantial').checked,
+        foreignWithheld: pn('shcg_foreignWithheld'),
+        realEstateAssoc: $('shcg_realEstateAssoc').checked,
+      });
+
+      $('shcg_verdict').style.display = 'none';
+      $('shcg_ftcRow').style.display  = 'none';
+      $('shcg_baseDisplay').textContent     = fmt(r.proceeds);
+      $('shcg_proceedsDisplay').textContent = fmt(r.proceeds);
+      $('shcg_costDisplay').textContent     = fmt(r.costBasis);
+      $('shcg_gainDisplay').textContent     = fmt(r.gain);
+
+      // No taxable gain (proceeds ≤ indexed basis) → no tax owed, explain why.
+      if (r.gain <= 0) {
+        $('shcg_rate').textContent           = '—';
+        $('shcg_taxDisplay').textContent     = fmt(0);
+        $('shcg_effectiveDisplay').textContent = '0.0%';
+        const note = $('shcg_note');
+        note.textContent   = 'No taxable gain — the proceeds do not exceed your indexed cost basis, so no capital-gains tax is owed.';
+        note.style.display = '';
+        return;
+      }
+
+      // Tax Rate (prominent): the statutory rate on taxable branches, "Exempt"
+      // otherwise. Tax Owed is the net Israeli tax; Effective Rate is the engine's
+      // net-tax-over-proceeds figure.
+      $('shcg_rate').textContent             = r.exempt ? 'Exempt' : (r.rate * 100).toFixed(0) + '%';
+      $('shcg_taxDisplay').textContent       = fmt(r.israeliTax);
+      $('shcg_effectiveDisplay').textContent = (r.effective * 100).toFixed(1) + '%';
+
+      // FTC breakdown (Israeli resident with foreign tax paid): surface the gross
+      // Israeli tax, the credited foreign tax, the net owed, and the total burden.
+      // The headline rate and effective rate are unchanged (net-Israeli per engine).
+      if (r.ftcActive) {
+        $('shcg_ftcRow').style.display         = '';
+        $('shcg_statutoryOut').textContent     = fmt(r.statutoryTax);
+        $('shcg_foreignOut').textContent       = fmt(r.foreignWithheld);
+        $('shcg_netOut').textContent           = fmt(r.israeliTax);
+        $('shcg_totalBurdenOut').textContent   = fmt(r.foreignWithheld + r.israeliTax);
+      }
+
+      showNote(r);
+    }
+
+    // Visibility-affecting controls re-sync then recalc; the rest just recalc.
+    ['shcg_residency', 'shcg_source'].forEach(id =>
+      $(id).addEventListener('change', function () { syncVisibility(); runCalc(); }));
+    ['shcg_proceeds', 'shcg_costBasis', 'shcg_foreignWithheld'].forEach(id =>
+      $(id).addEventListener('input', runCalc));
+    ['shcg_substantial', 'shcg_realEstateAssoc'].forEach(id =>
+      $(id).addEventListener('change', runCalc));
 
     syncVisibility();
     runCalc();
