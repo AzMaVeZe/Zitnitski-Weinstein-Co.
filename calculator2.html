@@ -842,6 +842,166 @@
 
   </div>
 
+  <!-- ═══ StockOptions: Individual · Employee Stock Options / RSUs (Sec. 102) ═════ -->
+  <!-- Progressive disclosure (like Ind_Interest): the listed-at-grant flag and the
+       30-day pre-grant average show only on the capital-gains track, and the latter
+       only once "listed" is checked. The trustee holding period (24mo cg / 12mo
+       income) is computed from the grant and sale dates, mirroring the CG sections'
+       owned-flag. All math is delegated to section102(); see initStockOptions. -->
+  <div class="calc-section" id="StockOptions" style="display:none">
+    <div class="card">
+      <div class="card-header">
+        <h2>Stock Options / RSUs</h2>
+        <p>Enter the details of your option or RSU exit below.</p>
+      </div>
+
+      <div class="fields">
+        <div class="field">
+          <label for="so_saleProceeds">Sale / Exit Proceeds</label>
+          <div class="income-wrap">
+            <span class="income-prefix">₪</span>
+            <input type="text" id="so_saleProceeds" inputmode="decimal" placeholder="e.g. 300,000" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="so_exercisePrice">Total Exercise Price Paid</label>
+          <div class="income-wrap">
+            <span class="income-prefix">₪</span>
+            <input type="text" id="so_exercisePrice" inputmode="decimal" placeholder="0" />
+          </div>
+          <div class="input-hint">0 for RSUs.</div>
+        </div>
+
+        <div class="field full">
+          <label for="so_track">Tax Track</label>
+          <select id="so_track">
+            <option value="cg">102 Capital Gains (trustee)</option>
+            <option value="income">102 Income (trustee)</option>
+            <option value="nontrustee">102 Non-Trustee</option>
+            <option value="3i">Non-102 arrangement</option>
+          </select>
+        </div>
+
+        <div class="field">
+          <label for="so_grantDate">Grant / Deposit Date</label>
+          <div class="income-wrap">
+            <input type="text" id="so_grantDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" style="padding:.65rem .9rem;" />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="so_saleDate">Sale Date</label>
+          <div class="income-wrap">
+            <input type="text" id="so_saleDate" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" style="padding:.65rem .9rem;" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Trustee holding-period flag (computed from the dates above) -->
+      <div class="cg-extras">
+        <div style="font-size:.84rem; font-weight:600; color:var(--text)">
+          Trustee holding period:
+          <span id="so_holdingFlag" class="cg-flag cg-flag-na">Enter dates above</span>
+        </div>
+      </div>
+
+      <!-- Capital-gains track only: was the company listed at grant? -->
+      <div class="cg-extras" id="so_listedField" style="display:none">
+        <label class="checkbox-row">
+          <input type="checkbox" id="so_listedAtGrant" />
+          <span>Company was publicly listed at grant</span>
+        </label>
+      </div>
+
+      <!-- Capital-gains track + listed: the 30-day pre-grant average splits the gain -->
+      <div class="fields" id="so_avg30Field" style="display:none">
+        <div class="field full">
+          <label for="so_avg30Base">30-Day Pre-Grant Average Value</label>
+          <div class="income-wrap">
+            <span class="income-prefix">₪</span>
+            <input type="text" id="so_avg30Base" inputmode="decimal" placeholder="0" />
+          </div>
+          <div class="input-hint">Used to split the listed-company gain.</div>
+        </div>
+      </div>
+
+      <div class="cg-extras">
+        <label class="checkbox-row">
+          <input type="checkbox" id="so_is10PctHolder" />
+          <span>I hold (or held) 10%+ of the company</span>
+        </label>
+        <label class="checkbox-row">
+          <input type="checkbox" id="so_over60" />
+          <span>I am over 60</span>
+        </label>
+        <div class="input-hint">Age doesn't affect the stock-option tax rate — this option has no effect on the result here.</div>
+      </div>
+
+      <div class="fields">
+        <div class="field full">
+          <label for="so_otherIncome">Other annual income (NIS)</label>
+          <div class="income-wrap">
+            <span class="income-prefix">₪</span>
+            <input type="text" id="so_otherIncome" inputmode="decimal" placeholder="0" />
+          </div>
+          <div class="input-hint">Your annual salary — the gain stacks on top for the marginal-rate portion. Has no effect on the pure 25% capital-gains result.</div>
+        </div>
+      </div>
+    </div><!-- /card -->
+
+    <!-- Single Israeli-tax card (mirrors Ind_Interest) -->
+    <div class="track-section">
+      <div class="track-section-header">
+        <h2>Estimated Israeli Tax</h2>
+        <p>Gross gain: <strong id="so_baseDisplay">—</strong></p>
+      </div>
+
+      <div class="track-cards" style="grid-template-columns: minmax(0, 520px); justify-content: center;">
+        <div class="track-card track-recommended">
+          <div class="track-card-name"><span class="track-letter">1</span>Estimated Tax</div>
+          <div class="track-card-rate" id="so_rate">—</div>
+          <hr class="track-divider" />
+          <div class="track-result-row">
+            <span class="track-result-label">Gross gain</span>
+            <span class="track-result-val" id="so_gainDisplay">—</span>
+          </div>
+          <div class="track-result-row" id="so_capPortionRow" style="display:none">
+            <span class="track-result-label">Capital-gains portion (25%)</span>
+            <span class="track-result-val" id="so_capitalPortion">—</span>
+          </div>
+          <div class="track-result-row" id="so_empPortionRow" style="display:none">
+            <span class="track-result-label">Employment-income portion</span>
+            <span class="track-result-val" id="so_employmentPortion">—</span>
+          </div>
+          <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+            <span class="track-result-label">Capital-gains tax</span>
+            <span class="track-result-val" id="so_capitalTax">—</span>
+          </div>
+          <div class="track-result-row" id="so_empTaxRow" style="display:none">
+            <span class="track-result-label">Employment-income tax</span>
+            <span class="track-result-val" id="so_employmentTax">—</span>
+          </div>
+          <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
+            <span class="track-result-label">Total tax</span>
+            <span class="track-result-val" id="so_totalTax">—</span>
+          </div>
+          <div class="track-result-row">
+            <span class="track-result-label">Effective rate</span>
+            <span class="track-result-val" id="so_effectiveDisplay">—</span>
+          </div>
+        </div>
+      </div>
+
+      <p class="track-verdict" id="so_verdict" style="color:var(--muted); font-style:italic;">Enter your sale proceeds above to see estimates.</p>
+      <p id="so_note" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;"></p>
+      <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Relocating from Israel: leaving Israeli residency can trigger a deemed sale of unsold shares and unvested options, with the Israeli portion allocated by Israeli vs. foreign workdays during vesting. That allocation isn't computed here. Consult a tax advisor before relocating.</p>
+      <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Spreading the tax (פריסה): the employment-income portion can often be spread backward over several earlier tax years by election, and the capital-gains portion over a shorter window — both can lower the marginal-rate and surtax impact shown above. This isn't computed here. Consult a tax advisor.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי). A surtax applies on total income above ₪721,560 — 5% on the capital-gains portion and 3% on the employment-income portion of any amount above the threshold — and is not included above. National Insurance and health-tax contributions on employment-income portions are not computed. Consult a tax advisor for your exact liability.</p>
+    </div>
+
+  </div>
+
   <!-- ═══ Co_IL_RE_Inc: Israeli Company · Real Estate · Rental Income ════════════ -->
   <div class="calc-section" id="Co_IL_RE_Inc" style="display:none">
 

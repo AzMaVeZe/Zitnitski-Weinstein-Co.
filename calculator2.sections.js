@@ -111,6 +111,8 @@
         key = 'Ind_Interest';
       } else if (asset === 'crypto') {
         key = 'Ind_Crypto';
+      } else if (asset === 'stock_options') {
+        key = 'StockOptions';
       }
     } else if (entity === 'company') {
       if (origin === 'israeli') {
@@ -157,6 +159,7 @@
     else if (key === 'Ind_Shares')    initIndShares();
     else if (key === 'Ind_Interest')  initIndInterest();
     else if (key === 'Ind_Crypto')    initIndCrypto();
+    else if (key === 'StockOptions')  initStockOptions();
     else if (key === 'Co_IL_RE_Inc')  initCoILREInc();
     else if (key === 'Co_IL_RE_CG_Res') initCoILRECG('coilcg_res_');
     else if (key === 'Co_IL_RE_CG_Com') initCoILRECG('coilcg_com_');
@@ -1042,6 +1045,219 @@
     $('cryp_olehSource').addEventListener('change', runCalc);
     ['cryp_proceeds', 'cryp_costBasis', 'cryp_foreignWithheld'].forEach(id =>
       $(id).addEventListener('input', runCalc));
+
+    syncVisibility();
+    runCalc();
+  }
+
+  // ── Individual · Employee Stock Options / RSUs (Sec. 102) ────────
+  // Pure DOM/UI layer over section102(); all rates come from the engine. The
+  // capital-gains track splits the gain when the company was listed at grant;
+  // every other track (and an early-sale violation, or a 10%+ holder) taxes the
+  // whole gain as employment income on the marginal ladder. Trustee holding is
+  // computed from the grant/sale dates (24mo cg / 12mo income); over60 is a no-op
+  // for this section (employment income uses the full ladder at any age).
+  function initStockOptions() {
+    const $ = (id) => document.getElementById(id);
+
+    // Branch → plain-English note (no individual-clause citations). The BL/health
+    // line is folded into every employment-income branch's text; cg_private is the
+    // only employment-free branch and intentionally omits it.
+    const NOTE = {
+      cg_private: "Held past the required period in a private company — the whole gain is taxed at the capital-gains rate.",
+      cg_listed_split: "Because the company was listed at grant, the portion up to the pre-grant average is taxed as employment income and only the appreciation above it gets the capital-gains rate.",
+      cg_violation_early_sale: "Sold before the required holding period — the whole gain is reclassified as employment income at marginal rates. National Insurance and health tax also apply.",
+      income_track: "On the income track the whole gain is taxed as employment income at marginal rates. National Insurance and health tax also apply.",
+      income_violation_early_sale: "Sold before the required holding period — the whole gain is employment income at marginal rates. National Insurance and health tax also apply.",
+      nontrustee: "On a non-trustee arrangement the whole gain is employment income at marginal rates. National Insurance and health tax also apply.",
+      '3i': "Outside the 102 tracks, the whole gain is employment income at marginal rates. National Insurance and health tax also apply.",
+      '3i_controlling_holder': "A 10%-or-greater holder can't use the 102 tracks, so the whole gain is taxed as employment income at marginal rates. National Insurance and health tax also apply.",
+    };
+
+    const OUTPUT_IDS = [
+      'so_baseDisplay', 'so_gainDisplay', 'so_rate',
+      'so_capitalPortion', 'so_employmentPortion',
+      'so_capitalTax', 'so_employmentTax', 'so_totalTax', 'so_effectiveDisplay',
+    ];
+
+    // Default the sale date to today, like the CG sections.
+    $('so_saleDate').value = formatDMY(new Date());
+
+    function resetCard() {
+      blank(OUTPUT_IDS);
+      $('so_capPortionRow').style.display = 'none';
+      $('so_empPortionRow').style.display = 'none';
+      $('so_empTaxRow').style.display     = 'none';
+      $('so_note').style.display          = 'none';
+      const v = $('so_verdict');
+      v.style.display = '';
+      v.textContent   = 'Enter your sale proceeds above to see estimates.';
+    }
+
+    function showNote(branch) {
+      const note = $('so_note');
+      const text = NOTE[branch] || '';
+      note.textContent   = text;
+      note.style.display = text ? '' : 'none';
+    }
+
+    // Hide a field/checkbox group and clear its inputs so stale values can't feed
+    // the calc (e.g. the avg-30 base when switching off the capital-gains track).
+    function setGroup(id, visible) {
+      const el = $(id);
+      el.style.display = visible ? '' : 'none';
+      if (!visible) {
+        el.querySelectorAll('input').forEach(i => { if (i.type === 'checkbox') i.checked = false; else i.value = ''; });
+      }
+    }
+
+    // Required trustee holding (months) by track; null = not applicable (non-trustee
+    // / 3(i)). Returns the month count and any date problem so both the flag display
+    // and the calc agree on a single source of truth.
+    function holdingInfo() {
+      const track    = $('so_track').value;
+      const required = track === 'cg' ? 24 : track === 'income' ? 12 : null;
+      const g = dateFieldState('so_grantDate');
+      const s = dateFieldState('so_saleDate');
+      let months = null, dateProblem = null;
+      if (g.state === 'invalid' || s.state === 'invalid') dateProblem = 'invalid';
+      else if (!g.date || !s.date)                        dateProblem = 'empty';
+      else months = (s.date.getFullYear() - g.date.getFullYear()) * 12 +
+                    (s.date.getMonth() - g.date.getMonth());
+      return { track, required, months, dateProblem };
+    }
+
+    function updateHoldingFlag() {
+      const flagEl = $('so_holdingFlag');
+      const info   = holdingInfo();
+      if (info.required == null) {                 // non-trustee / 3(i)
+        flagEl.className = 'cg-flag cg-flag-na';
+        flagEl.textContent = 'Not applicable';
+      } else if (info.dateProblem === 'invalid') {
+        flagEl.className = 'cg-flag cg-flag-na';
+        flagEl.textContent = 'Use DD/MM/YYYY format';
+      } else if (info.dateProblem === 'empty') {
+        flagEl.className = 'cg-flag cg-flag-na';
+        flagEl.textContent = 'Enter dates above';
+      } else if (info.months >= info.required) {
+        flagEl.className = 'cg-flag cg-flag-yes';
+        flagEl.textContent = '✓ Holding period met (' + info.months + ' months)';
+      } else {
+        flagEl.className = 'cg-flag cg-flag-no';
+        flagEl.textContent = '✗ Not met (' + info.months + ' months — early sale)';
+      }
+    }
+
+    // listed-at-grant shows only on the cg track; the 30-day average only once
+    // listed is checked. The holding flag re-reads the (possibly new) track.
+    function syncVisibility() {
+      const isCg = $('so_track').value === 'cg';
+      setGroup('so_listedField', isCg);
+      setGroup('so_avg30Field',  isCg && $('so_listedAtGrant').checked);
+      updateHoldingFlag();
+    }
+
+    function runCalc() {
+      const saleProceeds = pn('so_saleProceeds');
+      if (saleProceeds <= 0) { resetCard(); return; }
+
+      const exercisePrice = pn('so_exercisePrice');
+      const gain          = Math.max(0, saleProceeds - exercisePrice);
+
+      // No taxable gain (proceeds ≤ exercise) → no tax, regardless of track/dates.
+      if (gain <= 0) {
+        resetCard();
+        $('so_verdict').style.display          = 'none';
+        $('so_baseDisplay').textContent        = fmt(0);
+        $('so_gainDisplay').textContent        = fmt(0);
+        $('so_rate').textContent               = '—';
+        $('so_capitalTax').textContent         = fmt(0);
+        $('so_totalTax').textContent           = fmt(0);
+        $('so_effectiveDisplay').textContent   = '0.0%';
+        const note = $('so_note');
+        note.textContent   = 'No taxable gain — the proceeds do not exceed the exercise price, so no tax is owed.';
+        note.style.display = '';
+        return;
+      }
+
+      const info = holdingInfo();
+      // On the trustee tracks the branch depends on the holding period, so valid
+      // grant/sale dates are required; non-trustee / 3(i) ignore dates entirely.
+      let holdingMet = true;
+      if (info.required != null) {
+        if (info.dateProblem) {
+          resetCard();
+          $('so_verdict').textContent = info.dateProblem === 'invalid'
+            ? 'Check the date format — dates must be DD/MM/YYYY (e.g. 15/06/2020).'
+            : 'Enter the grant and sale dates above to determine the holding period.';
+          return;
+        }
+        holdingMet = info.months >= info.required;
+      }
+
+      const r = section102({
+        saleProceeds,
+        exercisePrice,
+        track: $('so_track').value,
+        listedAtGrant: $('so_listedAtGrant').checked,
+        avg30Base: pn('so_avg30Base'),
+        holdingMet,
+        is10PctHolder: $('so_is10PctHolder').checked,
+        otherAnnualIncome: pn('so_otherIncome'),
+        over60: $('so_over60').checked,
+      });
+
+      // Conditional rows hidden unless this branch populates them.
+      $('so_capPortionRow').style.display = 'none';
+      $('so_empPortionRow').style.display = 'none';
+      $('so_empTaxRow').style.display     = 'none';
+      $('so_verdict').style.display       = 'none';
+
+      $('so_baseDisplay').textContent      = fmt(r.gain);
+      $('so_gainDisplay').textContent      = fmt(r.gain);
+      $('so_rate').textContent             = (r.effective * 100).toFixed(1) + '%';
+
+      if (r.capitalPortion > 0) {
+        $('so_capPortionRow').style.display   = '';
+        $('so_capitalPortion').textContent    = fmt(r.capitalPortion);
+      }
+      if (r.employmentPortion > 0) {
+        $('so_empPortionRow').style.display    = '';
+        $('so_employmentPortion').textContent  = fmt(r.employmentPortion);
+      }
+      $('so_capitalTax').textContent = fmt(r.capitalTax);
+      if (r.employmentTax > 0) {
+        $('so_empTaxRow').style.display     = '';
+        $('so_employmentTax').textContent   = fmt(r.employmentTax);
+      }
+      $('so_totalTax').textContent         = fmt(r.totalTax);
+      $('so_effectiveDisplay').textContent = (r.effective * 100).toFixed(1) + '%';
+
+      // Listed-at-grant split needs the 30-day pre-grant average to find the
+      // employment-income floor. A blank average reads as 0, so the engine puts
+      // the WHOLE gain in the (lower) capital bucket — which would otherwise show
+      // the split note's "taxed as employment income" wording next to ₪0 of it.
+      // Replace the note with an actionable prompt until the average is entered.
+      const avg30Blank = ($('so_avg30Base').value || '').trim() === '';
+      if (r.branch === 'cg_listed_split' && avg30Blank) {
+        const note = $('so_note');
+        note.textContent = 'You marked the company as listed at grant but haven’t entered the 30-day pre-grant average — until you do, the entire gain is shown at the capital-gains rate. Enter the average above to split out the employment-income portion.';
+        note.style.display = '';
+      } else {
+        showNote(r.branch);
+      }
+    }
+
+    // Track + listed flag change visibility (and re-sync) then recalc; dates update
+    // the holding flag then recalc; the rest just recalc.
+    $('so_track').addEventListener('change', function () { syncVisibility(); runCalc(); });
+    $('so_listedAtGrant').addEventListener('change', function () { syncVisibility(); runCalc(); });
+    ['so_grantDate', 'so_saleDate'].forEach(id =>
+      $(id).addEventListener('input', function () { updateHoldingFlag(); runCalc(); }));
+    ['so_saleProceeds', 'so_exercisePrice', 'so_avg30Base', 'so_otherIncome'].forEach(id =>
+      $(id).addEventListener('input', runCalc));
+    ['so_is10PctHolder', 'so_over60'].forEach(id =>
+      $(id).addEventListener('change', runCalc));
 
     syncVisibility();
     runCalc();
