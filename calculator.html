@@ -55,6 +55,7 @@
           <option value="shares">Shares</option>
           <option value="interest">Interest</option>
           <option value="crypto">Crypto / Digital Assets</option>
+          <option value="stock_options">Stock Options / RSUs (Sec. 102)</option>
         </select>
       </div>
 
@@ -128,18 +129,21 @@
   document.getElementById('entityType').addEventListener('change', function () {
     setVisible('originField', 'companyOrigin', this.value === 'company');
 
-    // Interest and crypto are individual-only assets: hide/disable them for a
-    // company and clear the field if one was selected, then re-validate so
-    // nextBtn is correct.
+    // Interest, crypto, and stock options are individual-only assets: hide/disable
+    // them for a company and clear the field if one was selected, then re-validate
+    // so nextBtn is correct.
     const assetSel    = document.getElementById('assetType');
     const interestOpt = assetSel.querySelector('option[value="interest"]');
     const cryptoOpt   = assetSel.querySelector('option[value="crypto"]');
+    const stockOpt    = assetSel.querySelector('option[value="stock_options"]');
     const isCompany   = this.value === 'company';
     interestOpt.hidden   = isCompany;
     interestOpt.disabled = isCompany;
     cryptoOpt.hidden     = isCompany;
     cryptoOpt.disabled   = isCompany;
-    if (isCompany && (assetSel.value === 'interest' || assetSel.value === 'crypto')) assetSel.value = '';
+    stockOpt.hidden      = isCompany;
+    stockOpt.disabled    = isCompany;
+    if (isCompany && ['interest', 'crypto', 'stock_options'].includes(assetSel.value)) assetSel.value = '';
     validate();
   });
 
