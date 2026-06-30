@@ -317,6 +317,87 @@
              foreignWithheld: fw, ftcActive, effective, modeled, branch };
   }
 
+  // ── Individual capital gain on shares (§91/§121B; §97(b) reliefs) ─
+  // INDIVIDUALS ONLY. A share disposal is an ordinary capital gain. The §91/§121B
+  // rate is 25%, raised to 30% for a "substantial shareholder" (10%+ of the means
+  // of control now or in the prior 12 months). Computed on the NOMINAL gain only
+  // (no inflation indexing — see CLAUDE.md): share CG is legally assessed on the
+  // REAL (CPI-adjusted) gain, so the UI collects an already-indexed cost basis and
+  // passes it as costBasis; the engine treats (proceeds − costBasis) as the taxable
+  // gain exactly as cryptoIndividual does — the "real gain" lives in the input, not
+  // in engine machinery. Branch reliefs: a foreign resident is exempt on ordinary
+  // Israeli shares (domestic §97(b2)/(b3); treaties generally give the residence
+  // country exclusive rights) but NOT on shares of a real-estate association
+  // (איגוד מקרקעין), which stay taxable; an oleh's foreign-source gain is exempt in
+  // the 10-year §14(a) window while an Israeli-source gain is taxed from day one; an
+  // Israeli resident is taxable on any source, with a direct foreign tax credit
+  // (capped at the Israeli liability, no refund of excess) for a foreign-source gain.
+  // A permanent establishment is a UI disclosure note only, not modeled here.
+  // Statute refs live in comments only — never in a return value.
+  function sharesIndividualCG({
+    proceeds = 0,                   // sale proceeds (NIS)
+    costBasis = 0,                  // CPI-ADJUSTED (indexed) cost basis (NIS)
+    residency = 'foreign',          // 'foreign' | 'israeli' | 'oleh'
+    source = 'israeli',             // 'israeli' | 'foreign'
+    substantialHolder = false,      // 10%+ of means of control (now / prior 12mo) → 30%
+    foreignWithheld = 0,            // foreign tax paid (NIS) — FTC input
+    realEstateAssoc = false,        // Israeli real-estate association (איגוד מקרקעין)
+  }) {
+    const gain  = Math.max(0, proceeds - costBasis);
+    const rate0 = substantialHolder ? 0.30 : 0.25;
+
+    let exempt    = false;
+    let rate      = rate0;
+    let ftcActive = false;
+    let fw        = 0;
+    const modeled = true;
+    let branch;
+
+    if (residency === 'foreign' && source === 'foreign') {
+      // Foreign resident, foreign-source gain: outside Israeli tax.
+      exempt = true; rate = 0;
+      branch = 'foreign_resident_foreign_source';
+    } else if (residency === 'foreign') {           // foreign resident, Israeli-source
+      if (realEstateAssoc) {
+        // Real-estate-association shares: domestic + treaty exemptions do not apply.
+        branch = 'foreign_resident_israeli_real_estate_assoc';
+      } else {
+        // Ordinary Israeli shares: exempt for a foreign resident.
+        exempt = true; rate = 0;
+        branch = 'foreign_resident_israeli_shares_exempt';
+      }
+    } else if (residency === 'oleh') {
+      if (source === 'foreign') {
+        // New-immigrant 10-year window: foreign-source gain exempt.
+        exempt = true; rate = 0;
+        branch = 'oleh_foreign_source_exempt';
+      } else {
+        // Oleh, Israeli-source: no shelter, taxed from day one.
+        branch = 'oleh_israeli_source';
+      }
+    } else {
+      // Israeli resident (non-oleh), any source: taxable. A foreign-source gain gets
+      // a direct FTC for foreign tax paid (capped at the Israeli liability); an
+      // Israeli-source gain has no FTC.
+      branch = 'israeli_resident_shares';
+      if (source === 'foreign' && foreignWithheld > 0) ftcActive = true;
+    }
+
+    const statutoryTax = exempt ? 0 : rate * gain;
+    let israeliTax = statutoryTax;
+    if (ftcActive) {
+      fw         = Math.max(0, foreignWithheld);
+      israeliTax = Math.max(0, statutoryTax - fw);
+    }
+
+    // Effective rate is the net Israeli tax over PROCEEDS (per spec; this section
+    // divides by proceeds, unlike the gain-based crypto section).
+    const effective = proceeds > 0 ? israeliTax / proceeds : 0;
+
+    return { proceeds, costBasis, gain, rate, exempt, statutoryTax, israeliTax,
+             foreignWithheld: fw, ftcActive, effective, modeled, branch };
+  }
+
   // ── Employee equity: §102 options / RSUs + §3(i) ─────────────────
   // INDIVIDUALS (employees) ONLY. Models the four §102 / §3(i) outcomes for an
   // option or RSU exit, on the NOMINAL gain (no indexing — see CLAUDE.md).

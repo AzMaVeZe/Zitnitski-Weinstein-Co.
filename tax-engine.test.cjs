@@ -24,12 +24,12 @@ const path = require('path');
 const engineSrc = fs.readFileSync(path.join(__dirname, 'tax-engine.js'), 'utf8');
 const engine = new Function(engineSrc + `
   ; return { BRACKETS, calcTaxPassive, calcTaxActive, fmt, computeTracks,
-             adjustedBasis, nominalGain, interestIndividual, cryptoIndividual, section102,
+             adjustedBasis, nominalGain, interestIndividual, cryptoIndividual, section102, sharesIndividualCG,
              corporateIsraeli, corporateForeign, companyRealEstateCG, companyDividendIsraeli,
              parseDMY, formatDMY, daysBetween, linearSplit };`)();
 const {
   BRACKETS, calcTaxPassive, calcTaxActive, fmt, computeTracks,
-  adjustedBasis, nominalGain, interestIndividual, cryptoIndividual, section102,
+  adjustedBasis, nominalGain, interestIndividual, cryptoIndividual, section102, sharesIndividualCG,
   corporateIsraeli, corporateForeign, companyRealEstateCG, companyDividendIsraeli,
   parseDMY, formatDMY, daysBetween, linearSplit,
 } = engine;
@@ -699,6 +699,174 @@ const EXPECT = {
     "blHealthApplies": false,
     "modeled": true
   },
+  "sharesIndividualCG :: foreign | foreign-source (exempt)": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0,
+    "exempt": true,
+    "statutoryTax": 0,
+    "israeliTax": 0,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0,
+    "modeled": true,
+    "branch": "foreign_resident_foreign_source"
+  },
+  "sharesIndividualCG :: foreign | israeli-source | not REA (exempt)": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0,
+    "exempt": true,
+    "statutoryTax": 0,
+    "israeliTax": 0,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0,
+    "modeled": true,
+    "branch": "foreign_resident_israeli_shares_exempt"
+  },
+  "sharesIndividualCG :: foreign | israeli-source | REA | 25%": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 25000,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.166667,
+    "modeled": true,
+    "branch": "foreign_resident_israeli_real_estate_assoc"
+  },
+  "sharesIndividualCG :: foreign | israeli-source | REA | substantial 30%": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.3,
+    "exempt": false,
+    "statutoryTax": 30000,
+    "israeliTax": 30000,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.2,
+    "modeled": true,
+    "branch": "foreign_resident_israeli_real_estate_assoc"
+  },
+  "sharesIndividualCG :: oleh | foreign-source (exempt)": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0,
+    "exempt": true,
+    "statutoryTax": 0,
+    "israeliTax": 0,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0,
+    "modeled": true,
+    "branch": "oleh_foreign_source_exempt"
+  },
+  "sharesIndividualCG :: oleh | israeli-source | 25%": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 25000,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.166667,
+    "modeled": true,
+    "branch": "oleh_israeli_source"
+  },
+  "sharesIndividualCG :: israeli | israeli-source | 25% (no FTC)": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 25000,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.166667,
+    "modeled": true,
+    "branch": "israeli_resident_shares"
+  },
+  "sharesIndividualCG :: israeli | israeli-source | substantial 30%": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.3,
+    "exempt": false,
+    "statutoryTax": 30000,
+    "israeliTax": 30000,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.2,
+    "modeled": true,
+    "branch": "israeli_resident_shares"
+  },
+  "sharesIndividualCG :: israeli | foreign-source | fw 0 (no FTC active)": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 25000,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.166667,
+    "modeled": true,
+    "branch": "israeli_resident_shares"
+  },
+  "sharesIndividualCG :: israeli | foreign-source | fw 15k (< israeli, tops up)": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 10000,
+    "foreignWithheld": 15000,
+    "ftcActive": true,
+    "effective": 0.066667,
+    "modeled": true,
+    "branch": "israeli_resident_shares"
+  },
+  "sharesIndividualCG :: israeli | foreign-source | fw 30k (> israeli, israeliTax 0)": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 0,
+    "foreignWithheld": 30000,
+    "ftcActive": true,
+    "effective": 0,
+    "modeled": true,
+    "branch": "israeli_resident_shares"
+  },
+  "sharesIndividualCG :: gain 0 (proceeds <= basis)": {
+    "proceeds": 40000,
+    "costBasis": 50000,
+    "gain": 0,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 0,
+    "israeliTax": 0,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0,
+    "modeled": true,
+    "branch": "israeli_resident_shares"
+  },
   "parseDMY :: '15/06/2020' valid": "15/06/2020",
   "parseDMY :: '31/02/2020' invalid": null,
   "parseDMY :: '' empty": null,
@@ -872,6 +1040,36 @@ add('section102', 'is10PctHolder (cg/private/holdingMet overridden) → 3i_contr
   section102({ saleProceeds: 200000, exercisePrice: 50000, track: 'cg', listedAtGrant: false, holdingMet: true, is10PctHolder: true }));
 add('section102', 'gain 0 (proceeds <= exercise) → all zeros, effective 0',
   section102({ saleProceeds: 40000, exercisePrice: 50000, track: 'cg', listedAtGrant: false, holdingMet: true }));
+
+// ===== sharesIndividualCG — §91/§121B individual share CG (NOMINAL gain) =====
+//   proceeds 150k / indexed basis 50k → gain 100k; rate 25% (30% substantial).
+//   Foreign resident exempt on ordinary Israeli shares but taxed on real-estate-
+//   association shares; oleh foreign-source exempt; Israeli resident taxable with a
+//   direct FTC on foreign-source. effective = net israeliTax / PROCEEDS (per spec).
+add('sharesIndividualCG', 'foreign | foreign-source (exempt)',
+  sharesIndividualCG({ proceeds: 150000, costBasis: 50000, residency: 'foreign', source: 'foreign' }));
+add('sharesIndividualCG', 'foreign | israeli-source | not REA (exempt)',
+  sharesIndividualCG({ proceeds: 150000, costBasis: 50000, residency: 'foreign', source: 'israeli', realEstateAssoc: false }));
+add('sharesIndividualCG', 'foreign | israeli-source | REA | 25%',
+  sharesIndividualCG({ proceeds: 150000, costBasis: 50000, residency: 'foreign', source: 'israeli', realEstateAssoc: true }));
+add('sharesIndividualCG', 'foreign | israeli-source | REA | substantial 30%',
+  sharesIndividualCG({ proceeds: 150000, costBasis: 50000, residency: 'foreign', source: 'israeli', realEstateAssoc: true, substantialHolder: true }));
+add('sharesIndividualCG', 'oleh | foreign-source (exempt)',
+  sharesIndividualCG({ proceeds: 150000, costBasis: 50000, residency: 'oleh', source: 'foreign' }));
+add('sharesIndividualCG', 'oleh | israeli-source | 25%',
+  sharesIndividualCG({ proceeds: 150000, costBasis: 50000, residency: 'oleh', source: 'israeli' }));
+add('sharesIndividualCG', 'israeli | israeli-source | 25% (no FTC)',
+  sharesIndividualCG({ proceeds: 150000, costBasis: 50000, residency: 'israeli', source: 'israeli' }));
+add('sharesIndividualCG', 'israeli | israeli-source | substantial 30%',
+  sharesIndividualCG({ proceeds: 150000, costBasis: 50000, residency: 'israeli', source: 'israeli', substantialHolder: true }));
+add('sharesIndividualCG', 'israeli | foreign-source | fw 0 (no FTC active)',
+  sharesIndividualCG({ proceeds: 150000, costBasis: 50000, residency: 'israeli', source: 'foreign', foreignWithheld: 0 }));
+add('sharesIndividualCG', 'israeli | foreign-source | fw 15k (< israeli, tops up)',
+  sharesIndividualCG({ proceeds: 150000, costBasis: 50000, residency: 'israeli', source: 'foreign', foreignWithheld: 15000 }));
+add('sharesIndividualCG', 'israeli | foreign-source | fw 30k (> israeli, israeliTax 0)',
+  sharesIndividualCG({ proceeds: 150000, costBasis: 50000, residency: 'israeli', source: 'foreign', foreignWithheld: 30000 }));
+add('sharesIndividualCG', 'gain 0 (proceeds <= basis)',
+  sharesIndividualCG({ proceeds: 40000, costBasis: 50000, residency: 'israeli', source: 'israeli' }));
 
 // ===== date helpers (support linearSplit; included for coverage) =====
 add('parseDMY', "'15/06/2020' valid",   dmy('15/06/2020'));
