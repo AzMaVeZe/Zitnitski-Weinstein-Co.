@@ -317,6 +317,113 @@
              foreignWithheld: fw, ftcActive, effective, modeled, branch };
   }
 
+  // ── Employee equity: §102 options / RSUs + §3(i) ─────────────────
+  // INDIVIDUALS (employees) ONLY. Models the four §102 / §3(i) outcomes for an
+  // option or RSU exit, on the NOMINAL gain (no indexing — see CLAUDE.md).
+  //   • Capital-gains trustee track (24-month holding): if the company was PRIVATE
+  //     at grant the whole gain is a §91/§121B 25% capital gain; if it was LISTED
+  //     at grant (or listed within 90 days) the value up to the 30-day pre-grant
+  //     average (net of strike) is employment income on the marginal ladder and
+  //     only the excess gets the 25% rate (the "listed split").
+  //   • Ordinary-income trustee track (12-month holding), the non-trustee track,
+  //     and §3(i) all tax the entire gain as employment income on the marginal
+  //     ladder.
+  //   • A 10%+ holder is barred from §102 and taxed under §3(i).
+  //   • Selling before the trustee holding period is met reclassifies the entire
+  //     gain to employment income.
+  // Surtax (5% on the capital portion / 3% on the employment portion above the
+  // threshold) and Bituach-Leumi / health are DISCLOSED by the UI, never computed
+  // here; the engine only flags whether a BL/health note applies (blHealthApplies).
+  // Statute refs live in comments only — never in a return value.
+
+  // Marginal (incremental) tax of stacking an employment-income portion on top of
+  // other annual income, on the full bracket ladder (calcTaxActive — no inline
+  // bracket logic). over60 is accepted for input parity but carries NO rate effect:
+  // employment income is personal-exertion ("active") income taxed on the full
+  // ladder at any age (over60 changes only the PASSIVE-income starting bracket
+  // elsewhere). gain=0 → both terms equal → 0, so effective stays a clean 0/0 guard.
+  function marginalEmploymentTax(empPortion, otherAnnualIncome = 0, over60 = false) {
+    return calcTaxActive(otherAnnualIncome + empPortion) - calcTaxActive(otherAnnualIncome);
+  }
+
+  function section102({
+    saleProceeds = 0,
+    exercisePrice = 0,
+    track = 'cg',                 // 'cg' | 'income' | 'nontrustee' | '3i'
+    listedAtGrant = false,        // company public at grant (or listed within 90d)
+    avg30Base = 0,                // 30-day pre-grant avg value; used only in the listed-cg split
+    holdingMet = false,           // trustee holding period satisfied (24mo cg / 12mo income)
+    is10PctHolder = false,        // holds/held 10%+ → barred from §102
+    otherAnnualIncome = 0,
+    over60 = false,
+  }) {
+    const CG_RATE = 0.25;
+    const gain = Math.max(0, saleProceeds - exercisePrice);
+
+    let effectiveTrack    = track;   // echoed back; the 10%-holder override re-sources to §3(i)
+    let branch;
+    let capitalPortion    = 0;
+    let employmentPortion = 0;
+    let blHealthApplies;
+
+    if (is10PctHolder) {
+      // Barred from §102 → §3(i) employment income at marginal rates (track ignored).
+      effectiveTrack    = '3i';
+      branch            = '3i_controlling_holder';
+      employmentPortion = gain;
+      blHealthApplies   = true;
+    } else if (track === 'cg' && !holdingMet) {
+      // Early sale / trustee-holding violation → whole gain reclassified to employment.
+      branch            = 'cg_violation_early_sale';
+      employmentPortion = gain;
+      blHealthApplies   = true;
+    } else if (track === 'cg' && holdingMet) {
+      if (!listedAtGrant) {
+        // Private at grant → entire gain at the 25% capital rate (pure cg branch).
+        branch          = 'cg_private';
+        capitalPortion  = gain;
+        blHealthApplies = false;
+      } else {
+        // Listed at grant → split: value up to the 30-day pre-grant average (net of
+        // strike, floored at 0) is employment income; the remainder is a 25% gain.
+        branch            = 'cg_listed_split';
+        employmentPortion = Math.max(0, Math.min(avg30Base, saleProceeds) - exercisePrice);
+        capitalPortion    = gain - employmentPortion;
+        blHealthApplies   = true;   // an employment-income branch even when the marginal slice is 0
+      }
+    } else if (track === 'income') {
+      // Trustee ordinary-income track (or an early-sale violation of it): the whole
+      // gain is employment income on the marginal ladder.
+      branch            = holdingMet ? 'income_track' : 'income_violation_early_sale';
+      employmentPortion = gain;
+      blHealthApplies   = true;
+    } else {
+      // Non-trustee track or §3(i): the whole gain is employment income.
+      branch            = track === '3i' ? '3i' : 'nontrustee';
+      employmentPortion = gain;
+      blHealthApplies   = true;
+    }
+
+    const capitalTax    = CG_RATE * capitalPortion;
+    const employmentTax = marginalEmploymentTax(employmentPortion, otherAnnualIncome, over60);
+    const totalTax      = capitalTax + employmentTax;
+    const effective     = gain > 0 ? totalTax / gain : 0;
+
+    return {
+      gain,
+      track: effectiveTrack,
+      branch,
+      capitalPortion,
+      employmentPortion,
+      capitalTax,
+      employmentTax,
+      totalTax,
+      effective,
+      blHealthApplies,
+      modeled: true,
+    };
+  }
+
   // ── Company (corporate) tax helpers ──────────────────────────────
   // Pure mirrors of the inline corporate math in calculator2.sections.js
   // (runCoILRegCalc / runCoFORRegCalc) so the company real-estate CG section

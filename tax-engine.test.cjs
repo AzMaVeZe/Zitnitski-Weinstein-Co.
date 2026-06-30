@@ -24,12 +24,12 @@ const path = require('path');
 const engineSrc = fs.readFileSync(path.join(__dirname, 'tax-engine.js'), 'utf8');
 const engine = new Function(engineSrc + `
   ; return { BRACKETS, calcTaxPassive, calcTaxActive, fmt, computeTracks,
-             adjustedBasis, nominalGain, interestIndividual, cryptoIndividual,
+             adjustedBasis, nominalGain, interestIndividual, cryptoIndividual, section102,
              corporateIsraeli, corporateForeign, companyRealEstateCG, companyDividendIsraeli,
              parseDMY, formatDMY, daysBetween, linearSplit };`)();
 const {
   BRACKETS, calcTaxPassive, calcTaxActive, fmt, computeTracks,
-  adjustedBasis, nominalGain, interestIndividual, cryptoIndividual,
+  adjustedBasis, nominalGain, interestIndividual, cryptoIndividual, section102,
   corporateIsraeli, corporateForeign, companyRealEstateCG, companyDividendIsraeli,
   parseDMY, formatDMY, daysBetween, linearSplit,
 } = engine;
@@ -530,6 +530,175 @@ const EXPECT = {
     "modeled": true,
     "branch": "foreign_resident_crypto"
   },
+  "section102 :: cg | private | holdingMet | exercise>0 → 25% flat": {
+    "gain": 150000,
+    "track": "cg",
+    "branch": "cg_private",
+    "capitalPortion": 150000,
+    "employmentPortion": 0,
+    "capitalTax": 37500,
+    "employmentTax": 0,
+    "totalTax": 37500,
+    "effective": 0.25,
+    "blHealthApplies": false,
+    "modeled": true
+  },
+  "section102 :: cg | private | holdingMet | RSU (exercise=0) → 25% on full proceeds": {
+    "gain": 150000,
+    "track": "cg",
+    "branch": "cg_private",
+    "capitalPortion": 150000,
+    "employmentPortion": 0,
+    "capitalTax": 37500,
+    "employmentTax": 0,
+    "totalTax": 37500,
+    "effective": 0.25,
+    "blHealthApplies": false,
+    "modeled": true
+  },
+  "section102 :: cg | private | NOT holdingMet (early sale) → full marginal": {
+    "gain": 150000,
+    "track": "cg",
+    "branch": "cg_violation_early_sale",
+    "capitalPortion": 0,
+    "employmentPortion": 150000,
+    "capitalTax": 0,
+    "employmentTax": 19392,
+    "totalTax": 19392,
+    "effective": 0.12928,
+    "blHealthApplies": true,
+    "modeled": true
+  },
+  "section102 :: cg | listed | holdingMet (split) → avg30 marginal + rest 25%": {
+    "gain": 250000,
+    "track": "cg",
+    "branch": "cg_listed_split",
+    "capitalPortion": 170000,
+    "employmentPortion": 80000,
+    "capitalTax": 42500,
+    "employmentTax": 14756.8,
+    "totalTax": 57256.8,
+    "effective": 0.229027,
+    "blHealthApplies": true,
+    "modeled": true
+  },
+  "section102 :: cg | listed | holdingMet | avg30<exercise → all capital (emp floored 0)": {
+    "gain": 150000,
+    "track": "cg",
+    "branch": "cg_listed_split",
+    "capitalPortion": 150000,
+    "employmentPortion": 0,
+    "capitalTax": 37500,
+    "employmentTax": 0,
+    "totalTax": 37500,
+    "effective": 0.25,
+    "blHealthApplies": true,
+    "modeled": true
+  },
+  "section102 :: income | holdingMet → full marginal": {
+    "gain": 150000,
+    "track": "income",
+    "branch": "income_track",
+    "capitalPortion": 0,
+    "employmentPortion": 150000,
+    "capitalTax": 0,
+    "employmentTax": 19392,
+    "totalTax": 19392,
+    "effective": 0.12928,
+    "blHealthApplies": true,
+    "modeled": true
+  },
+  "section102 :: income | NOT holdingMet → full marginal (violation branch)": {
+    "gain": 150000,
+    "track": "income",
+    "branch": "income_violation_early_sale",
+    "capitalPortion": 0,
+    "employmentPortion": 150000,
+    "capitalTax": 0,
+    "employmentTax": 19392,
+    "totalTax": 19392,
+    "effective": 0.12928,
+    "blHealthApplies": true,
+    "modeled": true
+  },
+  "section102 :: income | holdingMet | stacked on other 100k | under60": {
+    "gain": 150000,
+    "track": "income",
+    "branch": "income_track",
+    "capitalPortion": 0,
+    "employmentPortion": 150000,
+    "capitalTax": 0,
+    "employmentTax": 34938.8,
+    "totalTax": 34938.8,
+    "effective": 0.232925,
+    "blHealthApplies": true,
+    "modeled": true
+  },
+  "section102 :: income | holdingMet | stacked on other 100k | OVER60 (inert)": {
+    "gain": 150000,
+    "track": "income",
+    "branch": "income_track",
+    "capitalPortion": 0,
+    "employmentPortion": 150000,
+    "capitalTax": 0,
+    "employmentTax": 34938.8,
+    "totalTax": 34938.8,
+    "effective": 0.232925,
+    "blHealthApplies": true,
+    "modeled": true
+  },
+  "section102 :: nontrustee → full marginal": {
+    "gain": 150000,
+    "track": "nontrustee",
+    "branch": "nontrustee",
+    "capitalPortion": 0,
+    "employmentPortion": 150000,
+    "capitalTax": 0,
+    "employmentTax": 19392,
+    "totalTax": 19392,
+    "effective": 0.12928,
+    "blHealthApplies": true,
+    "modeled": true
+  },
+  "section102 :: 3i → full marginal": {
+    "gain": 150000,
+    "track": "3i",
+    "branch": "3i",
+    "capitalPortion": 0,
+    "employmentPortion": 150000,
+    "capitalTax": 0,
+    "employmentTax": 19392,
+    "totalTax": 19392,
+    "effective": 0.12928,
+    "blHealthApplies": true,
+    "modeled": true
+  },
+  "section102 :: is10PctHolder (cg/private/holdingMet overridden) → 3i_controlling_holder": {
+    "gain": 150000,
+    "track": "3i",
+    "branch": "3i_controlling_holder",
+    "capitalPortion": 0,
+    "employmentPortion": 150000,
+    "capitalTax": 0,
+    "employmentTax": 19392,
+    "totalTax": 19392,
+    "effective": 0.12928,
+    "blHealthApplies": true,
+    "modeled": true
+  },
+  "section102 :: gain 0 (proceeds <= exercise) → all zeros, effective 0": {
+    "gain": 0,
+    "track": "cg",
+    "branch": "cg_private",
+    "capitalPortion": 0,
+    "employmentPortion": 0,
+    "capitalTax": 0,
+    "employmentTax": 0,
+    "totalTax": 0,
+    "effective": 0,
+    "blHealthApplies": false,
+    "modeled": true
+  },
   "parseDMY :: '15/06/2020' valid": "15/06/2020",
   "parseDMY :: '31/02/2020' invalid": null,
   "parseDMY :: '' empty": null,
@@ -668,6 +837,41 @@ add('cryptoIndividual', 'oleh | israeli-source (taxed day one)',
   cryptoIndividual({ amount: 150000, costBasis: 50000, residency: 'oleh', source: 'israeli' }));
 add('cryptoIndividual', 'foreign | underwater (gain floored at 0)',
   cryptoIndividual({ amount: 50000, costBasis: 80000, residency: 'foreign' }));
+
+// ===== section102 — §102 / §3(i) employee equity (NOMINAL gain) =====
+//   Branch precedence: 10%-holder → cg early-sale violation → cg (private 25% |
+//   listed split) → income track (+ violation) → non-trustee / §3(i). Marginal
+//   branches stack the employment portion on otherAnnualIncome via the active
+//   ladder; capital portions take the flat 25% rate. Hand-computed below from the
+//   2024 annual brackets (calcTaxActive): e.g. calcTaxActive(150000)=8412+5124+
+//   29280*0.20=19392; calcTaxActive(100000)=10635.2; calcTaxActive(180000)=25392;
+//   calcTaxActive(250000)=45574.
+add('section102', 'cg | private | holdingMet | exercise>0 → 25% flat',
+  section102({ saleProceeds: 200000, exercisePrice: 50000, track: 'cg', listedAtGrant: false, holdingMet: true }));
+add('section102', 'cg | private | holdingMet | RSU (exercise=0) → 25% on full proceeds',
+  section102({ saleProceeds: 150000, exercisePrice: 0, track: 'cg', listedAtGrant: false, holdingMet: true }));
+add('section102', 'cg | private | NOT holdingMet (early sale) → full marginal',
+  section102({ saleProceeds: 200000, exercisePrice: 50000, track: 'cg', listedAtGrant: false, holdingMet: false }));
+add('section102', 'cg | listed | holdingMet (split) → avg30 marginal + rest 25%',
+  section102({ saleProceeds: 300000, exercisePrice: 50000, track: 'cg', listedAtGrant: true, avg30Base: 130000, holdingMet: true, otherAnnualIncome: 100000 }));
+add('section102', 'cg | listed | holdingMet | avg30<exercise → all capital (emp floored 0)',
+  section102({ saleProceeds: 200000, exercisePrice: 50000, track: 'cg', listedAtGrant: true, avg30Base: 30000, holdingMet: true }));
+add('section102', 'income | holdingMet → full marginal',
+  section102({ saleProceeds: 200000, exercisePrice: 50000, track: 'income', holdingMet: true }));
+add('section102', 'income | NOT holdingMet → full marginal (violation branch)',
+  section102({ saleProceeds: 200000, exercisePrice: 50000, track: 'income', holdingMet: false }));
+add('section102', 'income | holdingMet | stacked on other 100k | under60',
+  section102({ saleProceeds: 200000, exercisePrice: 50000, track: 'income', holdingMet: true, otherAnnualIncome: 100000, over60: false }));
+add('section102', 'income | holdingMet | stacked on other 100k | OVER60 (inert)',
+  section102({ saleProceeds: 200000, exercisePrice: 50000, track: 'income', holdingMet: true, otherAnnualIncome: 100000, over60: true }));
+add('section102', 'nontrustee → full marginal',
+  section102({ saleProceeds: 200000, exercisePrice: 50000, track: 'nontrustee', holdingMet: true }));
+add('section102', '3i → full marginal',
+  section102({ saleProceeds: 200000, exercisePrice: 50000, track: '3i' }));
+add('section102', 'is10PctHolder (cg/private/holdingMet overridden) → 3i_controlling_holder',
+  section102({ saleProceeds: 200000, exercisePrice: 50000, track: 'cg', listedAtGrant: false, holdingMet: true, is10PctHolder: true }));
+add('section102', 'gain 0 (proceeds <= exercise) → all zeros, effective 0',
+  section102({ saleProceeds: 40000, exercisePrice: 50000, track: 'cg', listedAtGrant: false, holdingMet: true }));
 
 // ===== date helpers (support linearSplit; included for coverage) =====
 add('parseDMY', "'15/06/2020' valid",   dmy('15/06/2020'));
