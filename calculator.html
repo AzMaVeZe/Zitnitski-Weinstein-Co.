@@ -89,6 +89,16 @@
         </select>
       </div>
 
+      <!-- Conditional: Share Activity (Individual + Shares only) -->
+      <div class="field" id="shareActivityField" data-conditional style="display:none">
+        <label for="shareActivity">Share Activity</label>
+        <select id="shareActivity">
+          <option value="">— Select activity —</option>
+          <option value="dividend">Receiving Dividends</option>
+          <option value="capital_gain">Selling Shares (Capital Gain)</option>
+        </select>
+      </div>
+
     </div>
 
     <div class="btn-row">
@@ -110,6 +120,16 @@
     field.style.display = visible ? 'flex' : 'none';
     if (!visible) sel.value = '';
     validate();
+  }
+
+  // Share Activity (dividend vs capital gain) applies only to an individual
+  // selling shares. The company shares path handles its own dividend/CG toggle
+  // internally, so this sub-field is hidden there. Visibility depends on BOTH
+  // entity and asset, so it's recomputed from both change handlers.
+  function updateShareActivity() {
+    const entity = document.getElementById('entityType').value;
+    const asset  = document.getElementById('assetType').value;
+    setVisible('shareActivityField', 'shareActivity', entity === 'individual' && asset === 'shares');
   }
 
   function validate() {
@@ -144,6 +164,7 @@
     stockOpt.hidden      = isCompany;
     stockOpt.disabled    = isCompany;
     if (isCompany && ['interest', 'crypto', 'stock_options'].includes(assetSel.value)) assetSel.value = '';
+    updateShareActivity();
     validate();
   });
 
@@ -151,6 +172,7 @@
     const isRealEstate = this.value === 'real_estate';
     setVisible('purposeField', 'purpose', isRealEstate);
     if (!isRealEstate) setVisible('propertyField', 'propertyType', false);
+    updateShareActivity();
   });
 
   document.getElementById('purpose').addEventListener('change', function () {
@@ -167,6 +189,7 @@
       origin:   normalize(document.getElementById('companyOrigin').value  || ''),
       purpose:  normalize(document.getElementById('purpose').value        || ''),
       property: normalize(document.getElementById('propertyType').value   || ''),
+      shareActivity: normalize(document.getElementById('shareActivity').value || ''),
     };
     sessionStorage.setItem('taxForm', JSON.stringify(vals));
     window.location.href = 'calculator2.html';
