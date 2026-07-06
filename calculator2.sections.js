@@ -2171,11 +2171,14 @@
       document.getElementById('coforsh_taxDisplay').textContent      = fmt(statutory);
       document.getElementById('coforsh_effectiveDisplay').textContent = effPct(statutory, dividend);
 
-      // Optional treaty override — show the reduced withholding if a rate is entered
-      const treatyPct = Math.min(100, Math.max(0, pn('coforsh_treatyPct')));
-      const treatyRow = document.getElementById('coforsh_treatyRow');
+      // Optional treaty override — a treaty is a ceiling, not a floor (CLAUDE.md):
+      // display min(statutory, treaty), so a rate at or above statutory shows the
+      // statutory amount, never more.
+      const treatyPct  = Math.min(100, Math.max(0, pn('coforsh_treatyPct')));
+      const treatyRate = Math.min(treatyPct / 100, rate);
+      const treaty     = treatyRate * dividend;
+      const treatyRow  = document.getElementById('coforsh_treatyRow');
       if (treatyPct > 0) {
-        const treaty = (treatyPct / 100) * dividend;
         treatyRow.style.display = '';
         document.getElementById('coforsh_treatyDisplay').textContent   = fmt(treaty);
         document.getElementById('coforsh_treatyEffective').textContent = effPct(treaty, dividend);
@@ -2188,7 +2191,11 @@
       document.getElementById('coforsh_verdict').textContent =
         'Statutory withholding: ' + fmt(statutory) + ' (' + (rate * 100).toFixed(0) + '% of the dividend). '
         + 'Distribution to foreign shareholders is outside Israeli tax, so this is the total Israeli tax'
-        + (treatyPct > 0 ? '; a treaty rate of ' + treatyPct + '% would reduce it to ' + fmt((treatyPct / 100) * dividend) + '.' : '.');
+        + (treatyPct > 0
+            ? (treatyRate < rate
+                ? '; a treaty rate of ' + treatyPct + '% would reduce it to ' + fmt(treaty) + '.'
+                : '; the entered treaty rate (' + treatyPct + '%) is not below the statutory rate, so the statutory figure applies.')
+            : '.');
     }
 
     function runCapitalGain() {
