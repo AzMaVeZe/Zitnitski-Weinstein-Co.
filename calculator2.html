@@ -16,7 +16,7 @@
 </nav>
 
 <header class="hero">
-  <div class="hero-badge">🏠 Real Estate Tax</div>
+  <div class="hero-badge">🧮 Israel Tax Calculator</div>
   <h1>Israel Tax Calculator</h1>
   <p>Based on your selections, here are the relevant tax calculations.</p>
 </header>
@@ -677,6 +677,7 @@
             <span class="track-result-label">Effective rate</span>
             <span class="track-result-val" id="intr_effectiveDisplay">—</span>
           </div>
+          <div class="input-hint">As a share of the interest amount. Where a foreign tax credit applies, this is the net Israeli tax after the credit — the combined burden appears in the "Total tax paid (foreign + Israeli)" row below.</div>
           <div id="intr_treatyRow" style="display:none">
             <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
               <span class="track-result-label">Treaty-reduced withholding</span>
@@ -811,6 +812,7 @@
             <span class="track-result-label">Effective rate</span>
             <span class="track-result-val" id="cryp_effectiveDisplay">—</span>
           </div>
+          <div class="input-hint">As a share of the gain. Includes credited foreign tax where a foreign tax credit applies.</div>
           <!-- Foreign tax credit breakdown — Israeli resident with foreign tax withheld -->
           <div id="cryp_ftcRow" style="display:none">
             <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
@@ -971,6 +973,7 @@
             <span class="track-result-label">Effective rate</span>
             <span class="track-result-val" id="shcg_effectiveDisplay">—</span>
           </div>
+          <div class="input-hint">Net Israeli tax as a share of gross proceeds. Foreign tax paid is shown separately in the breakdown above.</div>
         </div>
       </div>
 

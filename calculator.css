@@ -163,15 +163,6 @@
     }
     .bracket-table-wrap tbody tr:last-child td { border-bottom: none; }
     .bracket-table-wrap tbody tr:nth-child(even) { background: var(--bg); }
-    .bracket-table-wrap tbody tr.active-bracket {
-      background: var(--blue-light) !important;
-    }
-    .bracket-table-wrap tbody tr.active-bracket td {
-      color: var(--blue); font-weight: 700;
-    }
-    .bracket-table-wrap tbody tr.active-bracket td:last-child::after {
-      content: ' ← you'; font-size: .75rem; font-weight: 400; color: var(--blue-mid);
-    }
 
     /* slide-in */
     @keyframes slideIn {
@@ -259,11 +250,6 @@
     .table-checkboxes .checkbox-row { margin-top: 0; }
 
     /* TRACK COMPARISON SECTION (shell styles shared with .card above) */
-    .track-inputs {
-      display: grid; grid-template-columns: 1fr 1fr 1fr;
-      gap: 1rem 1.5rem; margin-bottom: 1.75rem; align-items: end;
-    }
-    @media (max-width: 720px) { .track-inputs { grid-template-columns: 1fr; } }
     .track-cards {
       display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.25rem;
     }

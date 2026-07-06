@@ -6,4 +6,5 @@
 # Tooling / scratch
 .claude/
 israel_tax_calculator_prompt.md
-audit-report.md          # uncommitted audit scratch from the read-only sweep
+# uncommitted audit scratch from the read-only sweep
+audit-report.md
