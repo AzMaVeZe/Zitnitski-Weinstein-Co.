@@ -21,6 +21,32 @@
     });
   }
 
+  // DD/MM/YYYY input mask for a date text input. Strips the value to digits
+  // (max 8) and re-renders with slashes inserted lazily — only once a digit
+  // exists beyond the day/month group ("15" stays "15"; "156" renders "15/6") —
+  // so deleting a character never re-inserts what was just removed. Pastes like
+  // "15062020" or "15/06/2020" normalize to 15/06/2020. Display-layer only:
+  // parsing and validation stay in parseDMY. Calls onInput after normalizing,
+  // so it replaces the field's plain input listener.
+  function attachDateMask(el, onInput) {
+    el.addEventListener('input', function () {
+      const digits = this.value.replace(/\D/g, '').slice(0, 8);
+      let out = digits.slice(0, 2);
+      if (digits.length > 2) out += '/' + digits.slice(2, 4);
+      if (digits.length > 4) out += '/' + digits.slice(4);
+      if (out !== this.value) {
+        const caret = this.selectionStart;
+        const atEnd = caret == null || caret >= this.value.length;
+        const pos   = atEnd ? out.length
+                            : Math.min(out.length,
+                                Math.round(caret * out.length / Math.max(1, this.value.length)));
+        this.value = out;
+        try { this.setSelectionRange(pos, pos); } catch (e) {}
+      }
+      onInput();
+    });
+  }
+
   // Classify a DD/MM/YYYY field so calculations can tell "not entered"
   // (allowed) apart from "typed but invalid" (blocks with a message).
   function dateFieldState(id) {
@@ -559,9 +585,7 @@
 
     // ── Event wiring ─────────────────────────────────────────────
     ['cg_res_purchaseDate','cg_res_saleDate'].forEach(id =>
-      document.getElementById(id).addEventListener('input', function () {
-        const clean = this.value.replace(/[^\d/]/g, '');   // digits and "/" only
-        if (clean !== this.value) this.value = clean;
+      attachDateMask(document.getElementById(id), function () {
         updateOwnedFlag(); runCGResCalc();
       })
     );
@@ -733,11 +757,7 @@
       document.getElementById(id).addEventListener('input', runCGComCalc)
     );
     ['cg_com_purchaseDate','cg_com_saleDate'].forEach(id =>
-      document.getElementById(id).addEventListener('input', function () {
-        const clean = this.value.replace(/[^\d/]/g, '');   // digits and "/" only
-        if (clean !== this.value) this.value = clean;
-        runCGComCalc();
-      })
+      attachDateMask(document.getElementById(id), runCGComCalc)
     );
 
     runCGComCalc();
@@ -1460,7 +1480,7 @@
     $('so_track').addEventListener('change', function () { syncVisibility(); runCalc(); });
     $('so_listedAtGrant').addEventListener('change', function () { syncVisibility(); runCalc(); });
     ['so_grantDate', 'so_saleDate'].forEach(id =>
-      $(id).addEventListener('input', function () { updateHoldingFlag(); runCalc(); }));
+      attachDateMask($(id), function () { updateHoldingFlag(); runCalc(); }));
     ['so_saleProceeds', 'so_exercisePrice', 'so_avg30Base', 'so_otherIncome'].forEach(id =>
       $(id).addEventListener('input', runCalc));
     ['so_is10PctHolder', 'so_over60'].forEach(id =>
