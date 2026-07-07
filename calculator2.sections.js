@@ -330,6 +330,11 @@
         flagEl.textContent = 'Enter dates above';
         return;
       }
+      if (sale <= purchase) {
+        flagEl.className   = 'cg-flag cg-flag-na';
+        flagEl.textContent = 'Check the dates — sale must be after purchase';
+        return;
+      }
       const months   = (sale.getFullYear() - purchase.getFullYear()) * 12 +
                        (sale.getMonth() - purchase.getMonth());
       if (months >= 18) {
@@ -350,6 +355,7 @@
       document.getElementById('cg_res_verdict').textContent          = '';
       document.getElementById('cg_res_noDateWarn').style.display     = 'none';
       document.getElementById('cg_res_badDateWarn').style.display    = 'none';
+      document.getElementById('cg_res_dateOrderWarn').style.display  = 'none';
       clearBadges(['cg_res_A_badge','cg_res_B_badge']);
       clearTrackFlags(['cg_res_A_card','cg_res_B_card']);
     }
@@ -375,6 +381,15 @@
       if (pDate.state === 'invalid' || sDate.state === 'invalid') {
         resetCGResCards();
         document.getElementById('cg_res_badDateWarn').style.display = '';
+        return;
+      }
+
+      // Reversed or same-day dates block computation. A computed treatment for a
+      // same-day disposal (e.g. full gain at the post-cutoff rate) would be a
+      // tax-math decision requiring tax-AI sign-off — this deliberately blocks instead.
+      if (purchaseDate && saleDate_ && saleDate_ <= purchaseDate) {
+        resetCGResCards();
+        document.getElementById('cg_res_dateOrderWarn').style.display = '';
         return;
       }
 
@@ -576,8 +591,9 @@
     function resetComCards() {
       blank(ALL_OUTPUT_IDS);
       document.getElementById('cg_com_verdict').textContent       = '';
-      document.getElementById('cg_com_noDateWarn').style.display  = 'none';
-      document.getElementById('cg_com_badDateWarn').style.display = 'none';
+      document.getElementById('cg_com_noDateWarn').style.display    = 'none';
+      document.getElementById('cg_com_badDateWarn').style.display   = 'none';
+      document.getElementById('cg_com_dateOrderWarn').style.display = 'none';
     }
 
     function runCGComCalc() {
@@ -594,16 +610,27 @@
 
       if (!salePrice) { resetComCards(); return; }
 
-      // Clear both date warnings up front; each branch below re-shows the one
+      // Clear the date warnings up front; each branch below re-shows the one
       // that applies. Otherwise a warning from a transiently-invalid keystroke
       // survives into the valid-computation path and never clears.
-      document.getElementById('cg_com_badDateWarn').style.display = 'none';
-      document.getElementById('cg_com_noDateWarn').style.display  = 'none';
+      document.getElementById('cg_com_badDateWarn').style.display   = 'none';
+      document.getElementById('cg_com_noDateWarn').style.display    = 'none';
+      document.getElementById('cg_com_dateOrderWarn').style.display = 'none';
 
       // Typed-but-invalid dates block calculation instead of silently misparsing
       if (pDate.state === 'invalid' || sDate.state === 'invalid') {
         resetComCards();
         document.getElementById('cg_com_badDateWarn').style.display = '';
+        return;
+      }
+
+      // Reversed or same-day dates block computation (linearSplit would return []
+      // and every bucket would render ₪0). A computed treatment for a same-day
+      // disposal would be a tax-math decision requiring tax-AI sign-off — this
+      // deliberately blocks instead.
+      if (purchaseDate && saleDate_ && saleDate_ <= purchaseDate) {
+        resetComCards();
+        document.getElementById('cg_com_dateOrderWarn').style.display = '';
         return;
       }
 
@@ -1266,6 +1293,9 @@
       let months = null, dateProblem = null;
       if (g.state === 'invalid' || s.state === 'invalid') dateProblem = 'invalid';
       else if (!g.date || !s.date)                        dateProblem = 'empty';
+      // Sale strictly before grant is impossible; a same-day grant/sale stays
+      // valid (months 0 → early sale), since selling immediately is a real scenario.
+      else if (s.date < g.date)                           dateProblem = 'order';
       else months = (s.date.getFullYear() - g.date.getFullYear()) * 12 +
                     (s.date.getMonth() - g.date.getMonth());
       return { track, required, months, dateProblem };
@@ -1283,6 +1313,9 @@
       } else if (info.dateProblem === 'empty') {
         flagEl.className = 'cg-flag cg-flag-na';
         flagEl.textContent = 'Enter dates above';
+      } else if (info.dateProblem === 'order') {
+        flagEl.className = 'cg-flag cg-flag-na';
+        flagEl.textContent = 'Sale date is before the grant date';
       } else if (info.months >= info.required) {
         flagEl.className = 'cg-flag cg-flag-yes';
         flagEl.textContent = '✓ Holding period met (' + info.months + ' months)';
@@ -1333,7 +1366,9 @@
           resetCard();
           $('so_verdict').textContent = info.dateProblem === 'invalid'
             ? 'Check the date format — dates must be DD/MM/YYYY (e.g. 15/06/2020).'
-            : 'Enter the grant and sale dates above to determine the holding period.';
+            : info.dateProblem === 'order'
+              ? 'The sale date is before the grant date — check the dates above.'
+              : 'Enter the grant and sale dates above to determine the holding period.';
           return;
         }
         holdingMet = info.months >= info.required;
