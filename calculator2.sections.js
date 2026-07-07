@@ -356,6 +356,7 @@
       document.getElementById('cg_res_noDateWarn').style.display     = 'none';
       document.getElementById('cg_res_badDateWarn').style.display    = 'none';
       document.getElementById('cg_res_dateOrderWarn').style.display  = 'none';
+      document.getElementById('cg_res_noSaleWarn').style.display     = 'none';
       clearBadges(['cg_res_A_badge','cg_res_B_badge']);
       clearTrackFlags(['cg_res_A_card','cg_res_B_card']);
     }
@@ -393,14 +394,22 @@
         return;
       }
 
-      const noDate = !purchaseDate;
+      // The sale date prefills to today, so it is only empty if the user
+      // actively cleared it — prompt for it instead of computing silently.
+      const noPurchase = !purchaseDate;
+      const noSale     = !saleDate_;
+      if (noSale) {
+        resetCGResCards();
+        document.getElementById('cg_res_noSaleWarn').style.display = '';
+        return;
+      }
 
       const basis = adjustedBasis(purchPrice, depreciation, improvements);
       const gain  = nominalGain(salePrice, saleExp, acqExp, basis);
 
       if (gain <= 0) {
         resetCGResCards();
-        document.getElementById('cg_res_noDateWarn').style.display     = noDate ? '' : 'none';
+        document.getElementById('cg_res_noDateWarn').style.display     = noPurchase ? '' : 'none';
         document.getElementById('cg_res_gainDisplay').textContent      = fmt(0) + ' (no taxable gain)';
         ['cg_res_A_tax','cg_res_A_total',
          'cg_res_B_tax','cg_res_B_total'].forEach(id => {
@@ -423,7 +432,7 @@
 
       const ineligibleReasons = [];
       if (!onlyApt)      ineligibleReasons.push('only-apartment box not checked');
-      if (noDate)        ineligibleReasons.push('purchase date not entered — holding period unknown');
+      if (noPurchase)    ineligibleReasons.push('purchase date not entered — holding period unknown');
       else if (!owned18) ineligibleReasons.push('held < 18 months');
       if (!foreignOK)    ineligibleReasons.push('home-country certificate not confirmed');
       const ineligible = !eligible;
@@ -467,7 +476,7 @@
 
       // ── Populate output ─────────────────────────────────────────
       resetCGResCards();
-      document.getElementById('cg_res_noDateWarn').style.display = noDate ? '' : 'none';
+      document.getElementById('cg_res_noDateWarn').style.display = noPurchase ? '' : 'none';
 
       document.getElementById('cg_res_gainDisplay').textContent =
         fmt(gain) + ' (nominal — inflation indexing not applied)';
@@ -594,6 +603,7 @@
       document.getElementById('cg_com_noDateWarn').style.display    = 'none';
       document.getElementById('cg_com_badDateWarn').style.display   = 'none';
       document.getElementById('cg_com_dateOrderWarn').style.display = 'none';
+      document.getElementById('cg_com_noSaleWarn').style.display    = 'none';
     }
 
     function runCGComCalc() {
@@ -616,6 +626,7 @@
       document.getElementById('cg_com_badDateWarn').style.display   = 'none';
       document.getElementById('cg_com_noDateWarn').style.display    = 'none';
       document.getElementById('cg_com_dateOrderWarn').style.display = 'none';
+      document.getElementById('cg_com_noSaleWarn').style.display    = 'none';
 
       // Typed-but-invalid dates block calculation instead of silently misparsing
       if (pDate.state === 'invalid' || sDate.state === 'invalid') {
@@ -634,15 +645,23 @@
         return;
       }
 
-      const noDate = !purchaseDate;
-      document.getElementById('cg_com_noDateWarn').style.display = noDate ? '' : 'none';
+      // The sale date prefills to today, so it is only empty if the user
+      // actively cleared it — prompt for it instead of computing silently.
+      const noPurchase = !purchaseDate;
+      const noSale     = !saleDate_;
+      if (noSale) {
+        resetComCards();
+        document.getElementById('cg_com_noSaleWarn').style.display = '';
+        return;
+      }
+      document.getElementById('cg_com_noDateWarn').style.display = noPurchase ? '' : 'none';
 
       const basis = adjustedBasis(purchPrice, depreciation, improvements);
       const gain  = nominalGain(salePrice, saleExp, acqExp, basis);
 
       if (gain <= 0) {
         resetComCards();
-        document.getElementById('cg_com_noDateWarn').style.display = noDate ? '' : 'none';
+        document.getElementById('cg_com_noDateWarn').style.display = noPurchase ? '' : 'none';
         document.getElementById('cg_com_gainDisplay').textContent  = fmt(0) + ' (no taxable gain)';
         ['cg_com_totalTax','cg_com_grandTotal',
          'cg_com_pre2001Gain','cg_com_midGain','cg_com_postGain'].forEach(id => {
@@ -673,6 +692,15 @@
         pre2001 = gain;   // worst case: unknown date → 47% on everything
       }
 
+      // Belt-and-braces with the chronology/no-sale guards above: linearSplit only
+      // returns [] for a non-positive date range, which is blocked before this
+      // point — but never render a ₪0 split or a garbled "Split: ." verdict if
+      // that invariant is ever broken.
+      if (pre2001 + mid + post <= 0) {
+        resetComCards();
+        return;
+      }
+
       const taxPre  = pre2001 * PRE_RATE;
       const taxMid  = mid     * MID_RATE;
       const taxPost = post    * POST_RATE;
@@ -692,7 +720,7 @@
 
       // Plain-English summary
       const parts = [];
-      if (pre2001 > 0) parts.push(noDate ? 'full gain at 47% (worst case — no purchase date)' : 'pre-2001 at 47%');
+      if (pre2001 > 0) parts.push(noPurchase ? 'full gain at 47% (worst case — no purchase date)' : 'pre-2001 at 47%');
       if (mid     > 0) parts.push('2001–2011 at 20%');
       if (post    > 0) parts.push('post-2012 at 25%');
       document.getElementById('cg_com_verdict').textContent =
