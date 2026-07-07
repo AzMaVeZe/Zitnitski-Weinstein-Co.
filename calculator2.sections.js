@@ -67,10 +67,15 @@
 
   // Classify a DD/MM/YYYY field so calculations can tell "not entered"
   // (allowed) apart from "typed but invalid" (blocks with a message).
+  // UI-layer year sanity floor: parseDMY (frozen — exercised by the locked test
+  // suite) accepts any 4-digit year from 0100, so "15/06/0999" would otherwise
+  // compute; years before 1900 are treated as typos and classified invalid,
+  // reusing every existing bad-date pathway.
   function dateFieldState(id) {
     const v = (document.getElementById(id).value || '').trim();
     if (!v) return { state: 'empty', date: null };
     const d = parseDMY(v);
+    if (d && d.getFullYear() < 1900) return { state: 'invalid', date: null };
     return d ? { state: 'ok', date: d } : { state: 'invalid', date: null };
   }
 
