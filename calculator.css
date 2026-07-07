@@ -195,6 +195,7 @@
     }
     .metric-val {
       font-size: 1.25rem; font-weight: 800; color: var(--text);
+      overflow-wrap: anywhere; min-width: 0;
     }
     .metric-val.accent { color: var(--blue); font-size: 1.45rem; }
 
@@ -287,6 +288,7 @@
     .track-verdict {
       margin-top: 1.25rem; font-size: .9rem; color: var(--muted);
       text-align: center; font-style: italic;
+      overflow-wrap: anywhere; min-width: 0;
     }
     .badge {
       display: inline-block; padding: .25rem .65rem;

@@ -4,18 +4,36 @@
 // loaded AFTER tax-engine.js (uses its globals: computeTracks, fmt,
 // parseDMY, formatDMY, daysBetween, linearSplit, etc.). No build step.
 
+  // Currency fields are capped at 13 integer digits (max ₪9,999,999,999,999):
+  // past 2^53 the parseInt/toLocaleString round-trip is inexact and corrupts
+  // the user's own keystrokes. 13 keeps every derived figure — including the
+  // ×12 syncPair mirror — exactly representable.
+  const MAX_CURRENCY_INT_DIGITS = 13;
+
   // Live thousands-separator formatting for a currency text input; pairs with
   // the comma-stripping parses used throughout. Keeps the caret roughly in
   // place while typing. Attached to every input[inputmode="decimal"].
+  // An edit that would push the integer part past MAX_CURRENCY_INT_DIGITS is
+  // ignored (previous value restored), like maxlength. _lastGood is refreshed
+  // on focus so programmatic writes (resets, syncPair) can't leave it stale.
   function liveComma(el) {
+    el._lastGood = el.value;
+    el.addEventListener('focus', function () { this._lastGood = this.value; });
     el.addEventListener('input', function () {
       const fromEnd = this.value.length - this.selectionStart;
       const raw     = this.value.replace(/[^\d.]/g, '');
-      if (raw === '') { this.value = ''; return; }
+      if (raw === '') { this.value = ''; this._lastGood = ''; return; }
       const [intPart, decPart] = raw.split('.');
+      if ((intPart || '').length > MAX_CURRENCY_INT_DIGITS) {
+        const pos = Math.min(this._lastGood.length, Math.max(0, this.selectionStart - 1));
+        this.value = this._lastGood;
+        this.setSelectionRange(pos, pos);
+        return;
+      }
       let out = intPart ? parseInt(intPart, 10).toLocaleString('en-IL') : '0';
       if (decPart !== undefined) out += '.' + decPart;
       this.value = out;
+      this._lastGood = out;
       const pos = Math.max(0, out.length - fromEnd);
       this.setSelectionRange(pos, pos);
     });
@@ -78,12 +96,22 @@
   function effPct(tax, base) { return (base > 0 ? (tax / base) * 100 : 0).toFixed(1) + '%'; }
 
   // Two-way monthly↔annual mirror for a paired set of currency inputs.
+  // The mirror write carries the same overflow cap as liveComma: a mirrored
+  // product beyond exact integer representation would render corrupted digits,
+  // so it writes blank instead (unreachable while sources honor the 13-digit
+  // cap — max mirror is 13 digits ×12 ≈ 1.2e14, well inside 2^53). The cap is
+  // deliberately NOT a 13-digit test on the mirrored output: the annual mirror
+  // of a maximal 13-digit monthly value legitimately renders 15 digits — still
+  // exact — and the company rental calcs read the annual field, so suppressing
+  // it would change computed figures for in-cap inputs.
   function syncPair(monthlyId, annualId) {
     function mirror(fromEl, toId, factor) {
+      const toEl = document.getElementById(toId);
       const v = parseFloat((fromEl.value || '').replace(/,/g, ''));
-      document.getElementById(toId).value = Number.isFinite(v)
+      toEl.value = (Number.isFinite(v) && Math.abs(v * factor) <= Number.MAX_SAFE_INTEGER)
         ? (+(v * factor).toFixed(2)).toLocaleString('en-IL', { maximumFractionDigits: 2 })
         : '';
+      toEl._lastGood = toEl.value;
     }
     document.getElementById(monthlyId).addEventListener('input', function () { mirror(this, annualId, 12); });
     document.getElementById(annualId).addEventListener('input', function () { mirror(this, monthlyId, 1 / 12); });
