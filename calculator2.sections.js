@@ -594,6 +594,12 @@
 
       if (!salePrice) { resetComCards(); return; }
 
+      // Clear both date warnings up front; each branch below re-shows the one
+      // that applies. Otherwise a warning from a transiently-invalid keystroke
+      // survives into the valid-computation path and never clears.
+      document.getElementById('cg_com_badDateWarn').style.display = 'none';
+      document.getElementById('cg_com_noDateWarn').style.display  = 'none';
+
       // Typed-but-invalid dates block calculation instead of silently misparsing
       if (pDate.state === 'invalid' || sDate.state === 'invalid') {
         resetComCards();
