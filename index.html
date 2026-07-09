@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Relocating to Israel — International Tax Guide</title>
+  <meta name="description" content="An international tax guide and calculator for individuals relocating to Israel, prepared by Zitnitski Weinstein &amp; Co. General information only — not legal or tax advice." />
+  <title>Relocating to Israel — International Tax Guide | Zitnitski Weinstein &amp; Co.</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -50,6 +51,11 @@
       text-decoration: none; display: flex; align-items: center; gap: .5rem;
     }
     .nav-brand .flag { font-size: 1.3rem; }
+    .brand-by { font-size: .72rem; font-weight: 600; color: var(--muted); letter-spacing: .04em; white-space: nowrap; }
+    /* The expanded nav-link row fills the whole bar (links already wrap on
+       mid-width screens); there is no room for the badge beside them, so it
+       shows only alongside the collapsed (hamburger) nav. */
+    @media (min-width: 821px) { .brand-by { display: none; } }
     .nav-links {
       display: flex; gap: .25rem; list-style: none;
     }
@@ -353,6 +359,8 @@
       font-size: .85rem;
     }
     footer strong { color: var(--white); }
+    footer a { color: var(--white); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
 
     /* ── RESPONSIVE NAV ── */
     @media (max-width: 820px) {
@@ -386,6 +394,7 @@
   <div class="nav-inner">
     <a href="#" class="nav-brand">
       <span class="flag">🇮🇱</span> Israel Tax Guide
+      <span class="brand-by">by ZW&amp;CO.</span>
     </a>
     <ul class="nav-links" id="navLinks">
       <li><a href="#residency">Residency</a></li>
@@ -945,7 +954,7 @@
         </p>
         <br>
         <p>
-          <strong>Always consult a qualified tax professional</strong> — ideally one licensed in both the United States and Israel with experience in cross-border taxation — before making any financial, investment, or residency decisions. Penalties for non-compliance can be severe. This content has not been reviewed or verified by a licensed tax professional. The authors of this site make no representations as to the accuracy, completeness, or currentness of the information provided, and accept no liability for any errors, omissions, or outcomes arising from reliance on this material.
+          <strong>Always consult a qualified tax professional</strong> — ideally one licensed in both the United States and Israel with experience in cross-border taxation — before making any financial, investment, or residency decisions. Penalties for non-compliance can be severe. This content has not been reviewed or verified by a licensed tax professional. Zitnitski Weinstein &amp; Co., the publisher of this site, makes no representations as to the accuracy, completeness, or currentness of the information provided, and accept no liability for any errors, omissions, or outcomes arising from reliance on this material.
         </p>
       </div>
     </div>
@@ -955,8 +964,10 @@
 
 <!-- FOOTER -->
 <footer>
+  <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer">Zitnitski Weinstein &amp; Co.</a></strong> — Israel International Tax Guide · <a href="https://www.linkedin.com/company/zitnitski-weinstein-&amp;-co-certified-public-accountants/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
   <p><strong>Israel International Tax Guide</strong> &mdash; General information only. Not legal or tax advice.</p>
   <p style="margin-top:.5rem">Always consult a qualified US–Israel cross-border tax professional for your specific situation.</p>
+  <p style="margin-top:.5rem">© 2026 Zitnitski Weinstein &amp; Co. All rights reserved.</p>
 </footer>
 
 

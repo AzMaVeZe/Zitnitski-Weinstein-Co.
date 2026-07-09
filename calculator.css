@@ -39,6 +39,10 @@
       padding: .9rem 1.5rem;
     }
     .nav-brand { font-weight: 700; font-size: 1.05rem; color: var(--blue); text-decoration: none; }
+    .brand-by { font-size: .72rem; font-weight: 600; color: var(--muted); letter-spacing: .04em; white-space: nowrap; }
+    /* At phone widths the back-link stays visible (no nav collapse on these
+       pages), so hide the badge to keep the nav brand on one line. */
+    @media (max-width: 480px) { .brand-by { display: none; } }
     .back-link {
       text-decoration: none; color: var(--muted); font-size: .875rem;
       padding: .4rem .75rem; border-radius: 6px;
@@ -356,6 +360,8 @@
       text-align: center; padding: 1.75rem 1.5rem; font-size: .84rem;
     }
     footer strong { color: var(--white); }
+    footer a { color: var(--white); text-decoration: none; }
+    footer a:hover { text-decoration: underline; }
 
     /* ── Step-1 classifier page (calculator.html) — rules used only there ── */
     .field[data-conditional] {

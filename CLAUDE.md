@@ -8,6 +8,10 @@ A static informational website (`index.html` + CSS/JS inline) about internationa
 
 English-speaking individuals (primarily US citizens) considering or completing aliyah, or professionals advising them. Assume general financial literacy but no deep tax expertise.
 
+## Site Owner / Branding
+
+The site is published by **Zitnitski Weinstein & Co.** ("ZW&CO."), the accounting firm that owns this project. Firm branding appears in: page `<title>`s, the nav brand, footers (name + © line), the meta description, and the disclaimer attribution. The firm name in HTML must always escape the ampersand (`&amp;`). Branding is chrome-level only — never inject the firm name into `tax-engine.js` strings, engine notes, or anything covered by the golden-master baseline.
+
 ## Voice & Tone
 
 - Professional but accessible — avoid dense legal jargon; explain terms when first used
@@ -55,13 +59,13 @@ When adding or editing factual claims, note the source in a code comment or in t
 - **A `modeled: false` engine result must never render a computed figure.** Interest connected to an Israeli permanent establishment (`connectedToIsraeliPE`, branch `pe_business_profits`) is re-sourced and taxed as Israeli business profits — outside the passive engine. The UI surfaces the disclosure note for these branches and shows no rate/tax/effective number. Do not add an EXPECT correctness entry for any `modeled:false` branch — drift-lock only.
 - **Treaty rates are user-input, never hardcoded.** Israeli withholding on Israeli-source passive income to a foreign resident displays as `min(statutory, treaty)` using a user-entered treaty rate; a treaty is a ceiling, not a floor, so a lower domestic rate or a domestic exemption (e.g. traded-bond / FX-deposit 0%) always wins. Do not build a per-country rate table or hardcode specific treaty figures.
 - **No frameworks, CDN dependencies, or build step** — vanilla HTML, CSS, and JS only, referenced by relative paths. The site must work offline (opened directly via `file://`).
-- **No cookies, no tracking, no external requests** — do not add analytics, fonts from CDN, or any third-party scripts.
+- **No cookies, no tracking, no external requests** — do not add analytics, fonts from CDN, or any third-party scripts. Outbound anchor links (the firm's website and LinkedIn) are permitted; the logo and all other assets must remain local files — never hotlinked.
 - **Responsive** — must work on mobile. The current layout uses CSS Grid with `auto-fit` columns; maintain this pattern.
 
 ## What to Avoid
 
 - Do not add a contact form or any server-side functionality
-- Do not link to or recommend specific law firms, accountants, or services
+- Do not link to or recommend specific law firms, accountants, or services — **except Zitnitski Weinstein & Co., the site owner**, whose name, logo, website, and LinkedIn links are intentional branding and must not be removed
 - Do not state that any particular strategy "works" or "is safe" — use hedged language
 - Do not describe enforcement priorities or suggest any approach to non-compliance other than the IRS Streamlined Procedures (which are official and publicly documented)
 - Do not add content about countries other than the US–Israel context without explicit instruction
