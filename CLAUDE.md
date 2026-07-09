@@ -10,7 +10,7 @@ English-speaking individuals (primarily US citizens) considering or completing a
 
 ## Site Owner / Branding
 
-The site is published by **Zitnitski Weinstein & Co.** ("ZW&CO."), the accounting firm that owns this project. Firm branding appears in: page `<title>`s, the nav brand, footers (name + © line), the meta description, and the disclaimer attribution. The firm name in HTML must always escape the ampersand (`&amp;`). Branding is chrome-level only — never inject the firm name into `tax-engine.js` strings, engine notes, or anything covered by the golden-master baseline.
+The site is published by **Zitnitski Weinstein & Co.** ("ZW&CO."), the accounting firm that owns this project. Firm branding appears in: page `<title>`s, the nav brand, footers (name + © line), the meta description, and the disclaimer attribution. The firm name in HTML must always escape the ampersand (`&amp;`). Branding is chrome-level only — never inject the firm name into `tax-engine.js` strings, engine notes, or anything covered by the golden-master baseline. The full firm logo lives at `assets/zwco-logo-full.png` and appears as the last element of every footer (linked to the firm site, on a white card for contrast against the blue footer); it must always remain a local asset — never hotlinked.
 
 ## Voice & Tone
 
