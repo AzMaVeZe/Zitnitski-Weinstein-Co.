@@ -821,6 +821,14 @@
       const substantial           = document.getElementById('shares_substantial').checked;
       const source                = document.getElementById('shares_source').value;
       const oleh                  = document.getElementById('shares_oleh').checked;
+
+      // Progressive disclosure: the foreign-withholding input only matters on the
+      // FTC branch (Israeli resident, foreign-company dividend, not Oleh-exempt).
+      // Hide and clear it everywhere else so an irrelevant field never shows.
+      const fwRelevant = residency === 'israeli' && source === 'foreign' && !oleh;
+      document.getElementById('shares_fwField').style.display = fwRelevant ? '' : 'none';
+      if (!fwRelevant) document.getElementById('shares_foreignWithheld').value = '';
+
       const foreignTaxWithheldPct = Math.min(100, Math.max(0, pn('shares_foreignWithheld')));   // clamp to 0–100%
 
       if (dividend <= 0) { resetSharesCards(); return; }

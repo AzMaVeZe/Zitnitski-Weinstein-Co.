@@ -1,5 +1,5 @@
 {
-  "BRACKETS :: table (2024, monthly NIS)": [
+  "BRACKETS :: table (2026, monthly NIS)": [
     {
       "min": 0,
       "max": 7010,
@@ -14,21 +14,21 @@
     },
     {
       "min": 10060,
-      "max": 16150,
+      "max": 19000,
       "rate": 0.2,
-      "label": "₪10,061 – ₪16,150"
+      "label": "₪10,061 – ₪19,000"
     },
     {
-      "min": 16150,
-      "max": 22440,
+      "min": 19000,
+      "max": 25100,
       "rate": 0.31,
-      "label": "₪16,151 – ₪22,440"
+      "label": "₪19,001 – ₪25,100"
     },
     {
-      "min": 22440,
+      "min": 25100,
       "max": 46690,
       "rate": 0.35,
-      "label": "₪22,441 – ₪46,690"
+      "label": "₪25,101 – ₪46,690"
     },
     {
       "min": 46690,
@@ -41,17 +41,17 @@
   "calcTaxPassive :: income 50000": 15500,
   "calcTaxPassive :: income 84120": 26077.2,
   "calcTaxPassive :: income 269280": 83476.8,
-  "calcTaxPassive :: income 269281": 83477.15,
-  "calcTaxPassive :: income 400000": 129228.8,
-  "calcTaxPassive :: income 560280": 185326.8,
-  "calcTaxPassive :: income 700000": 250995.2,
+  "calcTaxPassive :: income 269281": 83477.11,
+  "calcTaxPassive :: income 400000": 127952,
+  "calcTaxPassive :: income 560280": 184050,
+  "calcTaxPassive :: income 700000": 249718.4,
   "calcTaxActive :: income 0": 0,
   "calcTaxActive :: income 50000": 5000,
   "calcTaxActive :: income 84120": 8412,
-  "calcTaxActive :: income 200000": 30074,
-  "calcTaxActive :: income 269280": 51550.8,
-  "calcTaxActive :: income 560280": 153400.8,
-  "calcTaxActive :: income 700000": 219069.2,
+  "calcTaxActive :: income 200000": 29392,
+  "calcTaxActive :: income 269280": 47788.8,
+  "calcTaxActive :: income 560280": 148362,
+  "calcTaxActive :: income 700000": 214030.4,
   "computeTracks :: residential | gross<C_EXEMPT | no other | under60": {
     "flatTax": 5000,
     "exemptTax": 0,
@@ -84,9 +84,9 @@
   },
   "computeTracks :: residential | gross>C_EXEMPT | other 300k | under60": {
     "flatTax": 10000,
-    "exemptTax": 22506.4,
+    "exemptTax": 19934.24,
     "fullyExempt": false,
-    "progTax": 35000
+    "progTax": 31000
   },
   "computeTracks :: residential | gross>C_EXEMPT | other 600k | under60": {
     "flatTax": 10000,
@@ -102,9 +102,9 @@
   },
   "computeTracks :: residential | gross>2*C_EXEMPT | no other | OVER60": {
     "flatTax": 20000,
-    "exemptTax": 30074,
+    "exemptTax": 29392,
     "fullyExempt": false,
-    "progTax": 30074
+    "progTax": 29392
   },
   "computeTracks :: residential | gross>C_EXEMPT | expenses 40k | under60": {
     "flatTax": 10000,
@@ -611,9 +611,9 @@
     "capitalPortion": 0,
     "employmentPortion": 150000,
     "capitalTax": 0,
-    "employmentTax": 34938.8,
-    "totalTax": 34938.8,
-    "effective": 0.232925,
+    "employmentTax": 31176.8,
+    "totalTax": 31176.8,
+    "effective": 0.207845,
     "blHealthApplies": true,
     "modeled": true
   },
@@ -624,9 +624,9 @@
     "capitalPortion": 0,
     "employmentPortion": 150000,
     "capitalTax": 0,
-    "employmentTax": 34938.8,
-    "totalTax": 34938.8,
-    "effective": 0.232925,
+    "employmentTax": 31176.8,
+    "totalTax": 31176.8,
+    "effective": 0.207845,
     "blHealthApplies": true,
     "modeled": true
   },

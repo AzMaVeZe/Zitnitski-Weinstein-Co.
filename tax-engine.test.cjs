@@ -49,22 +49,24 @@ function norm(v) {
 }
 
 // ── EXPECT: known-correct values ──────────────────────────────────────────
-//   Verified against authoritative Israeli tax figures: 2024 brackets &
-//   ceilings (frozen 2025–2027 by the Dec-2024 freeze law); §121 passive /
-//   age-60 floor; §122 flat-10%; §49 single-residence cap + §48A linear.
-//   Each value was reproduced by an independent calc from the confirmed annual
-//   brackets and matched the engine exactly.
+//   Verified against authoritative Israeli tax figures: 2026 brackets (the
+//   20%/31% bands were widened to ₪19,000/₪25,100 monthly by the 2026
+//   Economic Efficiency Law; ceilings such as the rental-exemption cap remain
+//   frozen through 2027); §121 passive / age-60 floor; §122 flat-10%; §49
+//   single-residence cap + §48A linear. Each value was reproduced by an
+//   independent calc from the confirmed annual brackets and matched the
+//   engine exactly.
 //
 //   TWO PREVIOUSLY OMITTED CASES — now resolved (see chat):
 //   • residential | gross>2*C_EXEMPT | no other | OVER60
 //       Fixed in the engine: above 2x the ceiling the standard exemption is fully
-//       phased out, so Track A now equals the progressive track (Track C = 30074,
+//       phased out, so Track A now equals the progressive track (Track C = 29392,
 //       the full age-60 ladder) instead of the under-60 passive floor (62000).
 //   • residential | gross>C_EXEMPT | expenses 40k | under60
 //       Confirmed correct as-is: Track A reduces its taxable base by the
 //       proportional (1 - E/R) expense deduction (exemptTax = 11960.544).
 const EXPECT = {
-  "BRACKETS :: table (2024, monthly NIS)": [
+  "BRACKETS :: table (2026, monthly NIS)": [
     {
       "min": 0,
       "max": 7010,
@@ -79,21 +81,21 @@ const EXPECT = {
     },
     {
       "min": 10060,
-      "max": 16150,
+      "max": 19000,
       "rate": 0.2,
-      "label": "₪10,061 – ₪16,150"
+      "label": "₪10,061 – ₪19,000"
     },
     {
-      "min": 16150,
-      "max": 22440,
+      "min": 19000,
+      "max": 25100,
       "rate": 0.31,
-      "label": "₪16,151 – ₪22,440"
+      "label": "₪19,001 – ₪25,100"
     },
     {
-      "min": 22440,
+      "min": 25100,
       "max": 46690,
       "rate": 0.35,
-      "label": "₪22,441 – ₪46,690"
+      "label": "₪25,101 – ₪46,690"
     },
     {
       "min": 46690,
@@ -106,17 +108,17 @@ const EXPECT = {
   "calcTaxPassive :: income 50000": 15500,
   "calcTaxPassive :: income 84120": 26077.2,
   "calcTaxPassive :: income 269280": 83476.8,
-  "calcTaxPassive :: income 269281": 83477.15,
-  "calcTaxPassive :: income 400000": 129228.8,
-  "calcTaxPassive :: income 560280": 185326.8,
-  "calcTaxPassive :: income 700000": 250995.2,
+  "calcTaxPassive :: income 269281": 83477.11,
+  "calcTaxPassive :: income 400000": 127952,
+  "calcTaxPassive :: income 560280": 184050,
+  "calcTaxPassive :: income 700000": 249718.4,
   "calcTaxActive :: income 0": 0,
   "calcTaxActive :: income 50000": 5000,
   "calcTaxActive :: income 84120": 8412,
-  "calcTaxActive :: income 200000": 30074,
-  "calcTaxActive :: income 269280": 51550.8,
-  "calcTaxActive :: income 560280": 153400.8,
-  "calcTaxActive :: income 700000": 219069.2,
+  "calcTaxActive :: income 200000": 29392,
+  "calcTaxActive :: income 269280": 47788.8,
+  "calcTaxActive :: income 560280": 148362,
+  "calcTaxActive :: income 700000": 214030.4,
   "computeTracks :: residential | gross<C_EXEMPT | no other | under60": {
     "flatTax": 5000,
     "exemptTax": 0,
@@ -149,9 +151,9 @@ const EXPECT = {
   },
   "computeTracks :: residential | gross>C_EXEMPT | other 300k | under60": {
     "flatTax": 10000,
-    "exemptTax": 22506.4,
+    "exemptTax": 19934.24,
     "fullyExempt": false,
-    "progTax": 35000
+    "progTax": 31000
   },
   "computeTracks :: residential | gross>C_EXEMPT | other 600k | under60": {
     "flatTax": 10000,
@@ -167,9 +169,9 @@ const EXPECT = {
   },
   "computeTracks :: residential | gross>2*C_EXEMPT | no other | OVER60": {
     "flatTax": 20000,
-    "exemptTax": 30074,
+    "exemptTax": 29392,
     "fullyExempt": false,
-    "progTax": 30074
+    "progTax": 29392
   },
   "computeTracks :: residential | gross>C_EXEMPT | expenses 40k | under60": {
     "flatTax": 10000,
@@ -628,9 +630,9 @@ const EXPECT = {
     "capitalPortion": 0,
     "employmentPortion": 150000,
     "capitalTax": 0,
-    "employmentTax": 34938.8,
-    "totalTax": 34938.8,
-    "effective": 0.232925,
+    "employmentTax": 31176.8,
+    "totalTax": 31176.8,
+    "effective": 0.207845,
     "blHealthApplies": true,
     "modeled": true
   },
@@ -641,9 +643,9 @@ const EXPECT = {
     "capitalPortion": 0,
     "employmentPortion": 150000,
     "capitalTax": 0,
-    "employmentTax": 34938.8,
-    "totalTax": 34938.8,
-    "effective": 0.232925,
+    "employmentTax": 31176.8,
+    "totalTax": 31176.8,
+    "effective": 0.207845,
     "blHealthApplies": true,
     "modeled": true
   },
@@ -881,8 +883,8 @@ const EXPECT = {
 const cases = [];
 const add = (group, name, value) => cases.push({ id: `${group} :: ${name}`, group, value });
 
-// constants snapshot (locks the 2024 bracket table + ordering)
-add('BRACKETS', 'table (2024, monthly NIS)', BRACKETS);
+// constants snapshot (locks the 2026 bracket table + ordering)
+add('BRACKETS', 'table (2026, monthly NIS)', BRACKETS);
 
 // ===== bracket functions =====
 for (const inc of [0, 50000, 84120, 269280, 269281, 400000, 560280, 700000])
@@ -1011,9 +1013,9 @@ add('cryptoIndividual', 'foreign | underwater (gain floored at 0)',
 //   listed split) → income track (+ violation) → non-trustee / §3(i). Marginal
 //   branches stack the employment portion on otherAnnualIncome via the active
 //   ladder; capital portions take the flat 25% rate. Hand-computed below from the
-//   2024 annual brackets (calcTaxActive): e.g. calcTaxActive(150000)=8412+5124+
+//   2026 annual brackets (calcTaxActive): e.g. calcTaxActive(150000)=8412+5124+
 //   29280*0.20=19392; calcTaxActive(100000)=10635.2; calcTaxActive(180000)=25392;
-//   calcTaxActive(250000)=45574.
+//   calcTaxActive(250000)=41812.
 add('section102', 'cg | private | holdingMet | exercise>0 → 25% flat',
   section102({ saleProceeds: 200000, exercisePrice: 50000, track: 'cg', listedAtGrant: false, holdingMet: true }));
 add('section102', 'cg | private | holdingMet | RSU (exercise=0) → 25% on full proceeds',

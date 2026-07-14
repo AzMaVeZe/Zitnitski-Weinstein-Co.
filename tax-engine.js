@@ -3,13 +3,16 @@
 // No document/window access. Loaded as a classic script BEFORE
 // calculator2.sections.js (which provides the DOM/UI layer). No build step.
 
-  // ── Tax brackets (monthly NIS, 2024) ────────────────────────────
+  // ── Tax brackets (monthly NIS, 2026) ────────────────────────────
+  // 2026 bracket widening (חוק ההתייעלות הכלכלית): the 20% bracket now ends at
+  // ₪19,000/mo and the 31% bracket at ₪25,100/mo. The annual 31%→35% stacking
+  // threshold used below (301,200) is BRACKETS[3].max × 12 — keep them in sync.
   const BRACKETS = [
     { min: 0,     max: 7010,     rate: 0.10, label: '₪0 – ₪7,010'       },
     { min: 7010,  max: 10060,    rate: 0.14, label: '₪7,011 – ₪10,060'  },
-    { min: 10060, max: 16150,    rate: 0.20, label: '₪10,061 – ₪16,150' },
-    { min: 16150, max: 22440,    rate: 0.31, label: '₪16,151 – ₪22,440' },
-    { min: 22440, max: 46690,    rate: 0.35, label: '₪22,441 – ₪46,690' },
+    { min: 10060, max: 19000,    rate: 0.20, label: '₪10,061 – ₪19,000' },
+    { min: 19000, max: 25100,    rate: 0.31, label: '₪19,001 – ₪25,100' },
+    { min: 25100, max: 46690,    rate: 0.35, label: '₪25,101 – ₪46,690' },
     { min: 46690, max: Infinity, rate: 0.47, label: 'Above ₪46,690'      },
   ];
 
@@ -56,7 +59,7 @@
       progTax = calcTaxActive(Net);
     } else if (O > 0) {
       let T;
-      if (O <= 269280)      T = 0.31;
+      if (O <= 301200)      T = 0.31;
       else if (O <= 560280) T = 0.35;
       else                  T = 0.47;
       progTax = T * Net;
@@ -89,7 +92,7 @@
     } else {
       let T;
       if (O > 0) {
-        if (O <= 269280)      T = 0.31;
+        if (O <= 301200)      T = 0.31;
         else if (O <= 560280) T = 0.35;
         else                  T = 0.47;
       } else {
@@ -205,7 +208,7 @@
           // in the foreign payer / employee / special relations) → marginal ladder, same as domestic.
           const gross = recharacterize
             ? (over60 ? calcTaxActive(amount)
-               : otherAnnualIncome > 0 ? (otherAnnualIncome <= 269280 ? 0.31 : otherAnnualIncome <= 560280 ? 0.35 : 0.47) * amount
+               : otherAnnualIncome > 0 ? (otherAnnualIncome <= 301200 ? 0.31 : otherAnnualIncome <= 560280 ? 0.35 : 0.47) * amount
                : calcTaxPassive(amount))
             : 0.25 * amount;
           foreignWithheld = (clampPct(foreignWithheldPct) / 100) * amount;
@@ -222,7 +225,7 @@
         if (over60) {
           israeliTax = calcTaxActive(amount);
         } else if (otherAnnualIncome > 0) {
-          const T = otherAnnualIncome <= 269280 ? 0.31
+          const T = otherAnnualIncome <= 301200 ? 0.31
                   : otherAnnualIncome <= 560280 ? 0.35
                   : 0.47;
           israeliTax = T * amount;
