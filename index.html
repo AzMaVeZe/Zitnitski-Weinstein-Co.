@@ -1227,5 +1227,36 @@
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   revealEls.forEach(el => revealObs.observe(el));
 </script>
+
+<script>
+  // Report height to an embedding parent (e.g. the firm's Wix site) so an
+  // iframe embed can auto-size and avoid a double scrollbar. No-ops outside
+  // a frame — pairs with the frame-ancestor guard in <head>.
+  (function () {
+    if (window.self === window.top) return;
+    function report() {
+      window.parent.postMessage(
+        { source: 'zwco-embed', height: document.documentElement.scrollHeight },
+        '*'
+      );
+    }
+    report();
+    window.addEventListener('load', report);
+    window.addEventListener('resize', report);
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(report).observe(document.documentElement);
+    } else {
+      new MutationObserver(report).observe(document.body, { childList: true, subtree: true, attributes: true });
+    }
+    // Accordions and other reveal transitions can change height without
+    // firing a resize/mutation signal on some browsers — a short poll for
+    // the first few seconds covers late layout shifts (fonts, images).
+    var ticks = 0;
+    var iv = setInterval(function () {
+      report();
+      if (++ticks > 10) clearInterval(iv);
+    }, 500);
+  })();
+</script>
 </body>
 </html>

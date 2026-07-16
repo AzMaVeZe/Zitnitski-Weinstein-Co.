@@ -401,5 +401,33 @@ document.getElementById('searchBox').addEventListener('input', renderTable);
 applyStatic();
 renderTable();
 </script>
+
+<script>
+  // Report height to an embedding parent (e.g. the firm's Wix site) so an
+  // iframe embed can auto-size and avoid a double scrollbar. No-ops outside
+  // a frame — pairs with the frame-ancestor guard in <head>.
+  (function () {
+    if (window.self === window.top) return;
+    function report() {
+      window.parent.postMessage(
+        { source: 'zwco-embed', height: document.documentElement.scrollHeight },
+        '*'
+      );
+    }
+    report();
+    window.addEventListener('load', report);
+    window.addEventListener('resize', report);
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(report).observe(document.documentElement);
+    } else {
+      new MutationObserver(report).observe(document.body, { childList: true, subtree: true, attributes: true });
+    }
+    var ticks = 0;
+    var iv = setInterval(function () {
+      report();
+      if (++ticks > 10) clearInterval(iv);
+    }, 500);
+  })();
+</script>
 </body>
 </html>
