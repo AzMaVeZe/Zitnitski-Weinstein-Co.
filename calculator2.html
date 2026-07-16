@@ -2,16 +2,50 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <script>
+    // Frame-ancestor guard: GitHub Pages cannot set X-Frame-Options/CSP
+    // frame-ancestors headers, so this page is embeddable in an iframe from
+    // any origin by default. Break out of any frame whose ancestor is not on
+    // the allowlist (the firm's own Wix site). Add the confirmed Wix embed
+    // hostname here once known — for now only the firm's own domain is trusted.
+    (function () {
+      try {
+        if (window.self === window.top) return;
+        var ALLOWED_ANCESTORS = ['zw-co.com'];
+        function hostAllowed(host) {
+          return ALLOWED_ANCESTORS.some(function (d) {
+            return host === d || host.slice(-(d.length + 1)) === '.' + d;
+          });
+        }
+        var allowed = false;
+        if (window.location.ancestorOrigins && window.location.ancestorOrigins.length) {
+          var top = window.location.ancestorOrigins[window.location.ancestorOrigins.length - 1];
+          try { allowed = hostAllowed(new URL(top).hostname); } catch (e) {}
+        } else if (document.referrer) {
+          try { allowed = hostAllowed(new URL(document.referrer).hostname); } catch (e) {}
+        }
+        if (!allowed) window.top.location = window.self.location.href;
+      } catch (e) {
+        try { window.top.location = window.self.location.href; } catch (e2) {}
+      }
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Interactive two-step Israel tax calculator for individuals and companies — real estate, shares, interest, crypto, and stock-option scenarios, by Zitnitski Weinstein &amp; Co." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231a4b8c'/%3E%3Ctext x='32' y='43' font-family='Arial, sans-serif' font-size='26' font-weight='700' fill='white' text-anchor='middle'%3EZW%3C/text%3E%3C/svg%3E" />
   <title>Israel Tax Calculator — Step 2 | Zitnitski Weinstein &amp; Co.</title>
   <link rel="stylesheet" href="calculator.css" />
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <nav>
   <div class="nav-inner">
     <a href="index.html" class="nav-brand">🇮🇱 Israel Tax Guide <span class="brand-by">by ZW&amp;CO.</span></a>
-    <a href="calculator.html" class="back-link">← Back to Step 1</a>
+    <span>
+      <a href="calculator.html" class="back-link">← Back to Step 1</a>
+      <a href="treaty-rates.html" class="back-link">Treaty Rates</a>
+    </span>
   </div>
 </nav>
 
@@ -29,7 +63,7 @@
   </div>
 </div>
 
-<main class="page">
+<main class="page" id="main-content">
 
   <!-- ═══ Ind_RE_Inc: Individual · Real Estate · Rental Income ════════════════════ -->
   <div class="calc-section" id="Ind_RE_Inc" style="display:none">
@@ -223,6 +257,10 @@
           <span>This is my only residential apartment in Israel</span>
         </label>
 
+        <div class="foreign-notice">
+          <strong>Note — a second apartment does not always disqualify this track.</strong> Owning an additional apartment does not necessarily rule out the single-home exemption if it is held at a ≤1/3 share, subject to a protected tenancy predating 1997, a replacement apartment acquired within 24 months of this sale, or an apartment received by inheritance meeting the conditions of ITO §49ב(5) — a separate rule that can grant a <em>full</em> exemption on an inherited apartment even where the heir owns other apartments (broadly: the heir is a spouse, descendant, or descendant's spouse of the deceased; the deceased owned only one apartment; and the deceased would have qualified for the exemption). None of these scenarios are modeled by this calculator — if any may apply to you, the "only apartment" checkbox may understate your relief, and Track B's result should not be assumed to be your only option. Consult a tax professional before relying on either track.
+        </div>
+
         <div style="margin-top:.85rem; font-size:.84rem; font-weight:600; color:var(--text)">
           Owned ≥ 18 months:
           <span id="cg_res_ownedFlag" class="cg-flag cg-flag-na">Enter dates above</span>
@@ -310,7 +348,7 @@
       </div>
 
       <p class="track-verdict" id="cg_res_verdict"></p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. They exclude the betterment levy and VAT, and the gain shown is the nominal gain — inflation indexing of the cost basis is not applied. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. On a sale price above roughly ₪5.39M, capital gains carry a higher surtax component (up to 5%, versus 3% on other income) that is not included here. They exclude the betterment levy and VAT, and the gain shown is the nominal gain — inflation indexing of the cost basis is not applied. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div><!-- /Ind_RE_CG_Res -->
@@ -2327,10 +2365,16 @@
     </div>
   </div>
 
+  <!-- Shown regardless of which scenario is active, right after its results -->
+  <div class="contact-cta">
+    <p>These figures are a starting point — the details of your situation can change the outcome. Zitnitski Weinstein &amp; Co. can walk you through the specifics.</p>
+    <a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" class="cta-btn">Get in touch with our team →</a>
+  </div>
+
 </main>
 
 <footer>
-  <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer">Zitnitski Weinstein &amp; Co.</a></strong> — Israel International Tax Guide · <a href="https://www.linkedin.com/company/zitnitski-weinstein-&amp;-co-certified-public-accountants/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
+  <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer">Zitnitski Weinstein &amp; Co.</a></strong> — Israel International Tax Guide · <a href="https://www.linkedin.com/company/zitnitski-weinstein-&amp;-co-certified-public-accountants/" target="_blank" rel="noopener noreferrer">LinkedIn</a> · <a href="index.html#accessibility">Accessibility Statement</a></p>
   <p><strong>Israel International Tax Guide</strong> — General information only. Not legal or tax advice.</p>
   <p>Tax rates, brackets, and thresholds reflect the <strong>2026 tax year</strong>, including the 2026 bracket adjustment; figures are subject to change with future legislation.</p>
   <p style="margin-top:.5rem">© 2026 Zitnitski Weinstein &amp; Co. All rights reserved.</p>

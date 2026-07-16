@@ -1,0 +1,7 @@
+# This is a staging/demo host (personal GitHub Pages account) for content
+# that will ultimately be embedded on https://www.zw-co.com. Blocking
+# indexing here avoids duplicate-content competition with the primary
+# domain once that integration goes live. Revisit if this ever becomes
+# the canonical public URL for this content.
+User-agent: *
+Disallow: /

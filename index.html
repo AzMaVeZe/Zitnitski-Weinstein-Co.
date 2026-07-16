@@ -2,8 +2,42 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <script>
+    // Frame-ancestor guard: GitHub Pages cannot set X-Frame-Options/CSP
+    // frame-ancestors headers, so this page is embeddable in an iframe from
+    // any origin by default. Break out of any frame whose ancestor is not on
+    // the allowlist (the firm's own Wix site). Add the confirmed Wix embed
+    // hostname here once known — for now only the firm's own domain is trusted.
+    (function () {
+      try {
+        if (window.self === window.top) return;
+        var ALLOWED_ANCESTORS = ['zw-co.com'];
+        function hostAllowed(host) {
+          return ALLOWED_ANCESTORS.some(function (d) {
+            return host === d || host.slice(-(d.length + 1)) === '.' + d;
+          });
+        }
+        var allowed = false;
+        if (window.location.ancestorOrigins && window.location.ancestorOrigins.length) {
+          var top = window.location.ancestorOrigins[window.location.ancestorOrigins.length - 1];
+          try { allowed = hostAllowed(new URL(top).hostname); } catch (e) {}
+        } else if (document.referrer) {
+          try { allowed = hostAllowed(new URL(document.referrer).hostname); } catch (e) {}
+        }
+        if (!allowed) window.top.location = window.self.location.href;
+      } catch (e) {
+        try { window.top.location = window.self.location.href; } catch (e2) {}
+      }
+    })();
+  </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="An international tax guide and calculator for individuals relocating to Israel, prepared by Zitnitski Weinstein &amp; Co. General information only — not legal or tax advice." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231a4b8c'/%3E%3Ctext x='32' y='43' font-family='Arial, sans-serif' font-size='26' font-weight='700' fill='white' text-anchor='middle'%3EZW%3C/text%3E%3C/svg%3E" />
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Relocating to Israel — International Tax Guide" />
+  <meta property="og:description" content="A structured overview of tax residency rules, treaty benefits, aliyah incentives, and cross-border reporting obligations, prepared by Zitnitski Weinstein &amp; Co." />
+  <meta property="og:image" content="assets/zwco-logo-full.png" />
+  <meta name="twitter:card" content="summary" />
   <title>Relocating to Israel — International Tax Guide | Zitnitski Weinstein &amp; Co.</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -34,6 +68,16 @@
       font-size: 16px;
     }
 
+    /* ── SKIP LINK ── */
+    .skip-link {
+      position: absolute; top: -3rem; left: 1rem; z-index: 200;
+      background: var(--blue); color: var(--white);
+      padding: .6rem 1.1rem; border-radius: 6px;
+      font-size: .9rem; font-weight: 600; text-decoration: none;
+      transition: top .15s;
+    }
+    .skip-link:focus { top: 1rem; }
+
     /* ── NAV ── */
     nav {
       position: sticky; top: 0; z-index: 100;
@@ -52,12 +96,12 @@
     }
     .nav-brand .flag { font-size: 1.3rem; }
     .brand-by { font-size: .72rem; font-weight: 600; color: var(--muted); letter-spacing: .04em; white-space: nowrap; }
-    /* The expanded nav-link row fills the whole bar (links already wrap on
-       mid-width screens); there is no room for the badge beside them, so it
-       shows only alongside the collapsed (hamburger) nav. */
-    @media (min-width: 821px) { .brand-by { display: none; } }
+    /* Keep the firm name visible at every width. The nav-link row can now run
+       longer than the bar (more items were added over time), so it wraps
+       instead of overflowing or forcing the brand tag to disappear. */
     .nav-links {
-      display: flex; gap: .25rem; list-style: none;
+      display: flex; flex-wrap: wrap; justify-content: flex-end;
+      gap: .25rem; list-style: none;
     }
     .nav-links a {
       text-decoration: none; color: var(--muted); font-size: .875rem;
@@ -391,6 +435,7 @@
   </script>
 </head>
 <body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
 
 <!-- NAV -->
 <nav>
@@ -407,12 +452,15 @@
       <li><a href="#establishment">Establishment</a></li>
       <li><a href="#withholding">Withholding</a></li>
       <li><a href="#disclaimer">Disclaimer</a></li>
+      <li><a href="#accessibility">Accessibility</a></li>
+      <li><a href="treaty-rates.html">Treaty Rates</a></li>
       <li><a href="calculator.html" style="color:var(--blue);font-weight:600;background:var(--blue-light)">🧮 Calculator</a></li>
     </ul>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
   </div>
 </nav>
 
+<main id="main-content">
 <!-- HERO -->
 <header class="hero">
   <div class="hero-content">
@@ -508,7 +556,7 @@
           <div class="card">
             <div class="card-icon">🏦</div>
             <h3>Interest &amp; Royalties</h3>
-            <p>Cross-border interest is generally subject to a treaty withholding rate capped at <strong>17.5%</strong> (US–Israel Tax Treaty, Article 13), reduced to <strong>10%</strong> for interest on loans from banks, savings institutions, and insurance companies, subject to the treaty's conditions and exceptions. Royalties for the use of intellectual property are also subject to reduced treaty rates to prevent double taxation.</p>
+            <p>Cross-border interest is generally subject to a treaty withholding rate capped at <strong>17.5%</strong> (US–Israel Tax Treaty, Article 13), reduced to <strong>10%</strong> for interest on loans from banks, savings institutions, and insurance companies, subject to the treaty's conditions and exceptions. Royalties for the use of intellectual property are also subject to reduced treaty rates to prevent double taxation. For withholding rates under Israel's other income tax treaties, see our <a href="treaty-rates.html">full treaty rates reference table</a>.</p>
           </div>
           <div class="card">
             <div class="card-icon">🏠</div>
@@ -965,9 +1013,50 @@
 </section>
 
 
+<!-- ── ACCESSIBILITY STATEMENT ── -->
+<!-- NOTE: the accessibility-coordinator contact below is a placeholder — if the
+     firm has 25+ employees, Israeli regulations require naming a specific
+     רכז/ת נגישות (accessibility coordinator) with direct contact details;
+     replace the generic firm-contact link accordingly. -->
+<section class="section" id="accessibility">
+  <div class="container">
+    <div class="section-header reveal">
+      <span class="section-tag">Accessibility</span>
+      <h2>Accessibility Statement</h2>
+    </div>
+    <div class="disclaimer reveal">
+      <div class="disclaimer-icon">♿</div>
+      <div>
+        <h3>Our Commitment to Accessibility</h3>
+        <p>
+          Zitnitski Weinstein &amp; Co. is committed to making this website accessible to users with disabilities, in accordance with Israel's Equal Rights for Persons with Disabilities Act (1998), the Equal Rights for Persons with Disabilities Regulations (Accessibility Adjustments for Service) (2013), and Israeli Standard IS 5568 (based on WCAG 2.0 Level AA).
+        </p>
+        <br>
+        <p>
+          <strong>Accessibility measures on this site include:</strong> semantic HTML structure with landmark regions, skip-to-content links, keyboard-navigable menus and interactive elements, labeled form fields, visible focus indicators, sufficient color contrast, responsive layouts for mobile devices, and bidirectional (RTL/LTR) support on bilingual pages.
+        </p>
+        <br>
+        <p>
+          <strong>Known limitations:</strong> this site is under ongoing accessibility review. Some dynamically-updated content (such as calculator results and validation messages) may not yet be fully announced to screen readers. We are working to address these gaps; if you encounter a barrier, please let us know using the contact details below.
+        </p>
+        <br>
+        <p>
+          This statement was last reviewed on <strong>July 15, 2026</strong>, following a manual accessibility audit against WCAG 2.0 AA criteria.
+        </p>
+        <br>
+        <p>
+          <strong>Accessibility contact:</strong> if you experience any difficulty accessing content on this site, or need information in an alternative format, please contact us via <a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer">our firm website</a>. Unresolved accessibility complaints may also be directed to Israel's Commission for Equal Rights of Persons with Disabilities (נציבות שוויון זכויות לאנשים עם מוגבלות), Ministry of Justice.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</main>
+
 <!-- FOOTER -->
 <footer>
-  <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer">Zitnitski Weinstein &amp; Co.</a></strong> — Israel International Tax Guide · <a href="https://www.linkedin.com/company/zitnitski-weinstein-&amp;-co-certified-public-accountants/" target="_blank" rel="noopener noreferrer">LinkedIn</a></p>
+  <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer">Zitnitski Weinstein &amp; Co.</a></strong> — Israel International Tax Guide · <a href="https://www.linkedin.com/company/zitnitski-weinstein-&amp;-co-certified-public-accountants/" target="_blank" rel="noopener noreferrer">LinkedIn</a> · <a href="#accessibility">Accessibility Statement</a></p>
   <p><strong>Israel International Tax Guide</strong> &mdash; General information only. Not legal or tax advice.</p>
   <p style="margin-top:.5rem">Always consult a qualified US–Israel cross-border tax professional for your specific situation.</p>
   <p style="margin-top:.5rem">© 2026 Zitnitski Weinstein &amp; Co. All rights reserved.</p>

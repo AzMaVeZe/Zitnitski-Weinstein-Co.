@@ -28,6 +28,29 @@
     /* Keyboard navigation — visible focus on links (controls have their own rings) */
     a:focus-visible { outline: 3px solid rgba(37,99,176,.35); outline-offset: 2px; border-radius: 4px; }
 
+    /* CONTACT CTA (shown after calculator results) */
+    .contact-cta {
+      max-width: 900px; margin: 2rem auto 0;
+      background: var(--blue-light); border: 1px solid #bfcfe8; border-radius: var(--radius);
+      padding: 1.5rem 1.75rem; text-align: center;
+    }
+    .contact-cta p { color: var(--text); font-size: .95rem; margin-bottom: .75rem; }
+    .contact-cta a.cta-btn {
+      display: inline-block; background: var(--blue); color: var(--white);
+      padding: .6rem 1.4rem; border-radius: 7px; text-decoration: none; font-weight: 600; font-size: .9rem;
+    }
+    .contact-cta a.cta-btn:hover { background: var(--blue-mid); }
+
+    /* SKIP LINK */
+    .skip-link {
+      position: absolute; top: -3rem; left: 1rem; z-index: 200;
+      background: var(--blue); color: var(--white);
+      padding: .6rem 1.1rem; border-radius: 6px;
+      font-size: .9rem; font-weight: 600; text-decoration: none;
+      transition: top .15s;
+    }
+    .skip-link:focus { top: 1rem; }
+
     /* NAV */
     nav {
       background: var(--white); border-bottom: 1px solid var(--border);

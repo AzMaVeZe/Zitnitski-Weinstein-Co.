@@ -2,9 +2,43 @@
 <html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8" />
+<script>
+  // Frame-ancestor guard: GitHub Pages cannot set X-Frame-Options/CSP
+  // frame-ancestors headers, so this page is embeddable in an iframe from
+  // any origin by default. Break out of any frame whose ancestor is not on
+  // the allowlist (the firm's own Wix site). Add the confirmed Wix embed
+  // hostname here once known — for now only the firm's own domain is trusted.
+  (function () {
+    try {
+      if (window.self === window.top) return;
+      var ALLOWED_ANCESTORS = ['zw-co.com'];
+      function hostAllowed(host) {
+        return ALLOWED_ANCESTORS.some(function (d) {
+          return host === d || host.slice(-(d.length + 1)) === '.' + d;
+        });
+      }
+      var allowed = false;
+      if (window.location.ancestorOrigins && window.location.ancestorOrigins.length) {
+        var top = window.location.ancestorOrigins[window.location.ancestorOrigins.length - 1];
+        try { allowed = hostAllowed(new URL(top).hostname); } catch (e) {}
+      } else if (document.referrer) {
+        try { allowed = hostAllowed(new URL(document.referrer).hostname); } catch (e) {}
+      }
+      if (!allowed) window.top.location = window.self.location.href;
+    } catch (e) {
+      try { window.top.location = window.self.location.href; } catch (e2) {}
+    }
+  })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Treaty Withholding Rates | Zitnitski Weinstein &amp; Co.</title>
 <meta name="description" content="Reference table of withholding tax rates (dividends, interest, royalties) under Israel's income tax treaties. Marketing and illustration purposes only — not tax advice. Published by Zitnitski Weinstein & Co." />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231a4b8c'/%3E%3Ctext x='32' y='43' font-family='Arial, sans-serif' font-size='26' font-weight='700' fill='white' text-anchor='middle'%3EZW%3C/text%3E%3C/svg%3E" />
+<meta property="og:type" content="website" />
+<meta property="og:title" content="Israel Tax Treaty Withholding Rates" />
+<meta property="og:description" content="Withholding rates on dividends, interest, and royalties under Israel's ~60 income tax treaties — bilingual reference table by Zitnitski Weinstein &amp; Co." />
+<meta property="og:image" content="assets/zwco-logo-full.png" />
+<meta name="twitter:card" content="summary" />
 <style>
   :root {
     --blue:        #1a4b8c;
@@ -26,6 +60,16 @@
   }
   html[lang="he"] body { line-height: 1.7; }
   input, select, button { font-family: inherit; }
+
+  /* ── Skip link ── */
+  .skip-link {
+    position: absolute; top: -3rem; left: 1rem; z-index: 200;
+    background: var(--blue); color: var(--white);
+    padding: .6rem 1.1rem; border-radius: 6px;
+    font-size: .9rem; font-weight: 700; text-decoration: none;
+    transition: top .15s;
+  }
+  .skip-link:focus { top: 1rem; }
 
   /* ── Nav ── */
   nav {
@@ -117,6 +161,7 @@
 </style>
 </head>
 <body>
+<a href="#main-content" class="skip-link" data-i18n="skipLink">Skip to main content</a>
 
 <nav>
   <div>
@@ -139,7 +184,7 @@
   </div>
 </header>
 
-<main>
+<main id="main-content">
   <div class="controls">
     <input type="search" id="searchBox" dir="auto" data-i18n-placeholder="searchPh" placeholder="Search country…" />
     <span class="count-note" id="countNote"></span>
@@ -167,7 +212,7 @@
 </main>
 
 <footer>
-  <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" data-i18n="firmName">Zitnitski Weinstein &amp; Co.</a></strong> <span data-i18n="footerTag">— Israel International Tax Guide</span></p>
+  <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" data-i18n="firmName">Zitnitski Weinstein &amp; Co.</a></strong> <span data-i18n="footerTag">— Israel International Tax Guide</span> · <a href="index.html#accessibility" data-i18n="accessibilityLink">Accessibility Statement</a></p>
   <p data-i18n="dFooter">Marketing and illustration purposes only. Not legal or tax advice, not a professional opinion; material errors may occur. Always consult a qualified cross-border tax professional.</p>
   <p style="margin-top:.5rem" data-i18n="copyright">© 2026 Zitnitski Weinstein &amp; Co. All rights reserved.</p>
   <a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" class="footer-logo-full-link">
@@ -193,6 +238,8 @@ const I18N = {
     dUnderTable: 'The rates shown are the treaty ceilings as summarized from firm source material; the domestic rate applies where it is lower, and treaty relief is never automatic — a valid certificate from the Israel Tax Authority is generally required. Figures are for marketing and illustration purposes only, may contain material errors, and do not constitute advice or an opinion of any kind. Verify every rate against the official treaty text and current guidance before acting.',
     firmName: 'Zitnitski Weinstein & Co.',
     footerTag: '— Israel International Tax Guide',
+    accessibilityLink: 'Accessibility Statement',
+    skipLink: 'Skip to main content',
     dFooter: 'Marketing and illustration purposes only. Not legal or tax advice, not a professional opinion; material errors may occur. Always consult a qualified cross-border tax professional.',
     copyright: '© 2026 Zitnitski Weinstein & Co. All rights reserved.',
     countShown: (n, t) => `Showing ${n} of ${t} treaties`,
@@ -215,6 +262,8 @@ const I18N = {
     dUnderTable: 'השיעורים המוצגים הם תקרות האמנה כפי שסוכמו מחומר המקור של המשרד; מקום שבו הדין הפנימי קובע שיעור נמוך יותר — הוא שיחול, והקלת אמנה אינה אוטומטית — נדרש ככלל אישור בתוקף מרשות המסים. הנתונים למטרות שיווק והמחשה בלבד, עלולות ליפול בהם טעויות מהותיות, ואין הם מהווים ייעוץ או חוות דעת מכל סוג. יש לאמת כל שיעור מול נוסח האמנה הרשמי וההנחיות העדכניות לפני כל פעולה.',
     firmName: 'ז\'יטניצקי וינשטין ושות\'',
     footerTag: '— מדריך המס הבינלאומי',
+    accessibilityLink: 'הצהרת נגישות',
+    skipLink: 'דלג לתוכן הראשי',
     dFooter: 'למטרות שיווק והמחשה בלבד. אין לראות באמור ייעוץ משפטי או ייעוץ מס או חוות דעת; עלולות ליפול טעויות מהותיות. יש להיוועץ תמיד באיש מקצוע מוסמך למיסוי בינלאומי.',
     copyright: '© 2026 ז\'יטניצקי וינשטין ושות\'. כל הזכויות שמורות.',
     countShown: (n, t) => `מוצגות ${n} מתוך ${t} אמנות`,

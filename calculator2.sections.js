@@ -582,7 +582,7 @@
           '<span class="badge badge-recommended">Fully Exempt ✓</span>';
         document.getElementById('cg_res_verdict').textContent =
           'Track A gives full exemption — ₪0 total tax.'
-          + ' Consider Track B if you plan to sell a higher-value property within the next 4 years, '
+          + ' Consider Track B if you plan to sell a higher-value property within the next 18 months, '
           + 'as using the exemption now forfeits it for that future sale.';
         return;
       }
@@ -605,7 +605,7 @@
         document.getElementById('cg_res_verdict').textContent =
           'Track A saves ' + fmt(totalB - totalA)
           + ' — total ' + fmt(totalA) + ' vs ' + fmt(totalB) + ' on Track B. '
-          + 'Track B preserves your once-per-4-years single-home exemption — consider which matters more.';
+          + 'Track B preserves your single-home exemption for a future, higher-value sale — consider which matters more.';
       } else {
         document.getElementById('cg_res_B_card').classList.add('track-recommended');
         document.getElementById('cg_res_B_badge').innerHTML =
@@ -2166,13 +2166,25 @@
     }
 
     // Show the input group for the selected income type, and the foreign-
-    // withholding field only for a foreign-source dividend.
+    // withholding field only for a foreign-source dividend. Clears the hidden
+    // group's values on switch — matching the setGroup pattern used elsewhere
+    // in this file — so a stale figure can never sit behind a hidden field.
+    // (The engine itself already guards foreignWithheldPct on source==='israeli',
+    // so this was not an exploitable calc bug, but clearing keeps the pattern
+    // consistent and removes the risk if that guard ever changes.)
     function syncVisibility() {
       const isDiv = document.getElementById('coilsh_incomeType').value === 'dividend';
       document.getElementById('coilsh_dividendInputs').style.display = isDiv ? '' : 'none';
       document.getElementById('coilsh_cgInputs').style.display       = isDiv ? 'none' : '';
+      if (isDiv) {
+        ['coilsh_cg_proceeds', 'coilsh_cg_cost', 'coilsh_cg_acqExpenses', 'coilsh_cg_saleExpenses']
+          .forEach(id => { document.getElementById(id).value = ''; });
+      } else {
+        document.getElementById('coilsh_dividend').value = '';
+      }
       const foreign = document.getElementById('coilsh_source').value === 'foreign';
       document.getElementById('coilsh_foreignWhtRow').style.display  = (isDiv && foreign) ? '' : 'none';
+      if (!(isDiv && foreign)) document.getElementById('coilsh_foreignWithheld').value = '';
     }
 
     // Render the shared two-card layout from a normalized result. `nominalNote`
@@ -2378,4 +2390,23 @@
     runCalc();
   }
 
-  document.addEventListener('DOMContentLoaded', showSection);
+  // Screen-reader announcements: every section's result verdict and the
+  // date-validation warning boxes toggle via style.display, which is silent
+  // to assistive tech. Apply aria-live generically (rather than per-element
+  // in the markup) so it stays correct as sections are added/edited.
+  function applyLiveRegions() {
+    document.querySelectorAll('.track-verdict').forEach(el => {
+      el.setAttribute('aria-live', 'polite');
+    });
+    document.querySelectorAll(
+      '[id$="badDateWarn"], [id$="dateOrderWarn"], [id$="noSaleWarn"], [id$="noDateWarn"]'
+    ).forEach(el => {
+      el.setAttribute('role', 'alert');
+      el.setAttribute('aria-live', 'assertive');
+    });
+  }
+
+  document.addEventListener('DOMContentLoaded', () => {
+    applyLiveRegions();
+    showSection();
+  });
