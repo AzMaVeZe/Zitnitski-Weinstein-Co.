@@ -116,12 +116,11 @@
 
   /* ── Controls ── */
   .controls { display: flex; gap: .8rem; margin: 1.2rem 0; flex-wrap: wrap; }
-  .controls input[type="search"] {
+  .controls input[type="search"], .controls select {
     flex: 1 1 16rem; border: 1.5px solid var(--border); border-radius: 7px;
     padding: .65rem .9rem; font-size: .94rem; color: var(--text); background: var(--white);
   }
-  .controls input[type="search"]:focus { outline: none; border-color: var(--blue-mid); }
-  .count-note { align-self: center; font-size: .82rem; color: var(--muted); white-space: nowrap; }
+  .controls input[type="search"]:focus, .controls select:focus { outline: none; border-color: var(--blue-mid); }
 
   /* ── Table ── */
   .table-wrap {
@@ -140,7 +139,7 @@
   td.country { font-weight: 700; color: var(--blue); white-space: nowrap; }
   .rate { white-space: nowrap; unicode-bidi: isolate; direction: ltr; display: inline-block; }
   .cond { display: block; font-size: .78rem; color: var(--muted); }
-  .no-results { padding: 1.2rem; text-align: center; color: var(--muted); font-style: italic; }
+  .no-results { padding: 2.2rem 1.2rem; text-align: center; color: var(--muted); font-style: italic; }
 
   .under-table-note {
     font-size: .8rem; color: var(--muted); margin-top: .9rem; text-align: start;
@@ -190,8 +189,9 @@
 
 <main id="main-content">
   <div class="controls">
-    <input type="search" id="searchBox" dir="auto" data-i18n-placeholder="searchPh" placeholder="Search country…" />
-    <span class="count-note" id="countNote"></span>
+    <select id="countrySelect" dir="auto"></select>
+    <input type="search" id="searchBox" dir="auto" list="countryDatalist" autocomplete="off" data-i18n-placeholder="searchPh" placeholder="Or type a country name…" />
+    <datalist id="countryDatalist"></datalist>
   </div>
 
   <div class="table-wrap">
@@ -236,7 +236,8 @@ const I18N = {
     subtitle: "Maximum withholding rates on dividends, interest, and royalties under Israel's income tax treaties — a quick-reference table published by Zitnitski Weinstein & Co.",
     dTopTitle: '⚠️ General overview only — not advice',
     dTopBody: 'This table presents a general overview of withholding rates. It does not constitute tax advice, a professional opinion, or a substitute for the binding treaty text. It may contain material errors. Treaty rates are subject to conditions, exceptions, protocols, and legislative change. Do not rely on this table without specific professional advice.',
-    searchPh: 'Search country…',
+    searchPh: 'Or type a country name…',
+    selectPlaceholder: 'Select a country…',
     thCountry: 'Country', thDivGen: 'Dividends — general', thDivParent: 'Dividends — parent co.',
     thInterest: 'Interest', thRoyalties: 'Royalties', thNotes: 'Notes',
     dUnderTable: 'The rates shown are the treaty ceilings as summarized from firm source material; the domestic rate applies where it is lower, and treaty relief is never automatic — a valid certificate from the Israel Tax Authority is generally required. This is a general overview only, may contain material errors, and does not constitute advice or an opinion of any kind. Verify every rate against the official treaty text and current guidance before acting.',
@@ -246,8 +247,8 @@ const I18N = {
     skipLink: 'Skip to main content',
     dFooter: 'General overview only. Not legal or tax advice, not a professional opinion; material errors may occur. Always consult a qualified cross-border tax professional.',
     copyright: '© 2026 Zitnitski Weinstein & Co. All rights reserved.',
-    countShown: (n, t) => `Showing ${n} of ${t} treaties`,
-    noResults: 'No country matches your search.',
+    emptyState: 'Select a country above, or type its name (in Hebrew or English), to see its treaty rates.',
+    noResults: 'No country matches that name — pick from the list or check the spelling.',
     notFound: 'Not found in sources',
     toggleLabel: 'עברית',
   },
@@ -260,7 +261,8 @@ const I18N = {
     subtitle: 'שיעורי הניכוי במקור המרביים על דיבידנד, ריבית ותמלוגים לפי אמנות המס של ישראל — טבלת עיון מהירה מבית ז\'יטניצקי וינשטין ושות\'.',
     dTopTitle: '⚠️ סקירה כללית בלבד — אין לראות בכך ייעוץ',
     dTopBody: 'טבלה זו מציגה סקירה כללית של שיעורי הניכוי במקור. אין היא מהווה ייעוץ מס, חוות דעת מקצועית או תחליף לנוסח האמנה המחייב. עלולות ליפול בה טעויות מהותיות. שיעורי האמנות כפופים לתנאים, לחריגים, לפרוטוקולים ולשינויי חקיקה. אין להסתמך על הטבלה ללא ייעוץ מקצועי פרטני.',
-    searchPh: 'חיפוש מדינה…',
+    searchPh: 'או הקלד שם מדינה…',
+    selectPlaceholder: 'בחר מדינה…',
     thCountry: 'מדינה', thDivGen: 'דיבידנד — כללי', thDivParent: 'דיבידנד — חברת אם',
     thInterest: 'ריבית', thRoyalties: 'תמלוגים', thNotes: 'הערות',
     dUnderTable: 'השיעורים המוצגים הם תקרות האמנה כפי שסוכמו מחומר המקור של המשרד; מקום שבו הדין הפנימי קובע שיעור נמוך יותר — הוא שיחול, והקלת אמנה אינה אוטומטית — נדרש ככלל אישור בתוקף מרשות המסים. זוהי סקירה כללית בלבד, עלולות ליפול בה טעויות מהותיות, ואין היא מהווה ייעוץ או חוות דעת מכל סוג. יש לאמת כל שיעור מול נוסח האמנה הרשמי וההנחיות העדכניות לפני כל פעולה.',
@@ -270,8 +272,8 @@ const I18N = {
     skipLink: 'דלג לתוכן הראשי',
     dFooter: 'סקירה כללית בלבד. אין לראות באמור ייעוץ משפטי או ייעוץ מס או חוות דעת; עלולות ליפול טעויות מהותיות. יש להיוועץ תמיד באיש מקצוע מוסמך למיסוי בינלאומי.',
     copyright: '© 2026 ז\'יטניצקי וינשטין ושות\'. כל הזכויות שמורות.',
-    countShown: (n, t) => `מוצגות ${n} מתוך ${t} אמנות`,
-    noResults: 'לא נמצאה מדינה מתאימה לחיפוש.',
+    emptyState: 'בחר מדינה למעלה, או הקלד את שמה (בעברית או באנגלית), כדי לראות את שיעורי האמנה שלה.',
+    noResults: 'לא נמצאה מדינה בשם הזה — בחר מהרשימה או בדוק את האיות.',
     notFound: 'לא נמצא במקורות',
     toggleLabel: 'English',
   },
@@ -347,8 +349,38 @@ const COUNTRIES = [
 
 // ── Rendering ───────────────────────────────────────────────────────
 let lang = 'en';
+// Stable identity for the selected country is its .en field (unaffected by
+// the language toggle, unlike its displayed label).
+let selectedKey = null;
 
 function t(key) { return I18N[lang][key]; }
+
+function sortedCountries() {
+  return COUNTRIES.slice().sort((a, b) => a[lang].localeCompare(b[lang], lang === 'he' ? 'he' : 'en'));
+}
+
+function findByName(query) {
+  const q = query.trim().toLowerCase();
+  if (!q) return null;
+  return COUNTRIES.find(c => c.en.toLowerCase() === q || c.he === query.trim()) || null;
+}
+
+function populateSelect() {
+  const select = document.getElementById('countrySelect');
+  const opts = [`<option value="">${t('selectPlaceholder')}</option>`]
+    .concat(sortedCountries().map(c => `<option value="${c.en}">${c[lang]}</option>`));
+  select.innerHTML = opts.join('');
+  select.value = selectedKey || '';
+}
+
+function populateDatalist() {
+  // Both languages are always offered, regardless of the current UI
+  // language, so typing works in Hebrew or English at any time.
+  const list = document.getElementById('countryDatalist');
+  list.innerHTML = COUNTRIES
+    .map(c => `<option value="${c.en}"></option><option value="${c.he}"></option>`)
+    .join('');
+}
 
 function applyStatic() {
   document.documentElement.lang = lang;
@@ -364,6 +396,8 @@ function applyStatic() {
   document.title = lang === 'he'
     ? 'שיעורי ניכוי במקור באמנות המס | ז\'יטניצקי וינשטין ושות\''
     : 'Treaty Withholding Rates | Zitnitski Weinstein & Co.';
+  populateSelect();
+  populateDatalist();
 }
 
 function cell(rate, note) {
@@ -372,16 +406,17 @@ function cell(rate, note) {
   return `<span class="rate">${rate}</span>${n}`;
 }
 
-function renderTable() {
-  const q = document.getElementById('searchBox').value.trim().toLowerCase();
+// Renders exactly zero or one country: nothing picked yet (emptyState),
+// a typed name with no match (noResults), or the selected country's row.
+function renderSelected() {
   const body = document.getElementById('ratesBody');
-  const rows = COUNTRIES
-    .slice()
-    .sort((a, b) => a[lang].localeCompare(b[lang], lang === 'he' ? 'he' : 'en'))
-    .filter(c => !q || c.en.toLowerCase().includes(q) || c.he.includes(q));
+  const searchBox = document.getElementById('searchBox');
+  const typed = searchBox.value.trim();
 
-  body.innerHTML = rows.length
-    ? rows.map(c => `
+  const c = selectedKey ? COUNTRIES.find(x => x.en === selectedKey) : null;
+
+  if (c) {
+    body.innerHTML = `
       <tr>
         <td class="country">${c[lang]}</td>
         <td>${cell(c.divGen)}</td>
@@ -389,21 +424,43 @@ function renderTable() {
         <td>${cell(c.interest, c.intNote)}</td>
         <td>${cell(c.royalties, c.royNote)}</td>
         <td>${c.notes && c.notes[lang] ? c.notes[lang] : '—'}</td>
-      </tr>`).join('')
-    : `<tr><td colspan="6" class="no-results">${t('noResults')}</td></tr>`;
+      </tr>`;
+  } else if (typed) {
+    body.innerHTML = `<tr><td colspan="6" class="no-results">${t('noResults')}</td></tr>`;
+  } else {
+    body.innerHTML = `<tr><td colspan="6" class="no-results">${t('emptyState')}</td></tr>`;
+  }
+}
 
-  document.getElementById('countNote').textContent = t('countShown')(rows.length, COUNTRIES.length);
+function selectCountry(c) {
+  selectedKey = c ? c.en : null;
+  document.getElementById('countrySelect').value = selectedKey || '';
+  document.getElementById('searchBox').value = c ? c[lang] : '';
+  renderSelected();
 }
 
 document.getElementById('langToggle').addEventListener('click', () => {
   lang = lang === 'en' ? 'he' : 'en';
+  const current = selectedKey ? COUNTRIES.find(x => x.en === selectedKey) : null;
   applyStatic();
-  renderTable();
+  if (current) document.getElementById('searchBox').value = current[lang];
+  renderSelected();
 });
-document.getElementById('searchBox').addEventListener('input', renderTable);
+
+document.getElementById('countrySelect').addEventListener('change', (e) => {
+  const c = COUNTRIES.find(x => x.en === e.target.value) || null;
+  selectCountry(c);
+});
+
+document.getElementById('searchBox').addEventListener('input', (e) => {
+  const match = findByName(e.target.value);
+  selectedKey = match ? match.en : null;
+  document.getElementById('countrySelect').value = selectedKey || '';
+  renderSelected();
+});
 
 applyStatic();
-renderTable();
+renderSelected();
 </script>
 
 <script>

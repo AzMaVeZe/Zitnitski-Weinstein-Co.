@@ -250,6 +250,7 @@
       font-size: .78rem; color: var(--muted);
       margin-top: .4rem;
     }
+    .input-hint a { color: var(--blue); font-weight: 600; }
 
     /* INPUT TABLE */
     .input-table {
