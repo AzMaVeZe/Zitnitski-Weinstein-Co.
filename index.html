@@ -24,7 +24,11 @@
         } else if (document.referrer) {
           try { allowed = hostAllowed(new URL(document.referrer).hostname); } catch (e) {}
         }
-        if (!allowed) window.top.location = window.self.location.href;
+        if (!allowed) { window.top.location = window.self.location.href; return; }
+        // Legitimately embedded — flag it so CSS can drop viewport-relative
+        // sizing (e.g. body's sticky-footer min-height:100vh) that would
+        // otherwise feed back into the iframe auto-resize script below.
+        document.documentElement.classList.add('zwco-embedded');
       } catch (e) {
         try { window.top.location = window.self.location.href; } catch (e2) {}
       }
@@ -448,7 +452,6 @@
       <li><a href="#residency">Residency</a></li>
       <li><a href="#treaty">US–Israel Treaty</a></li>
       <li><a href="#aliyah">Aliyah Benefits</a></li>
-      <li><a href="#reporting">Reporting</a></li>
       <li><a href="#establishment">Establishment</a></li>
       <li><a href="#withholding">Withholding</a></li>
       <li><a href="#disclaimer">Disclaimer</a></li>
@@ -726,111 +729,12 @@
 </section>
 
 
-<!-- ── SECTION 4: REPORTING ── -->
-<section class="section" id="reporting">
-  <div class="container">
-    <details class="section-acc">
-      <summary class="section-summary">
-        <span class="section-tag">Section 04</span>
-        <h2 class="summary-title">US Reporting Obligations: FBAR &amp; FATCA</h2>
-        <span class="summary-chevron" aria-hidden="true"></span>
-      </summary>
-      <div class="section-acc-body">
-        <div class="section-header reveal">
-          <p>US persons living in Israel with Israeli bank accounts, pensions, or investments face significant cross-border reporting obligations regardless of the Israeli tax exemption.</p>
-        </div>
-
-        <div class="two-col reveal">
-          <div class="info-block">
-            <h3>FBAR — FinCEN Form 114</h3>
-            <ul>
-              <li><span class="dot"></span><strong>Who must file:</strong> US persons with foreign financial accounts exceeding $10,000 aggregate at any point during the calendar year</li>
-              <li><span class="dot"></span><strong>What to report:</strong> Bank accounts, brokerage accounts, certain pension accounts, and mutual funds held at foreign institutions</li>
-              <li><span class="dot"></span><strong>Deadline:</strong> April 15 (automatic extension to October 15)</li>
-              <li><span class="dot"></span><strong>Filed with:</strong> FinCEN electronically via BSA E-Filing System (not the IRS)</li>
-              <li><span class="dot"></span><strong>Penalties:</strong> For non-willful violations, up to $10,000 (inflation-adjusted) per annual report — not per account — following <em>Bittner v. United States</em> (2023); for willful violations, up to the greater of $100,000 or 50% of the account balance, assessed per account</li>
-              <li><span class="dot"></span><strong>Israeli accounts covered:</strong> Israeli bank (e.g., Bank Hapoalim, Bank Leumi), brokerage, pension (Kupat Gemel, Keren Hishtalmut, Bituach Menahalim)</li>
-            </ul>
-          </div>
-          <div class="info-block">
-            <h3>FATCA — Form 8938</h3>
-            <ul>
-              <li><span class="dot"></span><strong>Who must file:</strong> Specified individuals with foreign financial assets exceeding thresholds ($50K single/$100K married filing jointly, or $200K/$400K if abroad)</li>
-              <li><span class="dot"></span><strong>What to report:</strong> Foreign bank accounts, stocks, securities, interests in foreign entities, and certain foreign contracts</li>
-              <li><span class="dot"></span><strong>Filed with:</strong> IRS as an attachment to Form 1040 (not a stand-alone filing)</li>
-              <li><span class="dot"></span><strong>Deadline:</strong> Same as your income tax return (including extensions)</li>
-              <li><span class="dot"></span><strong>Penalties:</strong> $10,000 failure-to-file penalty; up to $50,000 for continued failure; potential 40% underpayment penalty on undisclosed foreign assets</li>
-              <li><span class="dot"></span><strong>FATCA ≠ FBAR:</strong> Filing both is typically required; they are not substitutes for each other</li>
-            </ul>
-          </div>
-        </div>
-
-        <div class="cards reveal" style="margin-top:2rem">
-          <div class="card">
-            <div class="card-icon">🏛️</div>
-            <h3>Israeli Pension Accounts</h3>
-            <p>Keren Hishtalmut (study fund), Kupat Gemel (provident fund), and Bituach Menahalim (manager's insurance) are commonly reportable on both FBAR and Form 8938. Their treatment under FATCA can be complex — some may qualify for treaty-based exclusions.</p>
-          </div>
-          <div class="card">
-            <div class="card-icon">🏢</div>
-            <h3>Israeli Business Interests</h3>
-            <p>Owning or controlling an Israeli company (Ltd.) triggers additional US reporting: <strong>Form 5471</strong> for controlled foreign corporations, <strong>Form 8865</strong> for foreign partnerships, and <strong>Form 8621</strong> if Israeli mutual funds are classified as PFICs.</p>
-          </div>
-          <div class="card">
-            <div class="card-icon">📋</div>
-            <h3>Streamlined Filing Programs</h3>
-            <p>US persons who are non-willfully delinquent in FBAR or FATCA obligations may qualify for the IRS <strong>Streamlined Foreign Offshore Procedures</strong>, which allow late filers living abroad to come into compliance with reduced (sometimes zero) penalties.</p>
-          </div>
-          <div class="card">
-            <div class="card-icon">🔄</div>
-            <h3>Israel–US FATCA IGA</h3>
-            <p>Israel and the US have entered into a <strong>FATCA Intergovernmental Agreement (IGA)</strong>. Israeli financial institutions automatically report US account holders' information to the ITA, which shares it with the IRS — making non-disclosure increasingly detectable.</p>
-          </div>
-        </div>
-
-        <div class="accordion reveal" style="margin-top:2.5rem">
-          <div class="accordion-item">
-            <button class="accordion-trigger">Do I need to report my Israeli Keren Hishtalmut on FBAR?<span class="accordion-icon">+</span></button>
-            <div class="accordion-body">
-              <p>Almost certainly yes, if the aggregate value of your foreign accounts (including the Keren Hishtalmut) exceeded $10,000 at any point during the year. The IRS has confirmed that many Israeli provident funds are reportable as foreign financial accounts on FBAR. Determining the reportable value requires understanding the account type (defined contribution vs. defined benefit) and whether signatory authority exists. Consult a tax professional for your specific plan.</p>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <button class="accordion-trigger">What is PFIC taxation and how does it affect Israeli mutual funds?<span class="accordion-icon">+</span></button>
-            <div class="accordion-body">
-              <p>A <strong>Passive Foreign Investment Company (PFIC)</strong> is a foreign corporation where 75%+ of income is passive or 50%+ of assets produce passive income. Most Israeli mutual funds (Kranot) and ETFs are PFICs. Holding PFICs without a timely election (QEF or Mark-to-Market) results in punitive US tax treatment: an interest charge plus ordinary income tax on "excess distributions" and gains. Many US persons in Israel prefer to hold US-domiciled ETFs in their investment accounts to avoid PFIC exposure.</p>
-            </div>
-          </div>
-          <div class="accordion-item">
-            <button class="accordion-trigger">What US forms might I need to file as a US citizen in Israel?<span class="accordion-icon">+</span></button>
-            <div class="accordion-body">
-              <p>The list varies by situation, but common forms include:</p>
-              <ul>
-                <li><strong>Form 1040</strong> — annual US income tax return (always required)</li>
-                <li><strong>FinCEN 114 (FBAR)</strong> — foreign accounts over $10K aggregate</li>
-                <li><strong>Form 8938</strong> — FATCA reporting of foreign financial assets</li>
-                <li><strong>Form 2555</strong> — Foreign Earned Income Exclusion</li>
-                <li><strong>Form 1116</strong> — Foreign Tax Credit</li>
-                <li><strong>Form 5471</strong> — Information return for controlled foreign corporations</li>
-                <li><strong>Form 8621</strong> — PFIC annual reporting</li>
-                <li><strong>Form 3520 / 3520-A</strong> — Foreign trusts and large foreign gifts</li>
-                <li><strong>Form 8865</strong> — Foreign partnership reporting</li>
-              </ul>
-            </div>
-          </div>
-        </div>
-      </div>
-    </details>
-  </div>
-</section>
-
-
-<!-- ── SECTION 5: PERMANENT ESTABLISHMENT ── -->
+<!-- ── SECTION 4: PERMANENT ESTABLISHMENT ── -->
 <section class="section" id="establishment">
   <div class="container">
     <details class="section-acc">
       <summary class="section-summary">
-        <span class="section-tag">Section 05</span>
+        <span class="section-tag">Section 04</span>
         <h2 class="summary-title">Permanent Establishment (PE)</h2>
         <span class="summary-chevron" aria-hidden="true"></span>
       </summary>
@@ -908,12 +812,12 @@
 </section>
 
 
-<!-- ── SECTION 6: WITHHOLDING TAX ── -->
+<!-- ── SECTION 5: WITHHOLDING TAX ── -->
 <section class="section" id="withholding">
   <div class="container">
     <details class="section-acc">
       <summary class="section-summary">
-        <span class="section-tag">Section 06</span>
+        <span class="section-tag">Section 05</span>
         <h2 class="summary-title">Withholding Tax on Payments (and the Foreign-Resident Trap)</h2>
         <span class="summary-chevron" aria-hidden="true"></span>
       </summary>
@@ -1020,35 +924,40 @@
      replace the generic firm-contact link accordingly. -->
 <section class="section" id="accessibility">
   <div class="container">
-    <div class="section-header reveal">
-      <span class="section-tag">Accessibility</span>
-      <h2>Accessibility Statement</h2>
-    </div>
-    <div class="disclaimer reveal">
-      <div class="disclaimer-icon">♿</div>
-      <div>
-        <h3>Our Commitment to Accessibility</h3>
-        <p>
-          Zitnitski Weinstein &amp; Co. is committed to making this website accessible to users with disabilities, in accordance with Israel's Equal Rights for Persons with Disabilities Act (1998), the Equal Rights for Persons with Disabilities Regulations (Accessibility Adjustments for Service) (2013), and Israeli Standard IS 5568 (based on WCAG 2.0 Level AA).
-        </p>
-        <br>
-        <p>
-          <strong>Accessibility measures on this site include:</strong> semantic HTML structure with landmark regions, skip-to-content links, keyboard-navigable menus and interactive elements, labeled form fields, visible focus indicators, sufficient color contrast, responsive layouts for mobile devices, and bidirectional (RTL/LTR) support on bilingual pages.
-        </p>
-        <br>
-        <p>
-          <strong>Known limitations:</strong> this site is under ongoing accessibility review. Some dynamically-updated content (such as calculator results and validation messages) may not yet be fully announced to screen readers. We are working to address these gaps; if you encounter a barrier, please let us know using the contact details below.
-        </p>
-        <br>
-        <p>
-          This statement was last reviewed on <strong>July 15, 2026</strong>, following a manual accessibility audit against WCAG 2.0 AA criteria.
-        </p>
-        <br>
-        <p>
-          <strong>Accessibility contact:</strong> if you experience any difficulty accessing content on this site, or need information in an alternative format, please contact us via <a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer">our firm website</a>. Unresolved accessibility complaints may also be directed to Israel's Commission for Equal Rights of Persons with Disabilities (נציבות שוויון זכויות לאנשים עם מוגבלות), Ministry of Justice.
-        </p>
+    <details class="section-acc">
+      <summary class="section-summary">
+        <span class="section-tag">Accessibility</span>
+        <h2 class="summary-title">Accessibility Statement</h2>
+        <span class="summary-chevron" aria-hidden="true"></span>
+      </summary>
+      <div class="section-acc-body">
+        <div class="disclaimer reveal">
+          <div class="disclaimer-icon">♿</div>
+          <div>
+            <h3>Our Commitment to Accessibility</h3>
+            <p>
+              Zitnitski Weinstein &amp; Co. is committed to making this website accessible to users with disabilities, in accordance with Israel's Equal Rights for Persons with Disabilities Act (1998), the Equal Rights for Persons with Disabilities Regulations (Accessibility Adjustments for Service) (2013), and Israeli Standard IS 5568 (based on WCAG 2.0 Level AA).
+            </p>
+            <br>
+            <p>
+              <strong>Accessibility measures on this site include:</strong> semantic HTML structure with landmark regions, skip-to-content links, keyboard-navigable menus and interactive elements, labeled form fields, visible focus indicators, sufficient color contrast, responsive layouts for mobile devices, and bidirectional (RTL/LTR) support on bilingual pages.
+            </p>
+            <br>
+            <p>
+              <strong>Known limitations:</strong> this site is under ongoing accessibility review. Some dynamically-updated content (such as calculator results and validation messages) may not yet be fully announced to screen readers. We are working to address these gaps; if you encounter a barrier, please let us know using the contact details below.
+            </p>
+            <br>
+            <p>
+              This statement was last reviewed on <strong>July 15, 2026</strong>, following a manual accessibility audit against WCAG 2.0 AA criteria.
+            </p>
+            <br>
+            <p>
+              <strong>Accessibility contact:</strong> if you experience any difficulty accessing content on this site, or need information in an alternative format, please contact us via <a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer">our firm website</a>. Unresolved accessibility complaints may also be directed to Israel's Commission for Equal Rights of Persons with Disabilities (נציבות שוויון זכויות לאנשים עם מוגבלות), Ministry of Justice.
+            </p>
+          </div>
+        </div>
       </div>
-    </div>
+    </details>
   </div>
 </section>
 
@@ -1094,10 +1003,22 @@
     if (acc && !acc.open) acc.open = true;
     return target;
   }
-  // Nav links keep normal anchor behaviour (the hash they add is stripped on
-  // the next load by the head script) but still expand their target section.
+  // Nav links: scroll explicitly via JS (rather than relying on the native
+  // hash-jump + scroll-margin-top) so this is robust inside embedding
+  // contexts — e.g. Wix Editor Preview — where native anchor-scroll can
+  // behave inconsistently. The hash is still pushed to the URL (unlike
+  // "Explore the Guide" below) so links stay shareable/bookmarkable; it's
+  // stripped on the next full load by the head script.
   document.querySelectorAll('.nav-links a[href^="#"]').forEach(a => {
-    a.addEventListener('click', () => openSectionAccordion(a.getAttribute('href')));
+    a.addEventListener('click', e => {
+      const hash = a.getAttribute('href');
+      const target = openSectionAccordion(hash);
+      if (target) {
+        e.preventDefault();
+        history.pushState(null, '', hash);
+        target.scrollIntoView({ behavior: 'smooth' });
+      }
+    });
   });
   // "Explore the Guide" scrolls in via JS only and never leaves a hash behind,
   // so a reload returns to the top of the page with every section collapsed.
@@ -1232,19 +1153,27 @@
   // Report height to an embedding parent (e.g. the firm's Wix site) so an
   // iframe embed can auto-size and avoid a double scrollbar. No-ops outside
   // a frame — pairs with the frame-ancestor guard in <head>.
+  //
+  // Measures document.body, not documentElement: per spec, the root
+  // element's scrollHeight always floors at the current viewport height,
+  // which — combined with the parent growing the iframe on every report —
+  // creates unbounded feedback growth. body has no such floor (as long as
+  // it isn't itself stretched to 100vh; see the .zwco-embedded CSS override
+  // for pages with a sticky-footer layout).
   (function () {
     if (window.self === window.top) return;
+    var lastReported = -1;
     function report() {
-      window.parent.postMessage(
-        { source: 'zwco-embed', height: document.documentElement.scrollHeight },
-        '*'
-      );
+      var h = document.body.scrollHeight;
+      if (Math.abs(h - lastReported) < 2) return;   // avoid redundant/oscillating messages
+      lastReported = h;
+      window.parent.postMessage({ source: 'zwco-embed', height: h }, '*');
     }
     report();
     window.addEventListener('load', report);
     window.addEventListener('resize', report);
     if ('ResizeObserver' in window) {
-      new ResizeObserver(report).observe(document.documentElement);
+      new ResizeObserver(report).observe(document.body);
     } else {
       new MutationObserver(report).observe(document.body, { childList: true, subtree: true, attributes: true });
     }

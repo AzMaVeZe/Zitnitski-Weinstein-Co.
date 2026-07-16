@@ -24,7 +24,11 @@
         } else if (document.referrer) {
           try { allowed = hostAllowed(new URL(document.referrer).hostname); } catch (e) {}
         }
-        if (!allowed) window.top.location = window.self.location.href;
+        if (!allowed) { window.top.location = window.self.location.href; return; }
+        // Legitimately embedded — flag it so CSS can drop viewport-relative
+        // sizing (e.g. body's sticky-footer min-height:100vh) that would
+        // otherwise feed back into the iframe auto-resize script below.
+        document.documentElement.classList.add('zwco-embedded');
       } catch (e) {
         try { window.top.location = window.self.location.href; } catch (e2) {}
       }
@@ -240,19 +244,27 @@
   // Report height to an embedding parent (e.g. the firm's Wix site) so an
   // iframe embed can auto-size and avoid a double scrollbar. No-ops outside
   // a frame — pairs with the frame-ancestor guard in <head>.
+  //
+  // Measures document.body, not documentElement: per spec, the root
+  // element's scrollHeight always floors at the current viewport height,
+  // which — combined with the parent growing the iframe on every report —
+  // creates unbounded feedback growth. body has no such floor (as long as
+  // it isn't itself stretched to 100vh; see the .zwco-embedded CSS override
+  // for pages with a sticky-footer layout).
   (function () {
     if (window.self === window.top) return;
+    var lastReported = -1;
     function report() {
-      window.parent.postMessage(
-        { source: 'zwco-embed', height: document.documentElement.scrollHeight },
-        '*'
-      );
+      var h = document.body.scrollHeight;
+      if (Math.abs(h - lastReported) < 2) return;   // avoid redundant/oscillating messages
+      lastReported = h;
+      window.parent.postMessage({ source: 'zwco-embed', height: h }, '*');
     }
     report();
     window.addEventListener('load', report);
     window.addEventListener('resize', report);
     if ('ResizeObserver' in window) {
-      new ResizeObserver(report).observe(document.documentElement);
+      new ResizeObserver(report).observe(document.body);
     } else {
       new MutationObserver(report).observe(document.body, { childList: true, subtree: true, attributes: true });
     }

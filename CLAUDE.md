@@ -46,7 +46,6 @@ When adding or editing factual claims, note the source in a code comment or in t
 | Tax Residency | Center-of-Life test, day-count rules | ITO § 1 (definition of "resident individual") |
 | US–Israel Treaty | Double tax relief, withholding rates | US–Israel Income Tax Treaty (1994/1995) |
 | Aliyah Benefits | 10-year foreign income exemption | ITO §§ 14, 97(b); ITA Circular 1/2011 |
-| Reporting | FBAR, FATCA, Form 8938 | 31 CFR 1010.350; IRC § 6038D; FinCEN 114 |
 | Disclaimer | Legal disclaimer | — |
 
 ## Technical Constraints

@@ -23,6 +23,14 @@
       line-height: 1.7; font-size: 16px;
       min-height: 100vh; display: flex; flex-direction: column;
     }
+    /* Sticky-footer min-height is viewport-relative (100vh), which is exactly
+       what makes it dangerous inside an iframe embed that resizes itself to
+       fit its content: grow the iframe → 100vh grows → the flexed .page
+       stretches to fill it → reported content height grows → iframe grows
+       again, forever. The frame-ancestor guard adds this class to <html>
+       only when legitimately embedded in a trusted parent, so the sticky
+       footer still works normally for direct/standalone viewing. */
+    html.zwco-embedded body { min-height: 0; }
     /* Form controls don't inherit the body font by default */
     input, select, button { font-family: inherit; }
     /* Keyboard navigation — visible focus on links (controls have their own rings) */

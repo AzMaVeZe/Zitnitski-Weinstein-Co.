@@ -24,7 +24,11 @@
       } else if (document.referrer) {
         try { allowed = hostAllowed(new URL(document.referrer).hostname); } catch (e) {}
       }
-      if (!allowed) window.top.location = window.self.location.href;
+      if (!allowed) { window.top.location = window.self.location.href; return; }
+      // Legitimately embedded — flag it so CSS can drop any viewport-relative
+      // sizing that would otherwise feed back into the iframe auto-resize
+      // script below.
+      document.documentElement.classList.add('zwco-embedded');
     } catch (e) {
       try { window.top.location = window.self.location.href; } catch (e2) {}
     }
@@ -32,7 +36,7 @@
 </script>
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>Treaty Withholding Rates | Zitnitski Weinstein &amp; Co.</title>
-<meta name="description" content="Reference table of withholding tax rates (dividends, interest, royalties) under Israel's income tax treaties. Marketing and illustration purposes only — not tax advice. Published by Zitnitski Weinstein & Co." />
+<meta name="description" content="Reference table of withholding tax rates (dividends, interest, royalties) under Israel's income tax treaties — a general overview, not tax advice. Published by Zitnitski Weinstein & Co." />
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231a4b8c'/%3E%3Ctext x='32' y='43' font-family='Arial, sans-serif' font-size='26' font-weight='700' fill='white' text-anchor='middle'%3EZW%3C/text%3E%3C/svg%3E" />
 <meta property="og:type" content="website" />
 <meta property="og:title" content="Israel Tax Treaty Withholding Rates" />
@@ -179,8 +183,8 @@
   <h1 data-i18n="title">Israel Tax Treaty Withholding Rates</h1>
   <p data-i18n="subtitle">Maximum withholding rates on dividends, interest, and royalties under Israel's income tax treaties — a quick-reference table published by Zitnitski Weinstein &amp; Co.</p>
   <div class="disclaimer-banner">
-    <strong data-i18n="dTopTitle">⚠️ Marketing &amp; illustration purposes only — not advice</strong>
-    <span data-i18n="dTopBody">This table is provided for general marketing and illustration purposes only. It does not constitute tax advice, a professional opinion, or a substitute for the binding treaty text. Material errors may occur in the figures and calculations. Treaty rates are subject to conditions, exceptions, protocols, and legislative change. Do not rely on this table without specific professional advice.</span>
+    <strong data-i18n="dTopTitle">⚠️ General overview only — not advice</strong>
+    <span data-i18n="dTopBody">This table presents a general overview of withholding rates. It does not constitute tax advice, a professional opinion, or a substitute for the binding treaty text. It may contain material errors. Treaty rates are subject to conditions, exceptions, protocols, and legislative change. Do not rely on this table without specific professional advice.</span>
   </div>
 </header>
 
@@ -207,13 +211,13 @@
   </div>
 
   <p class="under-table-note" data-i18n="dUnderTable">
-    The rates shown are the treaty ceilings as summarized from firm source material; the domestic rate applies where it is lower, and treaty relief is never automatic — a valid certificate from the Israel Tax Authority is generally required. Figures are for marketing and illustration purposes only, may contain material errors, and do not constitute advice or an opinion of any kind. Verify every rate against the official treaty text and current guidance before acting.
+    The rates shown are the treaty ceilings as summarized from firm source material; the domestic rate applies where it is lower, and treaty relief is never automatic — a valid certificate from the Israel Tax Authority is generally required. This is a general overview only, may contain material errors, and does not constitute advice or an opinion of any kind. Verify every rate against the official treaty text and current guidance before acting.
   </p>
 </main>
 
 <footer>
   <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" data-i18n="firmName">Zitnitski Weinstein &amp; Co.</a></strong> <span data-i18n="footerTag">— Israel International Tax Guide</span> · <a href="index.html#accessibility" data-i18n="accessibilityLink">Accessibility Statement</a></p>
-  <p data-i18n="dFooter">Marketing and illustration purposes only. Not legal or tax advice, not a professional opinion; material errors may occur. Always consult a qualified cross-border tax professional.</p>
+  <p data-i18n="dFooter">General overview only. Not legal or tax advice, not a professional opinion; material errors may occur. Always consult a qualified cross-border tax professional.</p>
   <p style="margin-top:.5rem" data-i18n="copyright">© 2026 Zitnitski Weinstein &amp; Co. All rights reserved.</p>
   <a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" class="footer-logo-full-link">
     <img src="assets/zwco-logo-full.png" alt="Zitnitski Weinstein &amp; Co." class="footer-logo-full" />
@@ -230,17 +234,17 @@ const I18N = {
     backCalc: '🧮 Calculator',
     title: 'Israel Tax Treaty Withholding Rates',
     subtitle: "Maximum withholding rates on dividends, interest, and royalties under Israel's income tax treaties — a quick-reference table published by Zitnitski Weinstein & Co.",
-    dTopTitle: '⚠️ Marketing & illustration purposes only — not advice',
-    dTopBody: 'This table is provided for general marketing and illustration purposes only. It does not constitute tax advice, a professional opinion, or a substitute for the binding treaty text. Material errors may occur in the figures and calculations. Treaty rates are subject to conditions, exceptions, protocols, and legislative change. Do not rely on this table without specific professional advice.',
+    dTopTitle: '⚠️ General overview only — not advice',
+    dTopBody: 'This table presents a general overview of withholding rates. It does not constitute tax advice, a professional opinion, or a substitute for the binding treaty text. It may contain material errors. Treaty rates are subject to conditions, exceptions, protocols, and legislative change. Do not rely on this table without specific professional advice.',
     searchPh: 'Search country…',
     thCountry: 'Country', thDivGen: 'Dividends — general', thDivParent: 'Dividends — parent co.',
     thInterest: 'Interest', thRoyalties: 'Royalties', thNotes: 'Notes',
-    dUnderTable: 'The rates shown are the treaty ceilings as summarized from firm source material; the domestic rate applies where it is lower, and treaty relief is never automatic — a valid certificate from the Israel Tax Authority is generally required. Figures are for marketing and illustration purposes only, may contain material errors, and do not constitute advice or an opinion of any kind. Verify every rate against the official treaty text and current guidance before acting.',
+    dUnderTable: 'The rates shown are the treaty ceilings as summarized from firm source material; the domestic rate applies where it is lower, and treaty relief is never automatic — a valid certificate from the Israel Tax Authority is generally required. This is a general overview only, may contain material errors, and does not constitute advice or an opinion of any kind. Verify every rate against the official treaty text and current guidance before acting.',
     firmName: 'Zitnitski Weinstein & Co.',
     footerTag: '— Israel International Tax Guide',
     accessibilityLink: 'Accessibility Statement',
     skipLink: 'Skip to main content',
-    dFooter: 'Marketing and illustration purposes only. Not legal or tax advice, not a professional opinion; material errors may occur. Always consult a qualified cross-border tax professional.',
+    dFooter: 'General overview only. Not legal or tax advice, not a professional opinion; material errors may occur. Always consult a qualified cross-border tax professional.',
     copyright: '© 2026 Zitnitski Weinstein & Co. All rights reserved.',
     countShown: (n, t) => `Showing ${n} of ${t} treaties`,
     noResults: 'No country matches your search.',
@@ -254,17 +258,17 @@ const I18N = {
     backCalc: '🧮 למחשבון',
     title: 'שיעורי ניכוי במקור באמנות המס של ישראל',
     subtitle: 'שיעורי הניכוי במקור המרביים על דיבידנד, ריבית ותמלוגים לפי אמנות המס של ישראל — טבלת עיון מהירה מבית ז\'יטניצקי וינשטין ושות\'.',
-    dTopTitle: '⚠️ למטרות שיווק והמחשה בלבד — אין לראות בכך ייעוץ',
-    dTopBody: 'טבלה זו מוצגת למטרות שיווק והמחשה כלליות בלבד. אין היא מהווה ייעוץ מס, חוות דעת מקצועית או תחליף לנוסח האמנה המחייב. עלולות ליפול טעויות מהותיות בנתונים ובתחשיבים. שיעורי האמנות כפופים לתנאים, לחריגים, לפרוטוקולים ולשינויי חקיקה. אין להסתמך על הטבלה ללא ייעוץ מקצועי פרטני.',
+    dTopTitle: '⚠️ סקירה כללית בלבד — אין לראות בכך ייעוץ',
+    dTopBody: 'טבלה זו מציגה סקירה כללית של שיעורי הניכוי במקור. אין היא מהווה ייעוץ מס, חוות דעת מקצועית או תחליף לנוסח האמנה המחייב. עלולות ליפול בה טעויות מהותיות. שיעורי האמנות כפופים לתנאים, לחריגים, לפרוטוקולים ולשינויי חקיקה. אין להסתמך על הטבלה ללא ייעוץ מקצועי פרטני.',
     searchPh: 'חיפוש מדינה…',
     thCountry: 'מדינה', thDivGen: 'דיבידנד — כללי', thDivParent: 'דיבידנד — חברת אם',
     thInterest: 'ריבית', thRoyalties: 'תמלוגים', thNotes: 'הערות',
-    dUnderTable: 'השיעורים המוצגים הם תקרות האמנה כפי שסוכמו מחומר המקור של המשרד; מקום שבו הדין הפנימי קובע שיעור נמוך יותר — הוא שיחול, והקלת אמנה אינה אוטומטית — נדרש ככלל אישור בתוקף מרשות המסים. הנתונים למטרות שיווק והמחשה בלבד, עלולות ליפול בהם טעויות מהותיות, ואין הם מהווים ייעוץ או חוות דעת מכל סוג. יש לאמת כל שיעור מול נוסח האמנה הרשמי וההנחיות העדכניות לפני כל פעולה.',
+    dUnderTable: 'השיעורים המוצגים הם תקרות האמנה כפי שסוכמו מחומר המקור של המשרד; מקום שבו הדין הפנימי קובע שיעור נמוך יותר — הוא שיחול, והקלת אמנה אינה אוטומטית — נדרש ככלל אישור בתוקף מרשות המסים. זוהי סקירה כללית בלבד, עלולות ליפול בה טעויות מהותיות, ואין היא מהווה ייעוץ או חוות דעת מכל סוג. יש לאמת כל שיעור מול נוסח האמנה הרשמי וההנחיות העדכניות לפני כל פעולה.',
     firmName: 'ז\'יטניצקי וינשטין ושות\'',
     footerTag: '— מדריך המס הבינלאומי',
     accessibilityLink: 'הצהרת נגישות',
     skipLink: 'דלג לתוכן הראשי',
-    dFooter: 'למטרות שיווק והמחשה בלבד. אין לראות באמור ייעוץ משפטי או ייעוץ מס או חוות דעת; עלולות ליפול טעויות מהותיות. יש להיוועץ תמיד באיש מקצוע מוסמך למיסוי בינלאומי.',
+    dFooter: 'סקירה כללית בלבד. אין לראות באמור ייעוץ משפטי או ייעוץ מס או חוות דעת; עלולות ליפול טעויות מהותיות. יש להיוועץ תמיד באיש מקצוע מוסמך למיסוי בינלאומי.',
     copyright: '© 2026 ז\'יטניצקי וינשטין ושות\'. כל הזכויות שמורות.',
     countShown: (n, t) => `מוצגות ${n} מתוך ${t} אמנות`,
     noResults: 'לא נמצאה מדינה מתאימה לחיפוש.',
@@ -283,10 +287,10 @@ const COUNTRIES = [
 {en:'Armenia', he:'ארמניה', divGen:'15%', divParent:'5%', divCond:{en:'≥25% direct', he:'החזקה ישירה ≥25%'}, interest:'10%', intNote:{en:'0% government / central bank', he:'0% לממשלה / בנק מרכזי'}, royalties:'5% / 10%', royNote:{en:'5% patents, trademarks, know-how; 10% copyright, films', he:'5% פטנטים, סימני מסחר, ידע; 10% זכויות יוצרים, סרטים'}, notes:{en:'0% to state / central bank / pension (<25%); REIT 15% if <10%', he:'0% למדינה / בנק מרכזי / קרן פנסיה (מתחת ל-25%); REIT ‏15% בהחזקה מתחת ל-10%'}},
 {en:'Australia', he:'אוסטרליה', divGen:'15%', divParent:'5%', divCond:{en:'≥10% voting, 365 days', he:'‏≥10% מכוח ההצבעה, 365 ימים'}, interest:'10%', intNote:{en:'5% financial institution / recognized pension fund; 0% government / central bank', he:'5% מוסד פיננסי / קרן פנסיה מוכרת; 0% ממשלה / בנק מרכזי'}, royalties:'5%', royNote:null, notes:{en:'REIT 15% if <10%; 0% to government / central bank / pension fund', he:'REIT ‏15% בהחזקה מתחת ל-10%; 0% לממשלה / בנק מרכזי / קרן פנסיה'}},
 {en:'Austria', he:'אוסטריה', divGen:'25%', divParent:'0%', divCond:{en:'≥25% voting, subject to conditions', he:'‏≥25% מכוח ההצבעה, בכפוף לתנאים'}, interest:'15%', intNote:null, royalties:'10%', royNote:{en:'0% literary/artistic copyright (films excluded)', he:'0% זכויות יוצרים ספרותיות/אמנותיות (למעט סרטים)'}, notes:null},
-{en:'Azerbaijan', he:'אזרבייג\'ן', divGen:null, divParent:null, divCond:null, interest:null, intNote:null, royalties:null, royNote:null, notes:null},
+{en:'Azerbaijan', he:'אזרבייג\'ן', divGen:'15%', divParent:'15%', divCond:{en:'Single 15% ceiling for all dividends', he:'תקרה אחידה של 15% לכל דיבידנד'}, interest:'10%', intNote:{en:'0% government / local authority / central bank / sovereign wealth funds (Azerbaijan\'s State Oil Fund, Israel\'s natural resources fund)', he:'0% ממשלה / רשות מקומית / בנק מרכזי / קרנות ריבוניות (קרן הנפט של אזרבייג\'ן, קרן משאבי הטבע של ישראל)'}, royalties:'5% / 10%', royNote:{en:'5% patents, equipment, know-how; 10% other, including copyright', he:'5% פטנטים, ציוד, ידע; 10% אחר, כולל זכויות יוצרים'}, notes:null},
 {en:'Belarus', he:'בלרוס', divGen:'10%', divParent:'10%', divCond:{en:'Single 10% ceiling for all dividends', he:'תקרה אחידה של 10% לכל דיבידנד'}, interest:'10%', intNote:{en:'5% bank loans / equipment credit sales; 0% government / central bank', he:'5% הלוואות בנק / מכירת ציוד באשראי; 0% ממשלה / בנק מרכזי'}, royalties:'5% / 10%', royNote:{en:'5% copyright; 10% patents, trademarks, equipment', he:'5% זכויות יוצרים; 10% פטנטים, סימני מסחר, ציוד'}, notes:null},
 {en:'Belgium', he:'בלגיה', divGen:'15%', divParent:null, divCond:null, interest:'15%', intNote:null, royalties:'10%', royNote:{en:'0% literary/artistic copyright (film/TV excluded)', he:'0% זכויות יוצרים ספרותיות/אמנותיות (למעט קולנוע/טלוויזיה)'}, notes:null},
-{en:'Brazil', he:'ברזיל', divGen:null, divParent:null, divCond:null, interest:null, intNote:null, royalties:null, royNote:null, notes:null},
+{en:'Brazil', he:'ברזיל', divGen:'15%', divParent:'10%', divCond:{en:'≥25% of capital', he:'החזקה ≥25% מההון'}, interest:'15%', intNote:{en:'0% government / local authority / wholly state-owned body', he:'0% ממשלה / רשות מקומית / גוף בבעלות ממשלתית מלאה'}, royalties:'15% / 10%', royNote:{en:'15% trademarks; 10% other', he:'15% סימני מסחר; 10% אחר'}, notes:{en:'Branch-profits tax up to 10%', he:'מס סניף עד 10%'}},
 {en:'Bulgaria', he:'בולגריה', divGen:'7.5%–12.5%', divParent:'10%', divCond:{en:'Dividends out of encouragement-law (reduced-tax) profits', he:'דיבידנד מרווחים מוטבים לפי חוק עידוד השקעות הון'}, interest:'10%', intNote:{en:'5% bank / financial institution; 0% government / central bank', he:'5% בנק / מוסד פיננסי; 0% ממשלה / בנק מרכזי'}, royalties:'7.5%–12.5%', royNote:{en:'Half the domestic rate, within the 7.5%–12.5% band', he:'מחצית השיעור הפנימי, בטווח 7.5%–12.5%'}, notes:null},
 {en:'Canada', he:'קנדה', divGen:'15%', divParent:'15%', divCond:{en:'Single 15% ceiling for all dividends', he:'תקרה אחידה של 15% לכל דיבידנד'}, interest:'15%', intNote:{en:'0% loans by Export Development Canada or equivalent', he:'0% הלוואות של החברה הקנדית לפיתוח הייצוא או גוף מקביל'}, royalties:'15%', royNote:{en:'0% copyright (films/video excluded)', he:'0% זכויות יוצרים (למעט סרטים/וידאו)'}, notes:null},
 {en:'China', he:'סין', divGen:'10%', divParent:'10%', divCond:{en:'Single 10% ceiling for all dividends', he:'תקרה אחידה של 10% לכל דיבידנד'}, interest:'10%', intNote:{en:'7% bank / financial institution; 0% government / central bank', he:'7% בנק / מוסד פיננסי; 0% ממשלה / בנק מרכזי'}, royalties:'10%', royNote:{en:'Equipment royalties: tax on 70% of gross (≈7% effective)', he:'תמלוגי ציוד: מס על 70% מהברוטו (כ-7% אפקטיבי)'}, notes:{en:'Branch-profits tax up to 10%', he:'מס סניף עד 10%'}},
@@ -301,21 +305,21 @@ const COUNTRIES = [
 {en:'Germany', he:'גרמניה', divGen:'25%', divParent:null, divCond:null, interest:'15%', intNote:{en:'0% government / central bank / public financial institutions (e.g. KfW)', he:'0% ממשלה / בנק מרכזי / מוסדות פיננסיים ציבוריים (למשל KfW)'}, royalties:'5%', royNote:{en:'0% literary/artistic copyright', he:'0% זכויות יוצרים ספרותיות/אמנותיות'}, notes:null},
 {en:'Greece', he:'יוון', divGen:null, divParent:null, divCond:null, interest:'10%', intNote:null, royalties:'10%', royNote:{en:'0% literary/artistic/scientific copyright (films excluded)', he:'0% זכויות יוצרים ספרותיות/אמנותיות/מדעיות (למעט סרטים)'}, notes:null},
 {en:'Hungary', he:'הונגריה', divGen:'15%', divParent:'5%', divCond:{en:'≥10% voting, direct or indirect', he:'‏≥10% מכוח ההצבעה, במישרין או בעקיפין'}, interest:'0%', intNote:{en:'Exclusive residence-state taxation', he:'זכות מיסוי בלעדית למדינת התושבות'}, royalties:'0%', royNote:{en:'Exclusive residence-state taxation', he:'זכות מיסוי בלעדית למדינת התושבות'}, notes:null},
-{en:'India', he:'הודו', divGen:null, divParent:null, divCond:null, interest:null, intNote:null, royalties:null, royNote:null, notes:null},
-{en:'Ireland', he:'אירלנד', divGen:null, divParent:null, divCond:null, interest:null, intNote:null, royalties:null, royNote:null, notes:null},
+{en:'India', he:'הודו', divGen:'10%', divParent:'10%', divCond:{en:'Single 10% ceiling for all dividends', he:'תקרה אחידה של 10% לכל דיבידנד'}, interest:'10%', intNote:{en:'0% government bonds; loans/guarantees of the Reserve Bank of India or Bank of Israel', he:'0% אג"ח ממשלתי; הלוואות/ערבויות של הבנק המרכזי ההודי או בנק ישראל'}, royalties:'10%', royNote:null, notes:{en:'A 2016 protocol to this treaty exists and may affect these rates — verify before relying on this figure', he:'קיים פרוטוקול משנת 2016 לאמנה זו שעשוי להשפיע על השיעורים — יש לאמת לפני הסתמכות'}},
+{en:'Ireland', he:'אירלנד', divGen:'10%', divParent:'10%', divCond:{en:'Single 10% ceiling; Irish tax-credit imputation structure — Article 2(4) denies the Irish credit at ≥10% voting control', he:'תקרה אחידה של 10%; מבנה זיכוי-אימפוטציה אירי — סעיף 2(4) שולל את הזיכוי האירי בהחזקה ≥10% מזכויות ההצבעה'}, interest:'10%', intNote:{en:'5% equipment/goods credit sales and bank loans; no 0% government exemption', he:'5% מכר-אשראי של ציוד/סחורה והלוואות בנקאיות; אין פטור 0% לממשלה'}, royalties:'10%', royNote:null, notes:null},
 {en:'Italy', he:'איטליה', divGen:'15%', divParent:'10%', divCond:{en:'≥25% direct of capital, non-partnership', he:'החזקה ישירה ≥25% מההון, שאינה שותפות'}, interest:null, intNote:null, royalties:null, royNote:null, notes:{en:'Israeli residents may reclaim the maggiorazione di conguaglio in certain cases', he:'תושב ישראל עשוי לקבל החזר maggiorazione di conguaglio בתנאים מסוימים'}},
 {en:'Jamaica', he:'ג\'מייקה', divGen:'22.5%', divParent:'15%', divCond:{en:'≥10% voting, direct or indirect, non-partnership', he:'‏≥10% מכוח ההצבעה, במישרין או בעקיפין, שאינה שותפות'}, interest:'15%', intNote:{en:'0% government bodies / central bank / development & mortgage banks / state-guaranteed loans', he:'0% גופי ממשלה / בנק מרכזי / בנקים לפיתוח ומשכנתאות / הלוואות בערבות המדינה'}, royalties:'10%', royNote:null, notes:{en:'Management fees capped at 15% in certain cases', he:'דמי ניהול עד 15% בתנאים מסוימים'}},
 {en:'Japan', he:'יפן', divGen:'15%', divParent:'5%', divCond:{en:'≥25% voting for 6 months', he:'‏≥25% מכוח ההצבעה במשך 6 חודשים'}, interest:'10%', intNote:{en:'0% government / central bank / state-owned financial institutions and guaranteed loans', he:'0% ממשלה / בנק מרכזי / מוסדות פיננסיים ממשלתיים והלוואות בערבותם'}, royalties:null, royNote:null, notes:null},
 {en:'Latvia', he:'לטביה', divGen:'15%', divParent:'5%', divCond:{en:'≥10% direct; 10% if paid from Israeli reduced-tax profits', he:'החזקה ישירה ≥10%; ‏10% אם משולם מרווחים מוטבים'}, interest:'10%', intNote:{en:'5% bank loans; 0% government / central bank / state institutions', he:'5% הלוואות בנק; 0% ממשלה / בנק מרכזי / מוסדות מדינה'}, royalties:'10%', royNote:{en:'5% industrial/commercial/scientific equipment', he:'5% ציוד תעשייתי/מסחרי/מדעי'}, notes:null},
 {en:'Lithuania', he:'ליטא', divGen:'15%', divParent:'5%', divCond:{en:'≥10% direct; 10% if paid from Israeli reduced-tax profits', he:'החזקה ישירה ≥10%; ‏10% אם משולם מרווחים מוטבים'}, interest:'10%', intNote:{en:'5% bank loans; 0% government / central bank / state financial institutions', he:'5% הלוואות בנק; 0% ממשלה / בנק מרכזי / מוסדות פיננסיים ממשלתיים'}, royalties:'10%', royNote:{en:'5% industrial/commercial/scientific equipment', he:'5% ציוד תעשייתי/מסחרי/מדעי'}, notes:null},
 {en:'Luxembourg', he:'לוקסמבורג', divGen:'15%', divParent:'5%', divCond:{en:'≥10% direct; 10% if paid from Israeli approved-enterprise profits', he:'החזקה ישירה ≥10%; ‏10% אם משולם מרווחי מפעל מאושר'}, interest:null, intNote:null, royalties:null, royNote:null, notes:null},
-{en:'Malta', he:'מלטה', divGen:null, divParent:null, divCond:null, interest:null, intNote:null, royalties:null, royNote:null, notes:null},
+{en:'Malta', he:'מלטה', divGen:'15%', divParent:'0%', divCond:{en:'≥10% of capital, non-partnership/non-REIT', he:'החזקה ≥10% מההון, שאינה שותפות/REIT'}, interest:'5%', intNote:{en:'0% government / central bank; exchange-traded corporate bonds; export-credit-institution guaranteed/insured loans', he:'0% ממשלה / בנק מרכזי; אג"ח קונצרני נסחר; הלוואות בערבות/ביטוח מוסד אשראי-יצוא'}, royalties:'0%', royNote:{en:'Exclusive residence-state taxation', he:'זכות מיסוי בלעדית למדינת התושבות'}, notes:{en:'REIT distributions: 15% if holding <10%', he:'חלוקות REIT: 15% בהחזקה מתחת ל-10%'}},
 {en:'Mexico', he:'מכסיקו', divGen:'10%', divParent:'5%', divCond:{en:'≥10% direct or indirect; 10% if paid from Israeli reduced-tax profits', he:'‏≥10% במישרין או בעקיפין; 10% אם משולם מרווחים מוטבים'}, interest:'10%', intNote:{en:'0% government / central bank / insured 3-year+ trade loans', he:'0% ממשלה / בנק מרכזי / הלוואות סחר מבוטחות מעל 3 שנים'}, royalties:'10%', royNote:null, notes:{en:'Branch-profits tax 5%/10% by case', he:'מס סניף 5%/10% לפי העניין'}},
-{en:'Moldova', he:'מולדובה', divGen:null, divParent:null, divCond:null, interest:null, intNote:null, royalties:null, royNote:null, notes:null},
+{en:'Moldova', he:'מולדובה', divGen:'10%', divParent:'5%', divCond:{en:'≥25% of capital, non-partnership', he:'החזקה ≥25% מההון, שאינה שותפות'}, interest:'5%', intNote:{en:'0% government / local authority / central bank / export-credit institutions / equipment or goods credit sales', he:'0% ממשלה / רשות מקומית / בנק מרכזי / מוסדות אשראי-יצוא / מכר-אשראי ציוד או סחורה'}, royalties:'5%', royNote:null, notes:null},
 {en:'Netherlands', he:'הולנד', divGen:'15%', divParent:'5%', divCond:{en:'≥25% holding; 10% if paid from Israeli approved-enterprise profits', he:'החזקה ≥25%; ‏10% אם משולם מרווחי מפעל מאושר'}, interest:'15%', intNote:{en:'10% bank / financial institution', he:'10% בנק / מוסד פיננסי'}, royalties:'5%', royNote:{en:'10% film / radio / TV', he:'10% סרטים / רדיו / טלוויזיה'}, notes:null},
-{en:'North Macedonia', he:'מקדוניה', divGen:null, divParent:null, divCond:null, interest:null, intNote:null, royalties:null, royNote:null, notes:null},
+{en:'North Macedonia', he:'מקדוניה', divGen:'15%', divParent:'5%', divCond:{en:'≥25% direct of capital', he:'החזקה ישירה ≥25% מההון'}, interest:'10%', intNote:{en:'0% government / local authority / central bank', he:'0% ממשלה / רשות מקומית / בנק מרכזי'}, royalties:'5%', royNote:null, notes:{en:'REIT distributions: up to 15% if holding <10%', he:'חלוקות REIT: עד 15% בהחזקה מתחת ל-10%'}},
 {en:'Norway', he:'נורבגיה', divGen:'25% (IL) / 15% (NO)', divParent:'5% (NO source)', divCond:{en:'≥50% voting control, Norwegian-source only', he:'שליטה ≥50% מכוח ההצבעה, ממקור נורבגי בלבד'}, interest:'25%', intNote:null, royalties:'10%', royNote:null, notes:{en:'Asymmetric dividend rates by source country', he:'שיעורי דיבידנד לא סימטריים לפי מדינת המקור'}},
-{en:'Panama', he:'פנמה', divGen:null, divParent:null, divCond:null, interest:null, intNote:null, royalties:null, royNote:null, notes:null},
+{en:'Panama', he:'פנמה', divGen:'15%', divParent:null, divCond:null, interest:'15%', intNote:{en:'0% government / central bank / pension fund; exchange-traded corporate bonds', he:'0% ממשלה / בנק מרכזי / קרן פנסיה; אג"ח קונצרני נסחר'}, royalties:'15%', royNote:null, notes:{en:'No reduced parent-company rate (5% applies only to a pension fund); REIT distributions up to 20% if holding <10%; branch-profits tax up to 5%', he:'אין שיעור מופחת לחברת אם (5% חל רק על קרן פנסיה); חלוקות REIT עד 20% בהחזקה מתחת ל-10%; מס סניף עד 5%'}},
 {en:'Philippines', he:'פיליפינים', divGen:'15%', divParent:'10%', divCond:{en:'≥10% direct', he:'החזקה ישירה ≥10%'}, interest:'10%', intNote:{en:'0% government bonds/loans / central bank / state-guaranteed loans', he:'0% אג"ח והלוואות ממשלה / בנק מרכזי / הלוואות בערבות המדינה'}, royalties:'15%', royNote:{en:'Or the lowest rate granted to a third state (MFN)', he:'או השיעור הנמוך ביותר למדינה שלישית (MFN)'}, notes:{en:'Branch-profits tax up to 10%', he:'מס סניף עד 10%'}},
 {en:'Poland', he:'פולין', divGen:'10%', divParent:'5%', divCond:{en:'≥15% direct', he:'החזקה ישירה ≥15%'}, interest:'5%', intNote:{en:'0% government / central bank and guaranteed loans', he:'0% ממשלה / בנק מרכזי והלוואות בערבותם'}, royalties:'5% / 10%', royNote:{en:'5% equipment; 10% other', he:'5% ציוד; 10% אחר'}, notes:null},
 {en:'Portugal', he:'פורטוגל', divGen:'15%', divParent:'5%', divCond:{en:'≥25% direct; 10% if paid from Israeli reduced-tax profits', he:'החזקה ישירה ≥25%; ‏10% אם משולם מרווחים מוטבים'}, interest:'10%', intNote:{en:'0% government / central bank / guaranteed loans / trade-insurance bodies', he:'0% ממשלה / בנק מרכזי / הלוואות בערבות / מוסדות ביטוח סחר'}, royalties:'10%', royNote:null, notes:null},
@@ -330,14 +334,14 @@ const COUNTRIES = [
 {en:'Spain', he:'ספרד', divGen:'10%', divParent:'10%', divCond:{en:'Single 10% ceiling for all dividends', he:'תקרה אחידה של 10% לכל דיבידנד'}, interest:'10%', intNote:{en:'5% bank loans / credit sales; 0% government / central bank / guaranteed loans', he:'5% הלוואות בנק / מכירות באשראי; 0% ממשלה / בנק מרכזי / הלוואות בערבות'}, royalties:'5% / 7%', royNote:{en:'5% copyright (films excluded); 7% other', he:'5% זכויות יוצרים (למעט סרטים); 7% אחר'}, notes:null},
 {en:'Sweden', he:'שוודיה', divGen:'15% (SE)', divParent:'5% (SE source)', divCond:{en:'≥50% voting, Swedish-source only; Israeli-source capped at the ordinary Israeli company rate', he:'‏≥50% מכוח ההצבעה, ממקור שוודי בלבד; ממקור ישראלי — עד שיעור מס החברות הרגיל'}, interest:'25%', intNote:null, royalties:'0%', royNote:{en:'Film/TV exception: limited tax on a 15% gross basis', he:'חריג קולנוע/טלוויזיה: מס מוגבל על בסיס 15% מהברוטו'}, notes:{en:'Asymmetric rates by source country', he:'שיעורים לא סימטריים לפי מדינת המקור'}},
 {en:'Switzerland', he:'שוויץ', divGen:'15%', divParent:'5%', divCond:{en:'≥10% direct; 10% if paid from Israeli reduced-tax profits', he:'החזקה ישירה ≥10%; ‏10% אם משולם מרווחים מוטבים'}, interest:null, intNote:null, royalties:null, royNote:null, notes:null},
-{en:'Taiwan', he:'טייוואן', divGen:null, divParent:null, divCond:null, interest:null, intNote:null, royalties:null, royNote:null, notes:null},
+{en:'Taiwan', he:'טייוואן', divGen:'10%', divParent:'10%', divCond:{en:'Single 10% ceiling; no special holding condition', he:'תקרה אחידה של 10%; ללא תנאי החזקה מיוחד'}, interest:'10%', intNote:{en:'7% bank loans; 0% government / central bank / state-guaranteed trade loans', he:'7% הלוואות בנק; 0% ממשלה / בנק מרכזי / הלוואות סחר בערבות מדינה'}, royalties:'10%', royNote:null, notes:{en:'Most-favoured-nation clause on dividends and royalties — a lower rate later agreed with an OECD country would apply automatically', he:'סעיף אומה מועדפת (MFN) על דיבידנד ותמלוגים — שיעור נמוך יותר שייחתם בעתיד עם מדינת OECD יחול אוטומטית'}},
 {en:'Thailand', he:'תאילנד', divGen:'10% (TH) / 15% (IL)', divParent:'10% (IL source)', divCond:{en:'≥25% of capital; Thai-source capped at 10% in all cases', he:'החזקה ≥25% מההון; ממקור תאילנדי — עד 10% בכל מקרה'}, interest:'15%', intNote:{en:'10% financial institution / insurance company; 0% government / central bank / state-owned bodies', he:'10% מוסד פיננסי / חברת ביטוח; 0% ממשלה / בנק מרכזי / גופים ממשלתיים'}, royalties:'15%', royNote:{en:'5% copyright (film/TV excluded)', he:'5% זכויות יוצרים (למעט קולנוע/טלוויזיה)'}, notes:{en:'Asymmetric dividend rates by source country', he:'שיעורי דיבידנד לא סימטריים לפי מדינת המקור'}},
 {en:'Turkey', he:'טורקיה', divGen:'10%', divParent:'10%', divCond:{en:'Single 10% ceiling for all dividends', he:'תקרה אחידה של 10% לכל דיבידנד'}, interest:'10%', intNote:{en:'0% to the Israeli/Turkish governments or their central banks', he:'0% לממשלות ישראל/טורקיה או לבנקים המרכזיים שלהן'}, royalties:'10%', royNote:null, notes:null},
 {en:'UAE', he:'איחוד האמירויות', divGen:'15%', divParent:'5%', divCond:{en:'≥10% direct, 365 days', he:'החזקה ישירה ≥10%, ‏365 ימים'}, interest:'10%', intNote:{en:'0% pension schemes / government; 5% government holding ≥50% of the payer', he:'0% תוכניות פנסיה / ממשלה; 5% לממשלה המחזיקה ≥50% בחברה המשלמת'}, royalties:'12%', royNote:null, notes:{en:'0% dividends to government/pension holding <5%; 5% to government holding ≥5%', he:'0% דיבידנד לממשלה/פנסיה בהחזקה מתחת ל-5%; ‏5% לממשלה בהחזקה ≥5%'}},
 {en:'Ukraine', he:'אוקראינה', divGen:'15%', divParent:'5%', divCond:{en:'≥25% direct; 10% if ≥10% and paid from Israeli reduced-tax profits', he:'החזקה ישירה ≥25%; ‏10% אם ≥10% ומשולם מרווחים מוטבים'}, interest:'10%', intNote:{en:'5% bank loans; 0% government / central bank / state-guaranteed or insured loans', he:'5% הלוואות בנק; 0% ממשלה / בנק מרכזי / הלוואות בערבות או ביטוח ממשלתיים'}, royalties:'10%', royNote:null, notes:null},
 {en:'United Kingdom', he:'בריטניה', divGen:'15%', divParent:'5%', divCond:{en:'≥10% direct of capital, 365 days, non-partnership/non-REIT', he:'החזקה ישירה ≥10% מההון, 365 ימים, שאינה שותפות/REIT'}, interest:'10%', intNote:{en:'5% bank loans; 0% government / central bank / pension funds / certain traded corporate bonds', he:'5% הלוואות בנק; 0% ממשלה / בנק מרכזי / קרנות פנסיה / אג"ח קונצרניות נסחרות מסוימות'}, royalties:'0%', royNote:{en:'Exclusive residence-state taxation', he:'זכות מיסוי בלעדית למדינת התושבות'}, notes:{en:'REIT 15% if <10% under conditions; 0% dividends to pension funds', he:'REIT ‏15% בהחזקה מתחת ל-10% בתנאים; 0% דיבידנד לקרנות פנסיה'}},
 {en:'United States', he:'ארצות הברית', divGen:'25%', divParent:'12.5%', divCond:{en:'≥10% voting + income conditions; 15% from approved-enterprise profits', he:'‏≥10% ממניות ההצבעה + תנאי הכנסה; 15% מרווחי מפעל מאושר'}, interest:'17.5%', intNote:{en:'10% loans from banks, savings institutions, insurance companies', he:'10% הלוואות מבנקים, מוסדות חיסכון, חברות ביטוח'}, royalties:'15% / 10%', royNote:{en:'15% industrial royalties; 10% copyright/film', he:'15% תמלוגים תעשייתיים; 10% זכויות יוצרים/סרטים'}, notes:{en:'REIT/RIC dividends follow special rules', he:'דיבידנד מ-REIT/RIC כפוף לכללים מיוחדים'}},
-{en:'Uzbekistan', he:'אוזבקיסטן', divGen:null, divParent:null, divCond:null, interest:null, intNote:null, royalties:null, royNote:null, notes:null},
+{en:'Uzbekistan', he:'אוזבקיסטן', divGen:'10%', divParent:'10%', divCond:{en:'Single 10% ceiling for all dividends', he:'תקרה אחידה של 10% לכל דיבידנד'}, interest:'10%', intNote:null, royalties:'5% / 10%', royNote:{en:'5% literary/artistic/scientific copyright (films excluded); 10% other', he:'5% זכויות יוצרים ספרותיות/אמנותיות/מדעיות (למעט סרטים); 10% אחר'}, notes:null},
 {en:'Vietnam', he:'וייטנאם', divGen:'10%', divParent:'10%', divCond:{en:'Single 10% ceiling for all dividends', he:'תקרה אחידה של 10% לכל דיבידנד'}, interest:'10%', intNote:{en:'0% government / central bank / local authority / state trade-insurance bodies', he:'0% ממשלה / בנק מרכזי / רשות מקומית / מוסדות ביטוח סחר ממשלתיים'}, royalties:'15%', royNote:{en:'7.5% technical payments/services', he:'7.5% תשלומים/שירותים טכניים'}, notes:null},
 ];
 
@@ -406,19 +410,27 @@ renderTable();
   // Report height to an embedding parent (e.g. the firm's Wix site) so an
   // iframe embed can auto-size and avoid a double scrollbar. No-ops outside
   // a frame — pairs with the frame-ancestor guard in <head>.
+  //
+  // Measures document.body, not documentElement: per spec, the root
+  // element's scrollHeight always floors at the current viewport height,
+  // which — combined with the parent growing the iframe on every report —
+  // creates unbounded feedback growth. body has no such floor (as long as
+  // it isn't itself stretched to 100vh; see the .zwco-embedded CSS override
+  // for pages with a sticky-footer layout).
   (function () {
     if (window.self === window.top) return;
+    var lastReported = -1;
     function report() {
-      window.parent.postMessage(
-        { source: 'zwco-embed', height: document.documentElement.scrollHeight },
-        '*'
-      );
+      var h = document.body.scrollHeight;
+      if (Math.abs(h - lastReported) < 2) return;   // avoid redundant/oscillating messages
+      lastReported = h;
+      window.parent.postMessage({ source: 'zwco-embed', height: h }, '*');
     }
     report();
     window.addEventListener('load', report);
     window.addEventListener('resize', report);
     if ('ResizeObserver' in window) {
-      new ResizeObserver(report).observe(document.documentElement);
+      new ResizeObserver(report).observe(document.body);
     } else {
       new MutationObserver(report).observe(document.body, { childList: true, subtree: true, attributes: true });
     }
