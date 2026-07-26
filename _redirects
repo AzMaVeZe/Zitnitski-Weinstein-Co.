@@ -4,8 +4,13 @@
 # files would otherwise be publicly readable on the production domain.
 # CLAUDE.md in particular carries the firm's internal editorial rules and
 # signed-off decisions — not secret, but it has no business being served
-# from a domain we promote publicly. Return 404 for those paths instead.
-/CLAUDE.md              /404.html  404
-/tax-engine.test.cjs    /404.html  404
-/tax-engine.baseline.json /404.html  404
-/_redirects             /404.html  404
+# from a domain we promote publicly.
+#
+# Pages only honours 3xx statuses and 200 proxies here — a `404` status is
+# rejected and the rule ignored (verified live: the asset kept serving). So
+# proxy these paths to the 404 page instead: the response is a 200, but the
+# dev-file content is never served, and _headers marks the same paths
+# X-Robots-Tag: noindex so the 200 cannot be indexed as a soft-404.
+/CLAUDE.md                /404.html  200
+/tax-engine.test.cjs      /404.html  200
+/tax-engine.baseline.json /404.html  200

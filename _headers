@@ -20,6 +20,15 @@
 #
 #   Content-Security-Policy: frame-ancestors https://zw-co.com https://*.zw-co.com
 
+# Dev-file paths are 200-proxied to 404.html in _redirects (Pages cannot
+# return a real 404 there); noindex keeps those 200s out of search results.
+/CLAUDE.md
+  X-Robots-Tag: noindex
+/tax-engine.test.cjs
+  X-Robots-Tag: noindex
+/tax-engine.baseline.json
+  X-Robots-Tag: noindex
+
 # The service worker (added in a later step) must never be served stale, or a
 # fix can take up to 24h to reach an already-installed client.
 /sw.js
