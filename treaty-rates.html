@@ -43,6 +43,11 @@
 <meta property="og:description" content="Withholding rates on dividends, interest, and royalties under Israel's ~60 income tax treaties — bilingual reference table by Zitnitski Weinstein &amp; Co." />
 <meta property="og:image" content="assets/zwco-logo-full.png" />
 <meta name="twitter:card" content="summary" />
+<link rel="manifest" href="manifest.json" />
+<meta name="theme-color" content="#1a4b8c" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-title" content="ZW Tax" />
+<link rel="apple-touch-icon" href="assets/icon-192.png" />
 <style>
   :root {
     --blue:        #1a4b8c;
@@ -74,6 +79,43 @@
     transition: top .15s;
   }
   .skip-link:focus { top: 1rem; }
+
+  /* ── PWA app shell: bottom tab bar ──────────────────────────────
+     Shown on narrow screens and when running as an installed app;
+     hidden inside the Wix iframe embed via the .zwco-embedded flag
+     that the frame-ancestor guard sets. Uses logical properties so
+     it mirrors correctly when the page switches to Hebrew/RTL. */
+  .app-tabbar {
+    display: none;
+    /* top:auto is load-bearing: the bare `nav` rule sets top:0 for the sticky
+       header, and without resetting it a fixed element with both top:0 and
+       bottom:0 stretches over the whole viewport. */
+    position: fixed; inset-inline: 0; top: auto; bottom: 0; z-index: 150;
+    background: var(--white); border-top: 1px solid var(--border);
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -2px 8px rgba(26,75,140,.08);
+  }
+  .app-tab {
+    flex: 1; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; gap: .15rem;
+    min-height: 56px; padding: .4rem .2rem;
+    text-decoration: none; color: var(--muted);
+    font-size: .68rem; font-weight: 600; text-align: center;
+  }
+  .app-tab .tab-icon { font-size: 1.15rem; line-height: 1; }
+  .app-tab[aria-current="page"] { color: var(--blue); }
+  .app-tab:focus-visible { outline: 3px solid rgba(37,99,176,.35); outline-offset: -3px; border-radius: 6px; }
+  @media (max-width: 820px) {
+    .app-tabbar { display: flex; }
+    body { padding-bottom: 64px; }
+  }
+  @media (display-mode: standalone) {
+    .app-tabbar { display: flex; }
+    body { padding-bottom: 64px; }
+  }
+  /* Higher specificity than the media rules above — no !important needed. */
+  html.zwco-embedded .app-tabbar { display: none; }
+  html.zwco-embedded body { padding-bottom: 0; }
 
   /* ── Nav ── */
   nav {
@@ -215,6 +257,13 @@
   </p>
 </main>
 
+<nav class="app-tabbar" aria-label="App sections">
+  <a href="index.html" class="app-tab"><span class="tab-icon" aria-hidden="true">📖</span><span data-i18n="tabGuide">Guide</span></a>
+  <a href="calculator.html" class="app-tab"><span class="tab-icon" aria-hidden="true">🧮</span><span data-i18n="tabCalc">Calculator</span></a>
+  <a href="treaty-rates.html" class="app-tab" aria-current="page"><span class="tab-icon" aria-hidden="true">🌐</span><span data-i18n="tabTreaties">Treaties</span></a>
+  <a href="contact.html" class="app-tab"><span class="tab-icon" aria-hidden="true">💬</span><span data-i18n="tabContact">Contact</span></a>
+</nav>
+
 <footer>
   <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" data-i18n="firmName">Zitnitski Weinstein &amp; Co.</a></strong> <span data-i18n="footerTag">— Israel International Tax Guide</span> · <a href="index.html#accessibility" data-i18n="accessibilityLink">Accessibility Statement</a></p>
   <p data-i18n="dFooter">General overview only. Not legal or tax advice, not a professional opinion; material errors may occur. Always consult a qualified cross-border tax professional.</p>
@@ -245,6 +294,7 @@ const I18N = {
     footerTag: '— Israel International Tax Guide',
     accessibilityLink: 'Accessibility Statement',
     skipLink: 'Skip to main content',
+    tabGuide: 'Guide', tabCalc: 'Calculator', tabTreaties: 'Treaties', tabContact: 'Contact',
     dFooter: 'General overview only. Not legal or tax advice, not a professional opinion; material errors may occur. Always consult a qualified cross-border tax professional.',
     copyright: '© 2026 Zitnitski Weinstein & Co. All rights reserved.',
     emptyState: 'Select a country above, or type its name (in Hebrew or English), to see its treaty rates.',
@@ -270,6 +320,7 @@ const I18N = {
     footerTag: '— מדריך המס הבינלאומי',
     accessibilityLink: 'הצהרת נגישות',
     skipLink: 'דלג לתוכן הראשי',
+    tabGuide: 'מדריך', tabCalc: 'מחשבון', tabTreaties: 'אמנות', tabContact: 'צור קשר',
     dFooter: 'סקירה כללית בלבד. אין לראות באמור ייעוץ משפטי או ייעוץ מס או חוות דעת; עלולות ליפול טעויות מהותיות. יש להיוועץ תמיד באיש מקצוע מוסמך למיסוי בינלאומי.',
     copyright: '© 2026 ז\'יטניצקי וינשטין ושות\'. כל הזכויות שמורות.',
     emptyState: 'בחר מדינה למעלה, או הקלד את שמה (בעברית או באנגלית), כדי לראות את שיעורי האמנה שלה.',

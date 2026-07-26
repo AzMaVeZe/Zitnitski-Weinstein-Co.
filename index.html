@@ -42,6 +42,11 @@
   <meta property="og:description" content="A structured overview of tax residency rules, treaty benefits, aliyah incentives, and cross-border reporting obligations, prepared by Zitnitski Weinstein &amp; Co." />
   <meta property="og:image" content="assets/zwco-logo-full.png" />
   <meta name="twitter:card" content="summary" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1a4b8c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ZW Tax" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
   <title>Relocating to Israel — International Tax Guide | Zitnitski Weinstein &amp; Co.</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -81,6 +86,43 @@
       transition: top .15s;
     }
     .skip-link:focus { top: 1rem; }
+
+    /* ── PWA APP SHELL: bottom tab bar ──────────────────────────────
+       Shown on narrow screens and whenever the site is running as an
+       installed app. Deliberately hidden inside the Wix iframe embed
+       (the host page has its own navigation there), reusing the
+       .zwco-embedded flag the frame-ancestor guard already sets. */
+    .app-tabbar {
+      display: none;
+      /* top:auto is load-bearing: the bare `nav` rule above sets top:0 for the
+         sticky header, and without resetting it a fixed element with both
+         top:0 and bottom:0 stretches over the whole viewport. */
+      position: fixed; inset-inline: 0; top: auto; bottom: 0; z-index: 150;
+      background: var(--white); border-top: 1px solid var(--border);
+      padding-bottom: env(safe-area-inset-bottom);
+      box-shadow: 0 -2px 8px rgba(26,75,140,.08);
+    }
+    .app-tab {
+      flex: 1; display: flex; flex-direction: column;
+      align-items: center; justify-content: center; gap: .15rem;
+      min-height: 56px; padding: .4rem .2rem;
+      text-decoration: none; color: var(--muted);
+      font-size: .68rem; font-weight: 600; text-align: center;
+    }
+    .app-tab .tab-icon { font-size: 1.15rem; line-height: 1; }
+    .app-tab[aria-current="page"] { color: var(--blue); }
+    .app-tab:focus-visible { outline: 3px solid rgba(37,99,176,.35); outline-offset: -3px; border-radius: 6px; }
+    @media (max-width: 820px) {
+      .app-tabbar { display: flex; }
+      body { padding-bottom: 64px; }
+    }
+    @media (display-mode: standalone) {
+      .app-tabbar { display: flex; }
+      body { padding-bottom: 64px; }
+    }
+    /* Higher specificity than the media rules above — no !important needed. */
+    html.zwco-embedded .app-tabbar { display: none; }
+    html.zwco-embedded body { padding-bottom: 0; }
 
     /* ── NAV ── */
     nav {
@@ -457,6 +499,7 @@
       <li><a href="#disclaimer">Disclaimer</a></li>
       <li><a href="#accessibility">Accessibility</a></li>
       <li><a href="treaty-rates.html">Treaty Rates</a></li>
+      <li><a href="contact.html">Contact</a></li>
       <li><a href="calculator.html" style="color:var(--blue);font-weight:600;background:var(--blue-light)">🧮 Calculator</a></li>
     </ul>
     <button class="nav-toggle" id="navToggle" aria-label="Toggle menu">☰</button>
@@ -473,6 +516,7 @@
     <div class="hero-ctas">
       <a href="#residency" id="exploreCta" class="hero-cta">Explore the Guide ↓</a>
       <a href="calculator.html" class="hero-cta-ghost">🧮 Tax Comparison Calculator</a>
+      <button type="button" id="installBtn" class="hero-cta-ghost" hidden>⬇️ Install app</button>
     </div>
   </div>
 </header>
@@ -963,6 +1007,13 @@
 
 </main>
 
+<nav class="app-tabbar" aria-label="App sections">
+  <a href="index.html" class="app-tab" aria-current="page"><span class="tab-icon" aria-hidden="true">📖</span>Guide</a>
+  <a href="calculator.html" class="app-tab"><span class="tab-icon" aria-hidden="true">🧮</span>Calculator</a>
+  <a href="treaty-rates.html" class="app-tab"><span class="tab-icon" aria-hidden="true">🌐</span>Treaties</a>
+  <a href="contact.html" class="app-tab"><span class="tab-icon" aria-hidden="true">💬</span>Contact</a>
+</nav>
+
 <!-- FOOTER -->
 <footer>
   <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer">Zitnitski Weinstein &amp; Co.</a></strong> — Israel International Tax Guide · <a href="https://www.linkedin.com/company/zitnitski-weinstein-&amp;-co-certified-public-accountants/" target="_blank" rel="noopener noreferrer">LinkedIn</a> · <a href="#accessibility">Accessibility Statement</a></p>
@@ -1147,6 +1198,32 @@
     });
   }, { threshold: 0.1, rootMargin: '0px 0px -40px 0px' });
   revealEls.forEach(el => revealObs.observe(el));
+</script>
+
+<script>
+  // Install prompt: surfaced only where the browser offers it (Chromium).
+  // Safari/iOS never fires beforeinstallprompt, so the button simply stays
+  // hidden there; contact.html carries the written Share-sheet instructions.
+  // Never shown inside the Wix embed — an iframe is not installable.
+  (function () {
+    var btn = document.getElementById('installBtn');
+    if (!btn || window.self !== window.top) return;
+    var deferred = null;
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferred = e;
+      btn.hidden = false;
+    });
+    btn.addEventListener('click', function () {
+      if (!deferred) return;
+      deferred.prompt();
+      var done = function () { deferred = null; btn.hidden = true; };
+      if (deferred.userChoice && deferred.userChoice.then) {
+        deferred.userChoice.then(done, done);
+      } else { done(); }
+    });
+    window.addEventListener('appinstalled', function () { btn.hidden = true; });
+  })();
 </script>
 
 <script>

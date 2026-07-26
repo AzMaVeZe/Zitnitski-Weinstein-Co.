@@ -37,6 +37,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Interactive two-step Israel tax calculator for individuals and companies — real estate, shares, interest, crypto, and stock-option scenarios, by Zitnitski Weinstein &amp; Co." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231a4b8c'/%3E%3Ctext x='32' y='43' font-family='Arial, sans-serif' font-size='26' font-weight='700' fill='white' text-anchor='middle'%3EZW%3C/text%3E%3C/svg%3E" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1a4b8c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ZW Tax" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
   <title>Israel Tax Calculator — Step 2 | Zitnitski Weinstein &amp; Co.</title>
   <link rel="stylesheet" href="calculator.css" />
 </head>
@@ -2372,10 +2377,38 @@
   <!-- Shown regardless of which scenario is active, right after its results -->
   <div class="contact-cta">
     <p>These figures are a starting point — the details of your situation can change the outcome. Zitnitski Weinstein &amp; Co. can walk you through the specifics.</p>
-    <a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" class="cta-btn">Get in touch with our team →</a>
+    <a href="https://www.zw-co.com/%D7%A6%D7%A8%D7%95-%D7%A7%D7%A9%D7%A8?utm_source=zwco-app&amp;utm_medium=calculator&amp;utm_content=footer-cta" target="_blank" rel="noopener noreferrer" class="cta-btn">Request a consultation →</a>
   </div>
 
 </main>
+
+<!-- Consultation invitation. Shown once per session, and only after the
+     visitor has actually produced a figure — never as an entry interstitial.
+     Carries no personal data: the outbound link passes a scenario slug for
+     attribution only, never the amounts entered. -->
+<div class="consult-overlay" id="consultOverlay" data-open="false">
+  <div class="consult-modal" role="dialog" aria-modal="true" aria-labelledby="consultTitle" aria-describedby="consultBody">
+    <button type="button" class="consult-close" id="consultClose" aria-label="Close">&times;</button>
+    <h2 id="consultTitle">Want this checked against your actual situation?</h2>
+    <p id="consultBody">
+      The figure above is a general estimate. Residency, timing, and treaty position often change the result materially. Leave your details and a member of our international tax team will get back to you to arrange a consultation.
+    </p>
+    <div class="consult-actions">
+      <a href="https://www.zw-co.com/%D7%A6%D7%A8%D7%95-%D7%A7%D7%A9%D7%A8?utm_source=zwco-app&amp;utm_medium=calculator&amp;utm_content=result-modal" target="_blank" rel="noopener noreferrer" class="cta-btn" id="consultCta">Request a consultation →</a>
+      <button type="button" class="consult-dismiss" id="consultDismiss">Not now — keep exploring</button>
+    </div>
+    <p class="consult-fineprint">
+      Opens our contact form on zw-co.com. Nothing you entered here is sent to us — your figures stay on this device. Getting in touch does not create an accountant–client relationship, and please don't include confidential details until an engagement is agreed in writing.
+    </p>
+  </div>
+</div>
+
+<nav class="app-tabbar" aria-label="App sections">
+  <a href="index.html" class="app-tab"><span class="tab-icon" aria-hidden="true">📖</span>Guide</a>
+  <a href="calculator.html" class="app-tab" aria-current="page"><span class="tab-icon" aria-hidden="true">🧮</span>Calculator</a>
+  <a href="treaty-rates.html" class="app-tab"><span class="tab-icon" aria-hidden="true">🌐</span>Treaties</a>
+  <a href="contact.html" class="app-tab"><span class="tab-icon" aria-hidden="true">💬</span>Contact</a>
+</nav>
 
 <footer>
   <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer">Zitnitski Weinstein &amp; Co.</a></strong> — Israel International Tax Guide · <a href="https://www.linkedin.com/company/zitnitski-weinstein-&amp;-co-certified-public-accountants/" target="_blank" rel="noopener noreferrer">LinkedIn</a> · <a href="index.html#accessibility">Accessibility Statement</a></p>
@@ -2389,6 +2422,97 @@
 
 <script src="tax-engine.js"></script>
 <script src="calculator2.sections.js"></script>
+
+<script>
+  // ── Consultation prompt ────────────────────────────────────────────
+  // Invites the visitor to request a consultation, but only once they have
+  // actually produced a figure: it waits for (a) a real input/change from the
+  // user and (b) a populated result value, then pauses briefly so it never
+  // interrupts mid-typing. Shown at most once per session (sessionStorage),
+  // so re-running scenarios never nags. Generic by design — it observes the
+  // shared result classes rather than hooking each of the 17 sections, so
+  // adding a section doesn't require touching this.
+  (function () {
+    var overlay = document.getElementById('consultOverlay');
+    var page    = document.querySelector('main.page');
+    if (!overlay || !page) return;
+
+    var SEEN_KEY = 'zwco_consult_seen';
+    try { if (sessionStorage.getItem(SEEN_KEY)) return; } catch (e) {}
+
+    var interacted = false, shown = false, timer = null, lastFocus = null;
+
+    function focusable() {
+      return overlay.querySelectorAll('a[href], button:not([disabled])');
+    }
+
+    function close() {
+      overlay.setAttribute('data-open', 'false');
+      document.removeEventListener('keydown', onKeydown, true);
+      if (lastFocus && lastFocus.focus) { try { lastFocus.focus(); } catch (e) {} }
+    }
+
+    function onKeydown(e) {
+      if (e.key === 'Escape') { e.preventDefault(); close(); return; }
+      if (e.key !== 'Tab') return;
+      var items = focusable();
+      if (!items.length) return;
+      var first = items[0], last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) { e.preventDefault(); last.focus(); }
+      else if (!e.shiftKey && document.activeElement === last) { e.preventDefault(); first.focus(); }
+    }
+
+    function open() {
+      if (shown) return;
+      shown = true;
+      try { sessionStorage.setItem(SEEN_KEY, '1'); } catch (e) {}
+
+      // Scenario slug for attribution only — never the amounts entered.
+      var active = document.querySelector('.calc-section:not([style*="display:none"]):not([style*="display: none"])');
+      var cta = document.getElementById('consultCta');
+      if (active && active.id && active.id !== 'fallback' && cta) {
+        try {
+          var u = new URL(cta.href);
+          u.searchParams.set('utm_term', active.id.toLowerCase());
+          cta.href = u.toString();
+        } catch (e) {}
+      }
+
+      lastFocus = document.activeElement;
+      overlay.setAttribute('data-open', 'true');
+      document.addEventListener('keydown', onKeydown, true);
+      var items = focusable();
+      if (items.length) items[items.length - 1].focus();   // "Not now" — least pushy default
+    }
+
+    // A result counts as real once a shared output shows something other than
+    // the em-dash placeholder the engine renders for empty/non-finite values.
+    function hasResult() {
+      var outs = page.querySelectorAll('.metric-val, .track-result-val');
+      for (var i = 0; i < outs.length; i++) {
+        var t = (outs[i].textContent || '').trim();
+        if (t && t !== '—' && /\d/.test(t)) return true;
+      }
+      return false;
+    }
+
+    function maybeSchedule() {
+      if (shown || !interacted || timer || !hasResult()) return;
+      timer = setTimeout(function () { timer = null; if (interacted && hasResult()) open(); }, 2500);
+    }
+
+    page.addEventListener('input',  function () { interacted = true; maybeSchedule(); }, true);
+    page.addEventListener('change', function () { interacted = true; maybeSchedule(); }, true);
+    new MutationObserver(maybeSchedule).observe(page, {
+      subtree: true, childList: true, characterData: true
+    });
+
+    document.getElementById('consultClose').addEventListener('click', close);
+    document.getElementById('consultDismiss').addEventListener('click', close);
+    overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+    document.getElementById('consultCta').addEventListener('click', close);
+  })();
+</script>
 
 <script>
   // Report height to an embedding parent (e.g. the firm's Wix site) so an

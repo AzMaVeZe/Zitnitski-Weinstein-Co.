@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <script>
+    // Frame-ancestor guard: GitHub Pages cannot set X-Frame-Options/CSP
+    // frame-ancestors headers, so this page is embeddable in an iframe from
+    // any origin by default. Break out of any frame whose ancestor is not on
+    // the allowlist (the firm's own Wix site). Add the confirmed Wix embed
+    // hostname here once known — for now only the firm's own domain is trusted.
+    (function () {
+      try {
+        if (window.self === window.top) return;
+        var ALLOWED_ANCESTORS = ['zw-co.com'];
+        function hostAllowed(host) {
+          return ALLOWED_ANCESTORS.some(function (d) {
+            return host === d || host.slice(-(d.length + 1)) === '.' + d;
+          });
+        }
+        var allowed = false;
+        if (window.location.ancestorOrigins && window.location.ancestorOrigins.length) {
+          var top = window.location.ancestorOrigins[window.location.ancestorOrigins.length - 1];
+          try { allowed = hostAllowed(new URL(top).hostname); } catch (e) {}
+        } else if (document.referrer) {
+          try { allowed = hostAllowed(new URL(document.referrer).hostname); } catch (e) {}
+        }
+        if (!allowed) { window.top.location = window.self.location.href; return; }
+        document.documentElement.classList.add('zwco-embedded');
+      } catch (e) {
+        try { window.top.location = window.self.location.href; } catch (e2) {}
+      }
+    })();
+  </script>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Reach the international tax team at Zitnitski Weinstein &amp; Co. — by email, phone, or the contact form on our website. General information only; contacting us does not create a client relationship." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231a4b8c'/%3E%3Ctext x='32' y='43' font-family='Arial, sans-serif' font-size='26' font-weight='700' fill='white' text-anchor='middle'%3EZW%3C/text%3E%3C/svg%3E" />
+  <link rel="manifest" href="manifest.json" />
+  <meta name="theme-color" content="#1a4b8c" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="ZW Tax" />
+  <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <title>Talk to Our Team | Zitnitski Weinstein &amp; Co.</title>
+  <link rel="stylesheet" href="calculator.css" />
+</head>
+<body>
+<a href="#main-content" class="skip-link">Skip to main content</a>
+
+<nav>
+  <div class="nav-inner">
+    <a href="index.html" class="nav-brand">🇮🇱 Israel Tax Guide <span class="brand-by">by ZW&amp;CO.</span></a>
+    <a href="index.html" class="back-link">← Back to Guide</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-badge">💬 Get in Touch</div>
+  <h1>Talk to Our Team</h1>
+  <p>Cross-border situations are rarely standard. If something here raised a question about your own circumstances, our international tax team is a message away.</p>
+</header>
+
+<main class="page" id="main-content">
+
+  <div class="card">
+    <div class="card-header">
+      <h2>How to Reach Us</h2>
+      <p>Choose whichever channel suits you — all of them reach the same team in Tel Aviv.</p>
+    </div>
+
+    <div class="contact-list">
+      <a class="contact-option" href="mailto:zw@zw-co.com">
+        <span class="contact-icon" aria-hidden="true">✉️</span>
+        <span class="contact-text">
+          <strong>Email us</strong>
+          <span class="contact-sub">zw@zw-co.com</span>
+        </span>
+      </a>
+
+      <a class="contact-option" href="https://www.zw-co.com/%D7%A6%D7%A8%D7%95-%D7%A7%D7%A9%D7%A8?utm_source=zwco-app" target="_blank" rel="noopener noreferrer">
+        <span class="contact-icon" aria-hidden="true">📝</span>
+        <span class="contact-text">
+          <strong>Contact form</strong>
+          <span class="contact-sub">Leave your name, company and details on our website</span>
+        </span>
+      </a>
+
+      <a class="contact-option" href="tel:+97236251111">
+        <span class="contact-icon" aria-hidden="true">📞</span>
+        <span class="contact-text">
+          <strong>Call the office</strong>
+          <span class="contact-sub">03-625-1111 · Israel time (UTC+2/+3)</span>
+        </span>
+      </a>
+
+      <a class="contact-option" href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer">
+        <span class="contact-icon" aria-hidden="true">🌐</span>
+        <span class="contact-text">
+          <strong>Firm website</strong>
+          <span class="contact-sub">zw-co.com — about the practice and our services</span>
+        </span>
+      </a>
+    </div>
+
+    <div class="foreign-notice">
+      <strong>Before you write to us.</strong> Contacting Zitnitski Weinstein &amp; Co. through this app does not create an accountant–client relationship and does not constitute receiving professional advice. Please do not send confidential or sensitive personal information until a written engagement has been agreed. Messages you choose to send travel through the channel you pick (email, our website form, or phone) and are subject to that provider's own privacy terms.
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-header">
+      <h2>Add to Your Home Screen</h2>
+      <p>This guide works as an app: install it once and it opens straight from your home screen.</p>
+    </div>
+    <p class="input-hint" style="margin-bottom:1rem">Nothing you enter in the calculator is ever sent to us — figures stay on your own device.</p>
+    <button type="button" id="installBtn" class="cta-btn" hidden>⬇️ Install app</button>
+    <p class="input-hint" id="installHintIos">
+      <strong>On iPhone / iPad:</strong> tap the Share button in Safari, then choose “Add to Home Screen”.
+      <br /><strong>On Android:</strong> open the browser menu and choose “Install app” or “Add to Home screen”.
+    </p>
+  </div>
+
+</main>
+
+<nav class="app-tabbar" aria-label="App sections">
+  <a href="index.html" class="app-tab"><span class="tab-icon" aria-hidden="true">📖</span>Guide</a>
+  <a href="calculator.html" class="app-tab"><span class="tab-icon" aria-hidden="true">🧮</span>Calculator</a>
+  <a href="treaty-rates.html" class="app-tab"><span class="tab-icon" aria-hidden="true">🌐</span>Treaties</a>
+  <a href="contact.html" class="app-tab" aria-current="page"><span class="tab-icon" aria-hidden="true">💬</span>Contact</a>
+</nav>
+
+<footer>
+  <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer">Zitnitski Weinstein &amp; Co.</a></strong> — Israel International Tax Guide · <a href="https://www.linkedin.com/company/zitnitski-weinstein-&amp;-co-certified-public-accountants/" target="_blank" rel="noopener noreferrer">LinkedIn</a> · <a href="index.html#accessibility">Accessibility Statement</a></p>
+  <p><strong>Israel International Tax Guide</strong> — General information only. Not legal or tax advice.</p>
+  <p style="margin-top:.5rem">© 2026 Zitnitski Weinstein &amp; Co. All rights reserved.</p>
+  <a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" class="footer-logo-full-link">
+    <img src="assets/zwco-logo-full.png" alt="Zitnitski Weinstein &amp; Co." class="footer-logo-full" />
+  </a>
+</footer>
+
+<script>
+  // Install prompt: surfaced only where the browser offers it (Chromium).
+  // Safari/iOS never fires beforeinstallprompt, so the button stays hidden
+  // and the written Share-sheet instructions below it carry that case.
+  (function () {
+    var btn = document.getElementById('installBtn');
+    if (!btn || window.self !== window.top) return;
+    var deferred = null;
+    window.addEventListener('beforeinstallprompt', function (e) {
+      e.preventDefault();
+      deferred = e;
+      btn.hidden = false;
+    });
+    btn.addEventListener('click', function () {
+      if (!deferred) return;
+      deferred.prompt();
+      var done = function () { deferred = null; btn.hidden = true; };
+      if (deferred.userChoice && deferred.userChoice.then) {
+        deferred.userChoice.then(done, done);
+      } else { done(); }
+    });
+    window.addEventListener('appinstalled', function () { btn.hidden = true; });
+  })();
+</script>
+
+<script>
+  // Report height to an embedding parent (e.g. the firm's Wix site) so an
+  // iframe embed can auto-size and avoid a double scrollbar. No-ops outside
+  // a frame — pairs with the frame-ancestor guard in <head>.
+  (function () {
+    if (window.self === window.top) return;
+    var lastReported = -1;
+    function report() {
+      var h = document.body.scrollHeight;
+      if (Math.abs(h - lastReported) < 2) return;
+      lastReported = h;
+      window.parent.postMessage({ source: 'zwco-embed', height: h }, '*');
+    }
+    report();
+    window.addEventListener('load', report);
+    window.addEventListener('resize', report);
+    if ('ResizeObserver' in window) {
+      new ResizeObserver(report).observe(document.body);
+    } else {
+      new MutationObserver(report).observe(document.body, { childList: true, subtree: true, attributes: true });
+    }
+    var ticks = 0;
+    var iv = setInterval(function () {
+      report();
+      if (++ticks > 10) clearInterval(iv);
+    }, 500);
+  })();
+</script>
+</body>
+</html>
