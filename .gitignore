@@ -12,3 +12,10 @@ audit-report.md
 handoff-review.md
 fix-prompts.md
 fix-progress.md
+
+# wrangler files
+.wrangler
+.dev.vars*
+!.dev.vars.example
+.env*
+!.env.example
