@@ -1,0 +1,26 @@
+# Cloudflare Pages response headers.
+# GitHub Pages could not set these at all, which is why the security review
+# recommended moving the production host here. Applied at the Pages edge, so
+# it works even though the zw-co.com DNS zone stays on Wix.
+
+/*
+  Content-Security-Policy: default-src 'none'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; manifest-src 'self'; connect-src 'self'; frame-src 'none'; object-src 'none'; form-action 'none'; base-uri 'none'
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=()
+
+# NOTE — frame-ancestors is deliberately NOT set yet.
+# The JS frame-ancestor guard in each page's <head> checks only the TOP-level
+# origin, so it permits the Wix HTML-embed case (top = www.zw-co.com even
+# though the immediate parent frame is served from a Wix-owned domain).
+# A strict `frame-ancestors https://zw-co.com https://*.zw-co.com` inspects the
+# whole ancestor chain and would therefore block that embed. Enable the line
+# below only once the Wix iframe embed is retired in favour of linking out to
+# this domain — otherwise the embed silently stops rendering.
+#
+#   Content-Security-Policy: frame-ancestors https://zw-co.com https://*.zw-co.com
+
+# The service worker (added in a later step) must never be served stale, or a
+# fix can take up to 24h to reach an already-installed client.
+/sw.js
+  Cache-Control: no-cache
