@@ -2,7 +2,7 @@
   "name": "ZW&CO. Israel Tax Guide",
   "short_name": "ZW Tax",
   "description": "International tax guide, calculator, and treaty withholding rates for individuals with an Israeli connection. General information only — not tax advice. Published by Zitnitski Weinstein & Co.",
-  "start_url": "index.html",
+  "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait-primary",
