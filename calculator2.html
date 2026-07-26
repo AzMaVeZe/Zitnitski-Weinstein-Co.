@@ -42,6 +42,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="ZW Tax" />
   <link rel="apple-touch-icon" href="assets/icon-192.png" />
+  <!-- Step 2 renders from the Step 1 selections held in sessionStorage, so it
+       has no meaningful standalone content: a searcher landing here directly
+       would see the "start again" fallback. Keep it out of the index and send
+       ranking signals to Step 1 instead. -->
+  <meta name="robots" content="noindex, follow" />
+  <link rel="canonical" href="https://tax.zw-co.com/calculator" />
   <title>Israel Tax Calculator — Step 2 | Zitnitski Weinstein &amp; Co.</title>
   <link rel="stylesheet" href="calculator.css" />
 </head>
