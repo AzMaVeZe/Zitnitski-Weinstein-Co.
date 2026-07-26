@@ -269,7 +269,7 @@
 </nav>
 
 <footer>
-  <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" data-i18n="firmName">Zitnitski Weinstein &amp; Co.</a></strong> <span data-i18n="footerTag">— Israel International Tax Guide</span> · <a href="index.html#accessibility" data-i18n="accessibilityLink">Accessibility Statement</a></p>
+  <p><strong><a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" data-i18n="firmName">Zitnitski Weinstein &amp; Co.</a></strong> <span data-i18n="footerTag">— Israel International Tax Guide</span> · <a href="index.html#accessibility" data-i18n="accessibilityLink">Accessibility Statement</a> · <a href="index.html#privacy" data-i18n="privacyLink">Privacy Notice</a></p>
   <p data-i18n="dFooter">General overview only. Not legal or tax advice, not a professional opinion; material errors may occur. Always consult a qualified cross-border tax professional.</p>
   <p style="margin-top:.5rem" data-i18n="copyright">© 2026 Zitnitski Weinstein &amp; Co. All rights reserved.</p>
   <a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" class="footer-logo-full-link">
@@ -297,6 +297,7 @@ const I18N = {
     firmName: 'Zitnitski Weinstein & Co.',
     footerTag: '— Israel International Tax Guide',
     accessibilityLink: 'Accessibility Statement',
+    privacyLink: 'Privacy Notice',
     skipLink: 'Skip to main content',
     tabGuide: 'Guide', tabCalc: 'Calculator', tabTreaties: 'Treaties', tabContact: 'Contact',
     dFooter: 'General overview only. Not legal or tax advice, not a professional opinion; material errors may occur. Always consult a qualified cross-border tax professional.',
@@ -323,6 +324,7 @@ const I18N = {
     firmName: 'ז\'יטניצקי וינשטין ושות\'',
     footerTag: '— מדריך המס הבינלאומי',
     accessibilityLink: 'הצהרת נגישות',
+    privacyLink: 'הצהרת פרטיות',
     skipLink: 'דלג לתוכן הראשי',
     tabGuide: 'מדריך', tabCalc: 'מחשבון', tabTreaties: 'אמנות', tabContact: 'צור קשר',
     dFooter: 'סקירה כללית בלבד. אין לראות באמור ייעוץ משפטי או ייעוץ מס או חוות דעת; עלולות ליפול טעויות מהותיות. יש להיוועץ תמיד באיש מקצוע מוסמך למיסוי בינלאומי.',
@@ -551,6 +553,17 @@ renderSelected();
       report();
       if (++ticks > 10) clearInterval(iv);
     }, 500);
+  })();
+</script>
+
+<script>
+  // Offline support. Registered only over https — service workers are
+  // unavailable over file:// and the site must keep working there too.
+  (function () {
+    if (!('serviceWorker' in navigator) || window.location.protocol !== 'https:') return;
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('/sw.js').catch(function () {});
+    });
   })();
 </script>
 </body>
