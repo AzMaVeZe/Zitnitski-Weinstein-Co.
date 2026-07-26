@@ -1,7 +1,8 @@
-# This is a staging/demo host (personal GitHub Pages account) for content
-# that will ultimately be embedded on https://www.zw-co.com. Blocking
-# indexing here avoids duplicate-content competition with the primary
-# domain once that integration goes live. Revisit if this ever becomes
-# the canonical public URL for this content.
+# tax.zw-co.com is the canonical public home of this content (opened for
+# indexing 2026-07-26 on the firm's instruction). calculator2.html is not
+# Disallowed here on purpose: it carries a noindex meta tag, and robots-
+# blocking a page prevents crawlers from ever seeing that tag.
 User-agent: *
-Disallow: /
+Allow: /
+
+Sitemap: https://tax.zw-co.com/sitemap.xml
