@@ -45,7 +45,7 @@ When adding or editing factual claims, note the source in a code comment or in t
 |---|---|---|
 | Tax Residency | Center-of-Life test, day-count rules | ITO § 1 (definition of "resident individual") |
 | US–Israel Treaty | Double tax relief, withholding rates | US–Israel Income Tax Treaty (1994/1995) |
-| Aliyah Benefits | 10-year foreign income exemption | ITO §§ 14, 97(b); ITA Circular 1/2011 |
+| Aliyah Benefits | 10-year foreign income exemption; plus a new (2026) temporary-provision exemption on Israeli-source earned income for arrivals Nov 2025–Dec 2026 | ITO §§ 14, 97(b); ITA Circular 1/2011; 2026 State Budget Law temporary provision (figures per professional-firm summaries, pending final ITA circular) |
 | Disclaimer | Legal disclaimer | — |
 
 ## Technical Constraints
