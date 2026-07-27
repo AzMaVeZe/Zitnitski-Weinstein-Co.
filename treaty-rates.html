@@ -135,8 +135,14 @@
   /* ── Nav ── */
   nav {
     background: var(--white); border-bottom: 1px solid var(--border);
-    padding: .8rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
-    gap: 1rem; flex-wrap: wrap; position: sticky; top: 0; z-index: 20;
+    position: sticky; top: 0; z-index: 20;
+  }
+  /* The bar was previously edge-to-edge here while every other page centred it
+     in a 1100px container, so it visibly widened on arrival. Same wrapper now. */
+  .nav-inner {
+    max-width: 1100px; margin: 0 auto;
+    padding: .9rem 1.5rem; display: flex; align-items: center;
+    justify-content: space-between; gap: 1rem; flex-wrap: wrap;
   }
   /* Brand lockup: firm logo + site name + beta marker + outbound links.
      Logical properties throughout - this page flips to RTL at runtime. */
@@ -188,6 +194,7 @@
     padding: .4rem .75rem; border-radius: 6px; transition: all .2s;
   }
   .nav-link:hover { color: var(--blue); background: var(--blue-light); }
+  .nav-link[aria-current="page"] { color: var(--blue); font-weight: 600; }
   .nav-cta {
     text-decoration: none; background: var(--blue); color: var(--white);
     font-weight: 600; font-size: .875rem; padding: .45rem 1rem; border-radius: 50px;
@@ -323,6 +330,7 @@
 <a href="#main-content" class="skip-link" data-i18n="skipLink">Skip to main content</a>
 
 <nav>
+  <div class="nav-inner">
   <div class="nav-brand-group">
     <a href="index.html" class="nav-brand">
       <img src="assets/zwco-logo-full.png" alt="Zitnitski Weinstein &amp; Co." class="nav-logo" />
@@ -341,11 +349,16 @@
       </a>
     </span>
   </div>
+  <!-- Same four destinations, same order, as every other page - only
+       aria-current moves. The language toggle is a page control, not a nav
+       item, so it sits after a separator. -->
   <div class="nav-actions">
     <a href="index.html" class="nav-link" data-i18n="tabGuide">Guide</a>
+    <a href="treaty-rates.html" class="nav-link" aria-current="page" data-i18n="navTreaties">Treaty Rates</a>
     <a href="contact.html" class="nav-link" data-i18n="tabContact">Contact</a>
     <a href="calculator.html" class="nav-cta"><span aria-hidden="true">🧮 </span><span data-i18n="tabCalc">Calculator</span></a>
     <button type="button" class="lang-toggle" id="langToggle">עברית</button>
+  </div>
   </div>
 </nav>
 
@@ -418,6 +431,7 @@ const I18N = {
     ariaSite: 'Firm website (opens in a new tab)',
     ariaLinkedIn: 'LinkedIn (opens in a new tab)',
     ariaFacebook: 'Facebook (opens in a new tab)',
+    navTreaties: 'Treaty Rates',
     title: 'Israel Tax Treaty Withholding Rates',
     subtitle: "Maximum withholding rates on dividends, interest, and royalties under Israel's income tax treaties - a quick-reference table published by Zitnitski Weinstein & Co.",
     dTopTitle: '⚠️ General overview only - not advice',
@@ -448,6 +462,7 @@ const I18N = {
     ariaSite: 'אתר הפירמה (נפתח בלשונית חדשה)',
     ariaLinkedIn: 'לינקדאין (נפתח בלשונית חדשה)',
     ariaFacebook: 'פייסבוק (נפתח בלשונית חדשה)',
+    navTreaties: 'שיעורי אמנות',
     title: 'שיעורי ניכוי במקור באמנות המס של ישראל',
     subtitle: 'שיעורי הניכוי במקור המרביים על דיבידנד, ריבית ותמלוגים לפי אמנות המס של ישראל - טבלת עיון מהירה מבית ז\'יטניצקי וינשטין ושות\'.',
     dTopTitle: '⚠️ סקירה כללית בלבד - אין לראות בכך ייעוץ',
