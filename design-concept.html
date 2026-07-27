@@ -47,7 +47,13 @@
     --ink:      #10141A;   /* the brush monogram. Headings, body, rules.      */
     --slate:    #44586F;   /* the "certified public accountants" line.        */
     --ice:      #EBF3F5;   /* the pale square behind the monogram.            */
+    /* Pure white is reserved for the masthead, because the logo PNG carries an
+       opaque #FFFFFF matte and any tint would show as a rectangle around it.
+       Reading surfaces take a warm off-white instead: Ramp ships #f4f2ef,
+       Anrok #fef9f7, Column #e3e9f2 - three of the most admired finance sites,
+       and not one of them uses #ffffff as the page ground. Cheap sites do. */
     --paper:    #FFFFFF;
+    --leaf:     #FCFBF9;
     --desk:     #F4F7F8;
     --rule:     #D3DCE0;
     --rule-mid: #7E8C97;   /* control borders - 3.45:1, passes 1.4.11        */
@@ -127,8 +133,12 @@
 
   .masthead { padding-block: var(--s8) var(--s6); }
   .masthead img { height: 46px; width: auto; display: block; margin-bottom: var(--s6); }
+  /* Weight 400 at display size, not 600. Baillie Gifford sets its 64px h1 at
+     400; Stripe's own token file caps "bold" at 500; Ramp ships 300/350/400.
+     Big type at a light weight reads as confidence - bold-everything reads as
+     a template. Mid-size headings below keep 600, where a serif needs it. */
   .masthead h1 {
-    font-family: var(--f-text); font-weight: 600; letter-spacing: -.018em;
+    font-family: var(--f-text); font-weight: 400; letter-spacing: -.018em;
     font-size: clamp(2.25rem, 1.4rem + 3.4vw, 3.25rem); line-height: 1.12;
     max-width: 18ch;
   }
@@ -149,7 +159,7 @@
   .colophon dd { color: var(--ink); margin-bottom: var(--s3); }
 
   /* ---- Sections ---------------------------------------------------------- */
-  .band { background: var(--paper); }
+  .band { background: var(--leaf); }
   .band--desk { background: var(--desk); }
   section { padding-block: var(--s9); }
 
@@ -628,6 +638,27 @@
         <li>Blue on twenty-nine headings. Headings are ink; blue means link.</li>
         <li>Scroll-fade on reference material you are trying to scan.</li>
         <li>Fourteen inline margin styles, replaced by one spacing scale.</li>
+      </ul>
+
+      <h3>What the benchmarks actually show</h3>
+      <!-- Read off shipped CSS across 37 finance properties, not from
+           screenshots: which webfont files each site actually serves. -->
+      <p>The large accounting firms are not the benchmark. Deloitte ships Open Sans and declares Calibri - Google's default humanist sans plus Microsoft Office's default font. KPMG ships Open Sans and Google's Material icon set. Of the Big Four only PwC licenses a real pair, a custom Helvetica Neue with ITC Charter.</p>
+      <p><strong>Grant Thornton - a mid-tier firm - out-types every one of them except PwC</strong>, on the strength of a single licensed face. That is the encouraging part: what separates a designed financial brand from a generic one is not budget or scale. It is one decisive typographic decision.</p>
+
+      <ul class="ruled">
+        <li>
+          <span class="term">Israeli finance sets a high bar</span>
+          <span class="desc">Bank Leumi commissioned a bespoke Hebrew cut; Pepper and Riseup ship custom faces of their own. A credible Israeli finance brand licenses Hebrew-capable type - and no well-designed Israeli CPA site turned up in the survey at all.</span>
+        </li>
+        <li>
+          <span class="term">The awards circuit is an anti-reference</span>
+          <span class="desc">The accounting entries are 2013-2017 nominees scoring around <span class="fig">6.6</span> of <span class="fig">10</span>, and the finance category contains no Site of the Day at all - it is dominated by crypto landing pages in exactly the register this concept avoids.</span>
+        </li>
+        <li>
+          <span class="term">Compliance gates can be editorial</span>
+          <span class="desc">Baillie Gifford opens with a numbered <span class="fig">01</span>. / <span class="fig">02</span>. jurisdiction selector and remembers the answer - structurally the same job as the calculator's classification step, treated as typography rather than as an apologetic interstitial.</span>
+        </li>
       </ul>
 
       <div class="notice notice--seal">
