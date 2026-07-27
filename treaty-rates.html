@@ -53,22 +53,33 @@
 <meta name="apple-mobile-web-app-title" content="ZW Tax" />
 <link rel="apple-touch-icon" href="assets/icon-192.png" />
 <style>
+  /* Token superset shared conceptually with index.html and calculator.css —
+     keep the three :root blocks in sync. */
   :root {
     --blue:        #1a4b8c;
     --blue-mid:    #2563b0;
+    --blue-deep:   #0d2d5e;
     --blue-light:  #e8f0fb;
+    --gold:        #c9a227;
+    --gold-light:  #fdf6e3;
+    --green:       #15803d;
+    --green-light: #dcfce7;
+    --amber:       #b45309;
+    --amber-light: #fef3c7;
     --text:        #1e2330;
     --muted:       #5a6275;
     --border:      #d4dae6;
     --white:       #ffffff;
     --bg:          #f7f9fc;
-    --amber:       #92600a;
-    --amber-light: #fdf3dc;
+    --radius:      10px;
+    --shadow-sm:   0 1px 2px rgba(26,75,140,.05), 0 2px 8px  rgba(26,75,140,.06);
+    --shadow:      0 2px 4px rgba(26,75,140,.05), 0 6px 24px rgba(26,75,140,.09);
+    --shadow-lg:   0 4px 8px rgba(26,75,140,.06), 0 16px 48px rgba(26,75,140,.14);
   }
   * { margin: 0; padding: 0; box-sizing: border-box; }
   html { scroll-behavior: smooth; }
   body {
-    font-family: 'Segoe UI', system-ui, -apple-system, 'Noto Sans Hebrew', 'Arial Hebrew', sans-serif;
+    font-family: system-ui, "Segoe UI Variable Text", "Segoe UI", -apple-system, Roboto, 'Noto Sans Hebrew', 'Arial Hebrew', "Helvetica Neue", Arial, sans-serif;
     background: var(--bg); color: var(--text); line-height: 1.6; font-size: 16px;
   }
   html[lang="he"] body { line-height: 1.7; }
@@ -130,11 +141,24 @@
   .nav-brand { font-weight: 700; font-size: 1.05rem; color: var(--blue); text-decoration: none; }
   .brand-by { font-size: .72rem; font-weight: 600; color: var(--muted); letter-spacing: .04em; white-space: nowrap; }
   .nav-actions { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
-  .back-link {
+  .nav-link {
     text-decoration: none; color: var(--muted); font-size: .875rem;
-    padding: .35rem .8rem; border-radius: 6px; border: 1px solid var(--border); transition: all .2s;
+    padding: .4rem .75rem; border-radius: 6px; transition: all .2s;
   }
-  .back-link:hover { color: var(--blue); background: var(--blue-light); border-color: var(--blue-mid); }
+  .nav-link:hover { color: var(--blue); background: var(--blue-light); }
+  .nav-cta {
+    text-decoration: none; background: var(--blue); color: var(--white);
+    font-weight: 600; font-size: .875rem; padding: .45rem 1rem; border-radius: 50px;
+    transition: background .2s;
+  }
+  .nav-cta:hover { background: var(--blue-mid); }
+  @media (max-width: 820px) {
+    /* The bottom tabbar carries cross-page nav at this width; keep only the
+       language toggle (the page's core control). Inside the Wix embed the
+       tabbar is hidden, so the links stay. */
+    html:not(.zwco-embedded) .nav-link,
+    html:not(.zwco-embedded) .nav-cta { display: none; }
+  }
   .lang-toggle {
     cursor: pointer; font-size: .9rem; font-weight: 700; color: var(--white);
     background: var(--blue); border: 1px solid var(--blue); border-radius: 6px;
@@ -142,11 +166,19 @@
   }
   .lang-toggle:hover { background: var(--blue-mid); }
 
-  /* ── Hero ── */
+  /* ── Hero — same gradient, pattern, and gold keyline as the other pages ── */
   header.hero {
-    background: linear-gradient(135deg, var(--blue) 0%, #0d2d5e 100%);
+    background: linear-gradient(135deg, var(--blue) 0%, var(--blue-deep) 100%);
     color: var(--white); padding: 2.2rem 1.5rem 2rem; text-align: center;
+    position: relative; overflow: hidden;
+    border-bottom: 3px solid var(--gold);
   }
+  header.hero::before {
+    content: '';
+    position: absolute; inset: 0; pointer-events: none;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  header.hero > * { position: relative; }
   .hero h1 { font-size: 1.6rem; margin-bottom: .4rem; }
   .hero p  { font-size: .95rem; opacity: .85; max-width: 52rem; margin: 0 auto; }
 
@@ -166,7 +198,19 @@
     flex: 1 1 16rem; border: 1.5px solid var(--border); border-radius: 7px;
     padding: .65rem .9rem; font-size: .94rem; color: var(--text); background: var(--white);
   }
-  .controls input[type="search"]:focus, .controls select:focus { outline: none; border-color: var(--blue-mid); }
+  .controls input[type="search"]:focus, .controls select:focus {
+    outline: none; border-color: var(--blue-mid);
+    box-shadow: 0 0 0 3px rgba(37,99,176,.15);
+  }
+  .controls select {
+    appearance: none; -webkit-appearance: none;
+    padding-inline-end: 2.4rem; cursor: pointer;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='11' height='7' viewBox='0 0 11 7'%3E%3Cpath d='M1 1l4.5 4.5L10 1' stroke='%235a6275' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right .85rem center;
+  }
+  /* background-position has no logical form; the page flips dir at runtime */
+  html[dir="rtl"] .controls select { background-position: left .85rem center; }
 
   /* ── Table ── */
   .table-wrap {
@@ -183,9 +227,15 @@
   tbody tr:nth-child(even) { background: var(--bg); }
   tbody tr:hover { background: var(--blue-light); }
   td.country { font-weight: 700; color: var(--blue); white-space: nowrap; }
-  .rate { white-space: nowrap; unicode-bidi: isolate; direction: ltr; display: inline-block; }
+  .rate { white-space: nowrap; unicode-bidi: isolate; direction: ltr; display: inline-block; font-variant-numeric: tabular-nums; }
   .cond { display: block; font-size: .78rem; color: var(--muted); }
-  .no-results { padding: 2.2rem 1.2rem; text-align: center; color: var(--muted); font-style: italic; }
+  .no-results {
+    padding: 3rem 1.5rem; text-align: center; color: var(--muted);
+    font-style: normal; font-size: .95rem;
+  }
+  .no-results::before {
+    content: '🌐'; display: block; font-size: 2rem; margin-bottom: .6rem; opacity: .5;
+  }
 
   .under-table-note {
     font-size: .8rem; color: var(--muted); margin-top: .9rem; text-align: start;
@@ -193,10 +243,12 @@
 
   /* ── Footer ── */
   footer {
-    background: var(--blue); color: #cdd9ec; text-align: center;
-    padding: 1.6rem 1.5rem; font-size: .8rem; margin-top: 2rem;
+    background: linear-gradient(180deg, var(--blue-deep) 0%, var(--blue) 120%);
+    color: rgba(255,255,255,.82); text-align: center;
+    padding: 2rem 1.5rem 1.6rem; font-size: .8rem; margin-top: 2rem;
+    border-top: 3px solid var(--gold);
   }
-  footer a { color: #ffffff; }
+  footer a { color: #ffffff; text-underline-offset: 3px; }
   .footer-logo-full-link {
     display: inline-block; background: var(--white); border-radius: 8px;
     padding: .45rem .9rem; margin-top: .9rem;
@@ -206,6 +258,22 @@
   @media (max-width: 640px) {
     .hero h1 { font-size: 1.25rem; }
     table { font-size: .8rem; }
+  }
+
+  /* ── Micro-polish ── */
+  ::selection { background: var(--blue-mid); color: var(--white); }
+  .table-wrap { scrollbar-width: thin; scrollbar-color: #b9c8e0 var(--bg); }
+  .table-wrap::-webkit-scrollbar { height: 8px; }
+  .table-wrap::-webkit-scrollbar-thumb { background: #b9c8e0; border-radius: 4px; }
+  tbody td { transition: background .15s; }
+
+  /* ── Motion preferences ── */
+  @media (prefers-reduced-motion: reduce) {
+    html { scroll-behavior: auto; }
+    *, *::before, *::after {
+      animation-duration: .01ms !important;
+      transition-duration: .01ms !important;
+    }
   }
 </style>
 </head>
@@ -218,8 +286,9 @@
     <span class="brand-by" data-i18n="brandBy">by Zitnitski Weinstein &amp; Co.</span>
   </div>
   <div class="nav-actions">
-    <a href="index.html" class="back-link" data-i18n="backGuide">← Tax Guide</a>
-    <a href="calculator.html" class="back-link" data-i18n="backCalc">🧮 Calculator</a>
+    <a href="index.html" class="nav-link" data-i18n="tabGuide">Guide</a>
+    <a href="contact.html" class="nav-link" data-i18n="tabContact">Contact</a>
+    <a href="calculator.html" class="nav-cta"><span aria-hidden="true">🧮 </span><span data-i18n="tabCalc">Calculator</span></a>
     <button type="button" class="lang-toggle" id="langToggle">עברית</button>
   </div>
 </nav>
@@ -283,8 +352,6 @@ const I18N = {
   en: {
     brand: '🇮🇱 Israel Tax Guide',
     brandBy: 'by Zitnitski Weinstein & Co.',
-    backGuide: '← Tax Guide',
-    backCalc: '🧮 Calculator',
     title: 'Israel Tax Treaty Withholding Rates',
     subtitle: "Maximum withholding rates on dividends, interest, and royalties under Israel's income tax treaties — a quick-reference table published by Zitnitski Weinstein & Co.",
     dTopTitle: '⚠️ General overview only — not advice',
@@ -310,8 +377,6 @@ const I18N = {
   he: {
     brand: '🇮🇱 מדריך המס הישראלי',
     brandBy: 'מאת ז\'יטניצקי וינשטין ושות\'',
-    backGuide: '→ למדריך המס',
-    backCalc: '🧮 למחשבון',
     title: 'שיעורי ניכוי במקור באמנות המס של ישראל',
     subtitle: 'שיעורי הניכוי במקור המרביים על דיבידנד, ריבית ותמלוגים לפי אמנות המס של ישראל — טבלת עיון מהירה מבית ז\'יטניצקי וינשטין ושות\'.',
     dTopTitle: '⚠️ סקירה כללית בלבד — אין לראות בכך ייעוץ',
