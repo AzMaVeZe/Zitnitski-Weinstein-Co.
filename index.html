@@ -197,6 +197,29 @@
       color: var(--blue); background: var(--blue-light);
     }
     .nav-links a[aria-current="page"] { color: var(--blue); font-weight: 600; }
+
+    /* "Guide" acts as a disclosure for the section index on this page. Styled to
+       sit flush with the sibling links so the bar keeps one rhythm. */
+    .nav-sections { position: relative; }
+    .nav-sections-btn {
+      display: flex; align-items: center; gap: .3rem;
+      background: none; border: none; cursor: pointer; font: inherit;
+      font-size: .875rem; color: var(--blue); font-weight: 600;
+      padding: .4rem .75rem; border-radius: 6px; transition: all .2s;
+    }
+    .nav-sections-btn:hover,
+    .nav-sections-btn[aria-expanded="true"] { background: var(--blue-light); }
+    .nav-sections-btn .caret { font-size: .7em; transition: transform .2s; }
+    .nav-sections-btn[aria-expanded="true"] .caret { transform: rotate(180deg); }
+    .nav-dropdown {
+      display: none; position: absolute; top: calc(100% + .4rem); left: 0;
+      min-width: 210px; background: var(--white);
+      border: 1px solid var(--border); border-radius: 10px;
+      box-shadow: var(--shadow); padding: .4rem; list-style: none; z-index: 110;
+    }
+    .nav-sections.open .nav-dropdown { display: block; }
+    .nav-dropdown a { display: block; white-space: nowrap; }
+
     /* Primary-action Calculator button */
     .nav-links a.nav-cta {
       background: var(--blue); color: var(--white); font-weight: 600;
@@ -531,12 +554,17 @@
         position: absolute; top: 100%; left: 0; right: 0; background: var(--white);
         border-bottom: 1px solid var(--border); padding: .75rem 1rem;
         box-shadow: var(--shadow); gap: .15rem; }
-      /* Every nav item is now a cross-page link that the bottom tabbar already
-         carries at this width, so the ☰ menu would be pure duplication. Both it
-         and the toggle appear only inside the Wix embed, which has no tabbar.
-         Same rule as the other pages - the bar stays identical everywhere. */
-      html.zwco-embedded .nav-links.open { display: flex; }
-      html.zwco-embedded .nav-toggle { display: block; }
+      .nav-links.open { display: flex; }
+      .nav-toggle { display: block; }
+      /* Inside the ☰ panel the disclosure flattens into a plain list - no
+         nested popover on a touch screen. */
+      .nav-sections-btn { display: none; }
+      .nav-dropdown { display: block; position: static; min-width: 0;
+        border: none; box-shadow: none; padding: 0; }
+      /* The bottom tabbar already carries Guide/Calculator/Treaties/Contact at
+         this width, so hide those duplicates and let ☰ be purely the section
+         index. In the Wix embed there is no tabbar, so they stay. */
+      html:not(.zwco-embedded) .nav-links .nav-x { display: none; }
       .nav-links a.nav-cta { border-radius: 8px; margin-left: 0; text-align: center; }
       /* Outbound icons drop out of the crowded mobile bar - the footer keeps them */
       .nav-social { display: none; }
@@ -606,8 +634,25 @@
       </span>
     </div>
     <ul class="nav-links" id="navLinks">
-      <li class="nav-x"><a href="index.html" aria-current="page">Guide</a></li>
-      <li class="nav-x"><a href="treaty-rates.html">Treaty Rates</a></li>
+      <!-- On the guide itself, "Guide" doubles as the section index: same slot,
+           same order, same label as every other page, but it opens the
+           sub-topics instead of navigating to the page you are already on. -->
+      <!-- Deliberately NOT .nav-x: the bottom tabbar carries the cross-page
+           links but has no section index, so this one must survive on mobile. -->
+      <li class="nav-sections">
+        <button type="button" class="nav-sections-btn" id="navSectionsBtn"
+                aria-expanded="false" aria-controls="navSectionsMenu" aria-current="page">
+          Guide <span class="caret" aria-hidden="true">▾</span>
+        </button>
+        <ul class="nav-dropdown" id="navSectionsMenu" aria-label="Guide sections">
+          <li><a href="#residency">Residency</a></li>
+          <li><a href="#treaty">US-Israel Treaty</a></li>
+          <li><a href="#aliyah">Aliyah Benefits</a></li>
+          <li><a href="#establishment">Establishment</a></li>
+          <li><a href="#withholding">Withholding</a></li>
+        </ul>
+      </li>
+      <li class="nav-x"><a href="treaty-rates.html">Tax Treaties</a></li>
       <li class="nav-x"><a href="contact.html">Contact</a></li>
       <li class="nav-x"><a href="calculator.html" class="nav-cta">🧮 Calculator</a></li>
     </ul>
@@ -1250,8 +1295,31 @@
       navLinks.classList.remove('open');
       toggle.textContent = '☰';
       toggle.setAttribute('aria-expanded', 'false');
+      closeSections();
     });
   });
+
+  // ── "Guide" section index (WAI-ARIA disclosure) ──
+  // Click-toggled, never hover-only, so it works for touch and keyboard alike.
+  const secWrap = document.querySelector('.nav-sections');
+  const secBtn  = document.getElementById('navSectionsBtn');
+  function closeSections() {
+    if (!secWrap) return;
+    secWrap.classList.remove('open');
+    secBtn.setAttribute('aria-expanded', 'false');
+  }
+  if (secBtn) {
+    secBtn.addEventListener('click', () => {
+      const open = secWrap.classList.toggle('open');
+      secBtn.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('click', e => { if (!secWrap.contains(e.target)) closeSections(); });
+    document.addEventListener('keydown', e => {
+      if (e.key === 'Escape' && secWrap.classList.contains('open')) { closeSections(); secBtn.focus(); }
+    });
+    // Collapse once focus leaves the group entirely (tabbing past the last item)
+    secWrap.addEventListener('focusout', e => { if (!secWrap.contains(e.relatedTarget)) closeSections(); });
+  }
 
   // ── Expand a section's accordion when navigated to ──
   // Opens the target section's <details> and returns the section element (or
@@ -1384,8 +1452,20 @@
     }));
   });
 
-  // (Scrollspy removed with the in-nav section links: the nav now holds only
-  // cross-page destinations, which have no section to track.)
+  // ── Track the section in view, so the open menu shows where you are ──
+  const spySections = document.querySelectorAll('section[id], header');
+  const spyLinks = document.querySelectorAll('.nav-dropdown a');
+  if (spyLinks.length) {
+    const spy = new IntersectionObserver(entries => {
+      entries.forEach(e => {
+        if (!e.isIntersecting) return;
+        spyLinks.forEach(a => {
+          a.classList.toggle('active', a.getAttribute('href') === '#' + e.target.id);
+        });
+      });
+    }, { threshold: 0.35 });
+    spySections.forEach(s => spy.observe(s));
+  }
 
   // ── Scroll reveal ──
   const revealEls = document.querySelectorAll('.reveal');
