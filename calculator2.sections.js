@@ -215,6 +215,25 @@
         'We could not read your selections from Step 1 - the session may have expired. Please start again.';
     }
 
+    // Individuals now settle residency in Step 1 (taxForm.origin), the same way
+    // a company settles its origin, so carry it into whichever section renders
+    // instead of asking again. Set before init so the section's first
+    // syncVisibility() already sees it; a change event is dispatched after init
+    // so listeners attached during init also react.
+    //
+    // Left visible and editable on purpose: cryp_/shcg_ residency also offer an
+    // "oleh" (new immigrant) variant that the two-option Step 1 question does
+    // not capture, and hiding the control would make that unreachable.
+    var prefilledResidency = null;
+    if (entity === 'individual' && (origin === 'israeli' || origin === 'foreign')) {
+      ['shares_residency', 'intr_residency', 'cryp_residency', 'shcg_residency'].forEach(function (id) {
+        var sel = document.getElementById(id);
+        if (!sel || !section.contains(sel) || sel.value === origin) return;
+        sel.value = origin;
+        prefilledResidency = sel;
+      });
+    }
+
     if      (key === 'Ind_RE_Inc')     initIndividualResidential();
     else if (key === 'Ind_RE_CG_Res') initIndCGRes();
     else if (key === 'Ind_RE_CG_Com') initIndCGCom();
@@ -231,6 +250,10 @@
     else if (key === 'Co_FOR_RE_CG_Res') initCoFORRECG('coforcg_res_');
     else if (key === 'Co_FOR_RE_CG_Com') initCoFORRECG('coforcg_com_');
     else if (key === 'Co_FOR_Shares')  initCoFORShares();
+
+    if (prefilledResidency) {
+      prefilledResidency.dispatchEvent(new Event('change', { bubbles: true }));
+    }
   }
 
   // ── Individual + Real Estate + Income (Rental) - event wiring ────

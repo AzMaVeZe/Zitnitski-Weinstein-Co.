@@ -140,6 +140,18 @@
         </select>
       </div>
 
+      <!-- Conditional: Residency (Individual only). Mirrors Company Origin so
+           both entity types settle "Israeli or foreign" here in Step 1 rather
+           than deferring it to Step 2. Feeds the same taxForm.origin key. -->
+      <div class="field" id="residencyField" data-conditional style="display:none">
+        <label for="individualResidency">Tax Residency</label>
+        <select id="individualResidency">
+          <option value="">- Select residency -</option>
+          <option value="israeli">Israeli Resident</option>
+          <option value="foreign">Foreign Resident</option>
+        </select>
+      </div>
+
       <!-- Conditional: Purpose (Real Estate only) -->
       <div class="field" id="purposeField" data-conditional style="display:none">
         <label for="purpose">Purpose</label>
@@ -236,6 +248,7 @@
 
   document.getElementById('entityType').addEventListener('change', function () {
     setVisible('originField', 'companyOrigin', this.value === 'company');
+    setVisible('residencyField', 'individualResidency', this.value === 'individual');
 
     // Interest, crypto, and stock options are individual-only assets: hide/disable
     // them for a company and clear the field if one was selected, then re-validate
@@ -271,10 +284,18 @@
 
   nextBtn.addEventListener('click', function () {
     function normalize(v) { return v.toLowerCase().replace(/\s+/g, '_'); }
+    // origin carries "israeli" | "foreign" for BOTH entity types: company
+    // origin for a company, tax residency for an individual. Step 2 already
+    // reads saved.origin for the individual residential-CG foreign-owner rule,
+    // and it drives the residency pre-fill for the other individual sections.
+    const entityVal = document.getElementById('entityType').value;
+    const originSrc = entityVal === 'company'
+      ? document.getElementById('companyOrigin').value
+      : document.getElementById('individualResidency').value;
     const vals = {
-      entity:   normalize(document.getElementById('entityType').value),
+      entity:   normalize(entityVal),
       asset:    normalize(document.getElementById('assetType').value),
-      origin:   normalize(document.getElementById('companyOrigin').value  || ''),
+      origin:   normalize(originSrc || ''),
       purpose:  normalize(document.getElementById('purpose').value        || ''),
       property: normalize(document.getElementById('propertyType').value   || ''),
       shareActivity: normalize(document.getElementById('shareActivity').value || ''),
