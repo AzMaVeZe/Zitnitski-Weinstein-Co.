@@ -2456,22 +2456,49 @@
 
 <script>
   // ── Consultation prompt ────────────────────────────────────────────
-  // Invites the visitor to request a consultation, but only once they have
-  // actually produced a figure: it waits for (a) a real input/change from the
-  // user and (b) a populated result value, then pauses briefly so it never
-  // interrupts mid-typing. Shown at most once per session (sessionStorage),
-  // so re-running scenarios never nags. Generic by design - it observes the
-  // shared result classes rather than hooking each of the 17 sections, so
-  // adding a section doesn't require touching this.
+  // Invites the visitor to request a consultation once they have run TWO
+  // calculations - a deliberate engagement gate, so we only ask people who
+  // are actually using the tool.
+  //
+  // "A calculation" needs defining, because the engine recomputes on every
+  // keystroke. An episode is counted only when all of these hold:
+  //   - the visitor typed or changed something (never counts a page render);
+  //   - inputs have then been quiet for SETTLE_MS, so a burst of typing is
+  //     one calculation, not one per character;
+  //   - results are populated and their signature differs from the last
+  //     counted episode, so a re-render of the same numbers doesn't count;
+  //   - COOLDOWN_MS has passed since the last counted episode, so pausing
+  //     to think mid-number can't split one calculation into two.
+  // The count lives in sessionStorage, so classifying a second scenario back
+  // on Step 1 and calculating again correctly reaches two.
+  //
+  // Shown at most once per session, so re-running scenarios never nags.
+  // Generic by design - it observes the shared result classes rather than
+  // hooking each of the 17 sections, so adding a section doesn't touch this.
   (function () {
     var overlay = document.getElementById('consultOverlay');
     var page    = document.querySelector('main.page');
     if (!overlay || !page) return;
 
-    var SEEN_KEY = 'zwco_consult_seen';
+    var SEEN_KEY  = 'zwco_consult_seen';
+    var COUNT_KEY = 'zwco_calc_count';
     try { if (sessionStorage.getItem(SEEN_KEY)) return; } catch (e) {}
 
-    var interacted = false, shown = false, timer = null, lastFocus = null;
+    var REQUIRED_CALCS = 2;
+    var SETTLE_MS      = 2000;   // quiet period before a burst of typing counts
+    var COOLDOWN_MS    = 5000;   // minimum gap between two counted calculations
+    var OPEN_DELAY_MS  = 2500;   // let them read the second result before asking
+
+    var interacted = false, shown = false, lastFocus = null;
+    var settleTimer = null, openTimer = null;
+    var lastSig = '', lastCountAt = 0;
+
+    function readCount() {
+      try { return parseInt(sessionStorage.getItem(COUNT_KEY), 10) || 0; } catch (e) { return 0; }
+    }
+    function writeCount(n) {
+      try { sessionStorage.setItem(COUNT_KEY, String(n)); } catch (e) {}
+    }
 
     function focusable() {
       return overlay.querySelectorAll('a[href], button:not([disabled])');
@@ -2527,14 +2554,52 @@
       return false;
     }
 
-    function maybeSchedule() {
-      if (shown || !interacted || timer || !hasResult()) return;
-      timer = setTimeout(function () { timer = null; if (interacted && hasResult()) open(); }, 2500);
+    // Fingerprint of the visible result set, so re-rendering the same numbers
+    // is not mistaken for a fresh calculation.
+    function resultSignature() {
+      var outs = page.querySelectorAll('.metric-val, .track-result-val');
+      var parts = [];
+      for (var i = 0; i < outs.length; i++) parts.push((outs[i].textContent || '').trim());
+      return parts.join('|');
     }
 
-    page.addEventListener('input',  function () { interacted = true; maybeSchedule(); }, true);
-    page.addEventListener('change', function () { interacted = true; maybeSchedule(); }, true);
-    new MutationObserver(maybeSchedule).observe(page, {
+    // Runs once the inputs have gone quiet - decides whether that burst of
+    // editing amounted to a new calculation, and asks after the second one.
+    function settle() {
+      settleTimer = null;
+      if (shown || !interacted || !hasResult()) return;
+
+      var sig = resultSignature();
+      if (sig === lastSig) return;                                  // same figures
+      var now = Date.now();
+      if (lastSig && (now - lastCountAt) < COOLDOWN_MS) return;     // same edit burst
+
+      lastSig = sig;
+      lastCountAt = now;
+      var n = readCount() + 1;
+      writeCount(n);
+
+      if (n >= REQUIRED_CALCS && !openTimer) {
+        openTimer = setTimeout(function () {
+          openTimer = null;
+          if (!shown) open();
+        }, OPEN_DELAY_MS);
+      }
+    }
+
+    function noteActivity() {
+      interacted = true;
+      if (shown) return;
+      clearTimeout(settleTimer);
+      settleTimer = setTimeout(settle, SETTLE_MS);
+    }
+
+    page.addEventListener('input',  noteActivity, true);
+    page.addEventListener('change', noteActivity, true);
+    // Results are rendered synchronously off those events, but observing them
+    // too means an async or programmatic update still restarts the quiet timer
+    // rather than being counted while the DOM is still moving.
+    new MutationObserver(function () { if (interacted) noteActivity(); }).observe(page, {
       subtree: true, childList: true, characterData: true
     });
 
