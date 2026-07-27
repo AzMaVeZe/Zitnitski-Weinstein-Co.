@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Design Concept - Reference Edition | Zitnitski Weinstein &amp; Co.</title>
+
+<!--
+  DESIGN CONCEPT - NOT THE LIVE SITE.
+
+  A standalone proposal. It changes nothing in index.html, calculator*.html or
+  treaty-rates.html; it exists to be looked at and argued with.
+
+  The direction came out of three findings:
+
+  1. The brand colours were invented. Sampling the pixels of
+     assets/zwco-logo-full.png returns four colours - #FFFFFF, #EBF3F5 (the ice
+     square), #10141A (the brush monogram) and #44586F (the "CERTIFIED PUBLIC
+     ACCOUNTANTS" line). Neither #1a4b8c nor #c9a227 appears anywhere in the
+     firm's own mark. The live site is painted in a brand that does not exist,
+     which is also why the logo has to sit on a white card to survive its own
+     footer. Here the mark's real colours ARE the system, so the logo simply
+     sits on the page.
+
+  2. Accent as ink, never as fill. A teardown of The Economist counts its red
+     used 78 times - every one of them carrying text or a 1px border, none
+     filling a button or a card. Gradient fills and tinted pills are the single
+     most reliable "generated" signal; ink is the way out.
+
+  3. Uncertainty reads better as a range. van der Bles et al., PNAS - five
+     experiments, 5,780 participants plus a BBC field trial - found numerical
+     ranges raise perceived uncertainty while PRESERVING trust, where hedging
+     words and long caveats do not. So the calculator states a range and puts
+     what it excludes in a counted, readable list instead of small grey print.
+
+  Everything here is system fonts only, no network requests, no build step, and
+  opens straight from disk. Self-hosted woff2 would improve it further (see the
+  notes at the end) but the design must work at this floor first.
+-->
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    /* Ink and paper - taken from the logo's own pixels. */
+    --ink:      #10141A;   /* the brush monogram. Headings, body, rules.      */
+    --slate:    #44586F;   /* the "certified public accountants" line.        */
+    --ice:      #EBF3F5;   /* the pale square behind the monogram.            */
+    --paper:    #FFFFFF;
+    --desk:     #F4F7F8;
+    --rule:     #D3DCE0;
+    --rule-mid: #7E8C97;   /* control borders - 3.45:1, passes 1.4.11        */
+
+    /* Accents. Each has exactly one job. */
+    --link: #1A4B8C;       /* links and focus rings ONLY                      */
+    --gold: #C9A227;       /* rules and marks ONLY - never behind text        */
+    --seal: #9E2B25;       /* negative figures, and the disclaimer rule       */
+    --positive: #155E36;
+
+    /* A serif for reading, a sans for interface and figures, a mono for
+       citations. One split, and most of the flatness goes away: the live site
+       has a single sans doing every job, so rank is signalled only by getting
+       bigger and bluer. */
+    --f-text: ui-serif, "Iowan Old Style", Charter, "Bitstream Charter",
+              "Palatino Linotype", Cambria, Georgia, serif;
+    --f-ui:   system-ui, "Segoe UI Variable Text", "Segoe UI", Roboto,
+              "Helvetica Neue", Arial, sans-serif;
+    --f-ref:  ui-monospace, "Cascadia Mono", "Segoe UI Mono", Consolas, monospace;
+
+    --s2: .5rem; --s3: .75rem; --s4: 1rem; --s5: 1.5rem;
+    --s6: 2rem; --s7: 3rem; --s8: 4rem; --s9: 6rem;
+  }
+
+  html { scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+
+  body {
+    background: var(--desk); color: var(--ink);
+    font-family: var(--f-text); font-size: 1.0625rem; line-height: 1.62;
+  }
+
+  /* Figures always take the sans, always tabular. On a site made of rates and
+     shekel amounts this is the difference between "a site with numbers on it"
+     and "a document produced by accountants". Cambria/Charter/Palatino default
+     to old-style figures, so a serif digit here would sit below the baseline. */
+  .fig {
+    font-family: var(--f-ui); font-weight: 600;
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+    unicode-bidi: isolate; direction: ltr;
+  }
+  h1, h2, h3 { font-variant-numeric: lining-nums; }
+
+  a { color: var(--link); text-underline-offset: 2px; }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--link); outline-offset: 2px;
+  }
+
+  /* ---- The document plate ------------------------------------------------
+     No gradient, no lattice pattern, no pill badge, no centring. The logo is
+     dark artwork on an opaque white matte, so a white masthead is the one
+     surface where it needs no card around it. */
+  .plate { background: var(--paper); border-bottom: 3px double var(--ink); }
+
+  .doc {
+    display: grid; justify-content: center; column-gap: 2.5rem;
+    grid-template-columns:
+      [rail-s] minmax(0, 11rem)
+      [rail-e text-s] minmax(0, 40rem)
+      [text-e note-s] minmax(0, 10rem) [note-e];
+    padding-inline: 1.5rem;
+  }
+  .doc > *      { grid-column: text-s / text-e; }
+  .doc > .rail  { grid-column: rail-s / rail-e; }
+  .doc > .note  { grid-column: note-s / note-e; }
+  .doc > .wide  { grid-column: rail-s / note-e; }
+
+  @media (max-width: 62rem) {
+    .doc { grid-template-columns: minmax(0, 40rem); }
+    .doc > *, .doc > .rail, .doc > .note, .doc > .wide { grid-column: 1; }
+    .doc > .rail {
+      border-bottom: 1px solid var(--rule);
+      padding-bottom: var(--s2); margin-bottom: var(--s4); text-align: start;
+    }
+  }
+
+  .masthead { padding-block: var(--s8) var(--s6); }
+  .masthead img { height: 46px; width: auto; display: block; margin-bottom: var(--s6); }
+  .masthead h1 {
+    font-family: var(--f-text); font-weight: 600; letter-spacing: -.018em;
+    font-size: clamp(2.25rem, 1.4rem + 3.4vw, 3.25rem); line-height: 1.12;
+    max-width: 18ch;
+  }
+  .deck {
+    font-size: 1.1875rem; color: var(--slate);
+    max-width: 54ch; margin-top: var(--s4);
+  }
+
+  /* The colophon turns the firm's compliance burden - every figure sourced,
+     every page disclaimed - into the thing that identifies the site. A
+     template has no provenance, so it never has one of these. */
+  .colophon {
+    font-family: var(--f-ref); font-size: .6875rem; line-height: 1.5;
+    color: var(--slate); border-top: 1px solid var(--rule);
+    padding-top: var(--s3); margin-top: var(--s6);
+  }
+  .colophon dt { letter-spacing: .12em; text-transform: uppercase; }
+  .colophon dd { color: var(--ink); margin-bottom: var(--s3); }
+
+  /* ---- Sections ---------------------------------------------------------- */
+  .band { background: var(--paper); }
+  .band--desk { background: var(--desk); }
+  section { padding-block: var(--s9); }
+
+  h2 {
+    font-family: var(--f-text); font-weight: 600; font-size: 1.625rem;
+    letter-spacing: -.008em; line-height: 1.2;
+    border-top: 2px solid var(--ink); padding-top: var(--s3);
+  }
+  h3 {
+    font-family: var(--f-ui); font-weight: 600; font-size: 1.25rem;
+    margin-top: var(--s6); margin-bottom: var(--s3);
+  }
+  p + p { margin-top: var(--s4); }
+  .lede { font-size: 1.1875rem; color: var(--slate); margin-top: var(--s4); }
+
+  /* The statute rail. CLAUDE.md requires that no figure appear without a
+     source; the live site honours that in HTML comments nobody sees. Given a
+     margin, the requirement becomes the page's most distinctive feature. */
+  .rail {
+    font-family: var(--f-ref); font-size: .6875rem; line-height: 1.55;
+    color: var(--slate); text-align: end; padding-top: .35rem;
+  }
+  .rail .mark {
+    display: block; color: var(--ink); font-size: .8125rem;
+    letter-spacing: .12em; margin-bottom: .4rem;
+  }
+  @media (max-width: 62rem) { .rail { text-align: start; } }
+
+  /* Ruled list instead of a card grid. Boxes stop information from touching;
+     rules separate it without walling it off. */
+  .ruled { list-style: none; margin-top: var(--s6); }
+  .ruled li { border-top: 1px solid var(--rule); padding-block: var(--s4); }
+  .ruled li:last-child { border-bottom: 1px solid var(--rule); }
+  .ruled .term {
+    font-family: var(--f-ui); font-weight: 600; font-size: .9375rem;
+    display: block; margin-bottom: .25rem;
+  }
+  .ruled .desc { color: var(--slate); font-size: 1rem; }
+  @media (min-width: 40rem) {
+    .ruled li { display: grid; grid-template-columns: 1fr 1.6fr; gap: var(--s5); }
+  }
+
+  /* ---- Figure slugs: leader dots, rule above subtotal, double under total -
+     The two conventions every accountant's eye is trained on. They also just
+     work better than the live site's metric tiles: figures land in one
+     scannable column instead of scattering across an auto-fit grid. */
+  .ledger { margin-top: var(--s5); }
+  .slug { display: flex; align-items: baseline; gap: .5rem;
+          font-family: var(--f-ui); font-size: .9375rem; padding-block: .3rem; }
+  .slug .lbl { color: var(--slate); }
+  .slug .lead {
+    flex: 1; align-self: end; height: .55em; min-width: 1.5rem;
+    background-image: radial-gradient(circle at 1px 50%, var(--rule) 1px, transparent 1.2px);
+    background-size: 5px 100%; background-repeat: repeat-x;
+  }
+  .slug .val {
+    font-variant-numeric: tabular-nums lining-nums; font-weight: 600;
+    text-align: end; min-width: 9ch;
+  }
+  .slug--sub .val   { border-top: 1px solid var(--ink); padding-top: .2rem; }
+  .slug--total      { margin-top: .2rem; }
+  .slug--total .lbl { color: var(--ink); font-weight: 600; }
+  .slug--total .val { border-bottom: 3px double var(--ink); padding-bottom: .2rem;
+                      font-size: 1.375rem; }
+  .val[data-sign="neg"] { color: var(--seal); }
+  .val[data-sign="neg"]::before { content: "("; }
+  .val[data-sign="neg"]::after  { content: ")"; }
+
+  /* ---- Comparison ------------------------------------------------------- */
+  .tracks { margin-top: var(--s6); }
+  .track { border-top: 1px solid var(--rule); padding-block: var(--s4); }
+  .track:last-of-type { border-bottom: 1px solid var(--rule); }
+  .track--win { border-top: 2px solid var(--ink); }
+  .track-head { display: flex; align-items: baseline; gap: var(--s3);
+                font-family: var(--f-ui); }
+  .track-name { font-weight: 600; font-size: 1rem; }
+  .track-tag {
+    font-family: var(--f-ref); font-size: .6875rem; letter-spacing: .1em;
+    text-transform: uppercase; color: var(--slate);
+    border: 1px solid var(--rule-mid); padding: .05rem .35rem;
+  }
+  .track--win .track-tag { color: var(--ink); border-color: var(--ink); }
+  .track-amt { margin-left: auto; font-family: var(--f-ui); font-weight: 600;
+               font-variant-numeric: tabular-nums lining-nums; font-size: 1.125rem; }
+  /* Bar answers "by how much" pre-attentively. On a phone the cards stack and
+     you can never see two figures at once, which is where the comparison -
+     the entire product - currently stops working. */
+  .bar { height: 6px; background: var(--ice); margin-top: var(--s3); }
+  .bar i { display: block; height: 100%; background: var(--slate); }
+  .track--win .bar i { background: var(--ink); }
+  .bar--range i { background: repeating-linear-gradient(90deg,
+      var(--slate) 0 4px, transparent 4px 8px); }
+  .track-why { font-size: .9375rem; color: var(--slate); margin-top: var(--s3);
+               max-width: 60ch; }
+
+  details.derive { margin-top: var(--s3); }
+  details.derive summary {
+    font-family: var(--f-ui); font-size: .875rem; color: var(--link);
+    cursor: pointer; width: max-content;
+  }
+  details.derive .steps {
+    font-family: var(--f-ui); font-size: .875rem; color: var(--slate);
+    border-left: 2px solid var(--rule); padding-left: var(--s4);
+    margin-top: var(--s3); line-height: 1.9;
+  }
+
+  /* ---- Uncertainty as a range, not a paragraph of hedges ---------------- */
+  .estimate { border-top: 2px solid var(--ink); padding-top: var(--s4);
+              margin-top: var(--s7); }
+  .estimate .range {
+    font-family: var(--f-ui); font-weight: 600; font-size: 2rem;
+    font-variant-numeric: tabular-nums lining-nums; letter-spacing: -.01em;
+  }
+  .estimate .range small { font-size: .9375rem; font-weight: 400; color: var(--slate); }
+  .excl { margin-top: var(--s4); }
+  .excl summary { font-family: var(--f-ui); font-size: .9375rem; cursor: pointer;
+                  color: var(--link); width: max-content; }
+  .excl ol { margin: var(--s3) 0 0 1.2rem; font-size: 1rem; }
+  .excl li { margin-bottom: .35rem; }
+
+  /* ---- The rates instrument --------------------------------------------- */
+  .table-wrap { overflow-x: auto; margin-top: var(--s5); }
+  table { border-collapse: collapse; width: 100%; font-family: var(--f-ui); }
+  caption { text-align: start; font-family: var(--f-ui); font-size: .875rem;
+            color: var(--slate); padding-bottom: var(--s3); }
+  th, td { padding: .55rem .8rem; font-size: .9375rem; }
+  thead th {
+    font-weight: 600; font-size: .75rem; letter-spacing: .08em;
+    text-transform: uppercase; color: var(--slate);
+    border-bottom: 1px solid var(--ink); text-align: start; white-space: nowrap;
+  }
+  /* Right-align numeric cells AND their headers, so units sit above units and
+     tens above tens - GOV.UK, Carbon and the Analysis Function all agree. */
+  th.num, td.num { text-align: end; font-variant-numeric: tabular-nums lining-nums; }
+  tbody tr { border-bottom: 1px solid var(--rule); }
+  tbody tr:hover { background: var(--ice); }
+  td.country { font-weight: 600; }
+  td .cond { display: block; font-size: .75rem; color: var(--slate);
+             font-weight: 400; margin-top: .1rem; }
+
+  /* ---- Notices ---------------------------------------------------------- */
+  .notice { border-top: 2px solid var(--gold); padding-top: var(--s4);
+            margin-top: var(--s7); }
+  .notice--seal { border-top-color: var(--seal); }
+  .notice h3 { margin-top: 0; font-size: 1rem; }
+  .notice p { font-size: 1rem; color: var(--slate); max-width: 62ch; }
+
+  /* ---- Before / after --------------------------------------------------- */
+  .compare { display: grid; gap: var(--s5); margin-top: var(--s6); }
+  @media (min-width: 48rem) { .compare { grid-template-columns: 1fr 1fr; } }
+  .spec { border: 1px solid var(--rule); padding: var(--s4); background: var(--paper); }
+  .spec h4 {
+    font-family: var(--f-ref); font-size: .6875rem; letter-spacing: .12em;
+    text-transform: uppercase; color: var(--slate); margin-bottom: var(--s3);
+  }
+  .spec--now { background: var(--desk); }
+  .swatches { display: flex; flex-wrap: wrap; gap: var(--s3); margin-top: var(--s4); }
+  .sw { font-family: var(--f-ref); font-size: .625rem; color: var(--slate); }
+  .sw i { display: block; width: 68px; height: 42px; border: 1px solid var(--rule); }
+
+  /* Old-look demo, quarantined so it cannot leak into the concept's own
+     styles. This is what the page is arguing against. */
+  .old-hero {
+    background: linear-gradient(135deg, #1a4b8c 0%, #0d2d5e 100%);
+    color: #fff; text-align: center; padding: var(--s6) var(--s4);
+  }
+  .old-hero .badge {
+    display: inline-block; background: rgba(255,255,255,.12); color: #fff;
+    border-radius: 50px; padding: .3rem .9rem; font-size: .75rem;
+    font-family: var(--f-ui); margin-bottom: var(--s3);
+  }
+  .old-hero h5 { font-family: var(--f-ui); font-weight: 800; font-size: 1.5rem;
+                 margin-bottom: var(--s2); }
+  .old-hero p { font-size: .875rem; opacity: .85; font-family: var(--f-ui); }
+  .old-hero .btn {
+    display: inline-block; margin-top: var(--s4); background: #c9a227; color: #10141A;
+    border-radius: 50px; padding: .5rem 1.2rem; font-family: var(--f-ui);
+    font-weight: 600; font-size: .8125rem;
+  }
+  .new-hero { background: var(--paper); border-bottom: 3px double var(--ink);
+              padding: var(--s6) var(--s4); }
+  .new-hero h5 { font-family: var(--f-text); font-weight: 600; font-size: 1.75rem;
+                 letter-spacing: -.014em; line-height: 1.15; max-width: 16ch; }
+  .new-hero p { color: var(--slate); font-size: 1rem; margin-top: var(--s3);
+                max-width: 46ch; }
+  .new-hero .go { display: inline-block; margin-top: var(--s4);
+    font-family: var(--f-ui); font-weight: 600; font-size: .875rem;
+    color: var(--ink); border-bottom: 2px solid var(--gold); padding-bottom: .15rem; }
+
+  .kill { list-style: none; font-family: var(--f-ui); font-size: .9375rem; }
+  .kill li { border-top: 1px solid var(--rule); padding-block: .55rem;
+             display: flex; gap: var(--s3); }
+  .kill li::before { content: "\00d7"; color: var(--seal); font-weight: 600; }
+
+  footer.plate-foot {
+    background: #16344F; color: #C7D3DA; border-top: 2px solid var(--gold);
+    padding-block: var(--s7); font-family: var(--f-ui); font-size: .875rem;
+  }
+  footer.plate-foot strong { color: #fff; }
+  footer.plate-foot a { color: #fff; }
+
+  .banner {
+    background: var(--ink); color: #fff; font-family: var(--f-ui);
+    font-size: .8125rem; padding: .6rem 1.5rem; text-align: center;
+  }
+  .banner b { color: var(--gold); }
+</style>
+</head>
+<body>
+
+<div class="banner">
+  <b>Design concept.</b> A proposal only - the live site is unchanged. Everything below is system fonts, no network requests, and opens from disk.
+</div>
+
+<!-- ============================ MASTHEAD ============================ -->
+<div class="plate">
+  <div class="doc">
+    <div class="rail masthead" style="padding-bottom:0">
+      <span class="mark">§</span>
+    </div>
+    <div class="masthead">
+      <img src="assets/zwco-logo-full.png" alt="Zitnitski Weinstein &amp; Co." />
+      <h1>Relocating to Israel</h1>
+      <p class="deck">A reference edition on residency, the United States treaty, aliyah relief and cross-border withholding - with the rates, the sections they come from, and the date each was last checked.</p>
+    </div>
+    <div class="note colophon">
+      <dl>
+        <dt>Jurisdictions</dt><dd>Israel · United States</dd>
+        <dt>Primary sources</dt><dd>ITO §§ 1, 14, 97(b)<br />US-IL Treaty, in force 1995</dd>
+        <dt>Revised</dt><dd><span class="fig">27</span> July <span class="fig">2026</span></dd>
+        <dt>Status</dt><dd>Beta - under professional review</dd>
+      </dl>
+    </div>
+  </div>
+</div>
+
+<!-- ============================ THE GUIDE ============================ -->
+<section class="band">
+  <div class="doc">
+    <aside class="rail">
+      <span class="mark">§ 1</span>
+      <cite>ITO § 1, definition of<br />"resident individual"<br />ITA Circular 1/2011</cite>
+    </aside>
+    <div>
+      <h2>Tax residency in Israel</h2>
+      <p class="lede">Israel taxes residents on worldwide income. Whether you are one turns on where your centre of life sits - a test that weighs your home, family, and economic ties, not merely the days you spent here.</p>
+      <p>The day-count creates a rebuttable presumption, not a rule. An individual present <span class="fig">183</span> days or more in a tax year is presumed resident; so is one present <span class="fig">30</span> days in the year whose three-year total reaches <span class="fig">425</span> days. Either presumption may be displaced by showing the centre of life lies elsewhere - and the Tax Authority may assert residency even where neither is met.</p>
+
+      <ul class="ruled">
+        <li>
+          <span class="term">Permanent home</span>
+          <span class="desc">Where a home is available to you continuously, whether owned or rented.</span>
+        </li>
+        <li>
+          <span class="term">Family and social ties</span>
+          <span class="desc">Where a spouse and dependent children live, and where community life is conducted.</span>
+        </li>
+        <li>
+          <span class="term">Economic centre</span>
+          <span class="desc">Where employment is performed, business is managed, and assets are held.</span>
+        </li>
+      </ul>
+    </div>
+    <aside class="note" style="font-family:var(--f-ui);font-size:.8125rem;color:var(--slate);border-top:1px solid var(--rule);padding-top:.75rem;margin-top:6rem">
+      The day counts are presumptions. They are frequently misread as a safe harbour.
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ CALCULATOR ============================ -->
+<section class="band band--desk">
+  <div class="doc">
+    <aside class="rail">
+      <span class="mark">§ 2</span>
+      <cite>ITO § 122<br />§ 9(5) exemption<br />2026 brackets</cite>
+    </aside>
+    <div>
+      <h2>Rental income - three routes compared</h2>
+      <p class="lede">The tool's job is not to produce a number. It is to show which route wins, by how much, and what would change the answer.</p>
+
+      <div class="tracks">
+
+        <div class="track track--win">
+          <div class="track-head">
+            <span class="track-name">Flat 10% route</span>
+            <span class="track-tag">Lowest</span>
+            <span class="track-amt fig">₪9,600</span>
+          </div>
+          <div class="bar"><i style="width:34%"></i></div>
+          <p class="track-why">Tax on gross rent with no deductions. Wins here because expenses are low relative to rent.</p>
+          <details class="derive">
+            <summary>How this was calculated</summary>
+            <div class="steps">
+              Gross rent <span class="fig">₪96,000</span><br />
+              Rate <span class="fig">10%</span> on gross, no deductions<br />
+              Tax <span class="fig">₪9,600</span>
+            </div>
+          </details>
+        </div>
+
+        <div class="track">
+          <div class="track-head">
+            <span class="track-name">Exemption route</span>
+            <span class="track-tag">Partial</span>
+            <span class="track-amt fig">₪14,880</span>
+          </div>
+          <div class="bar"><i style="width:53%"></i></div>
+          <p class="track-why">Rent above the monthly ceiling reduces the exemption twice over, so the benefit falls away quickly.</p>
+        </div>
+
+        <div class="track">
+          <div class="track-head">
+            <span class="track-name">Progressive route</span>
+            <span class="track-tag">Range</span>
+            <span class="track-amt fig">₪28,160 +</span>
+          </div>
+          <!-- Hatched, because the figure is a floor: the live tool warns that
+               National Insurance is excluded and then still ranks this track
+               against complete numbers. A range is honest; a point estimate
+               with a footnote saying it is incomplete is not. -->
+          <div class="bar bar--range"><i style="width:100%"></i></div>
+          <p class="track-why">Deductions allowed, but the figure is a floor - National Insurance of roughly <span class="fig">12%</span> may apply on top and is not included above.</p>
+        </div>
+
+      </div>
+
+      <div class="ledger" style="margin-top:2rem">
+        <div class="slug"><span class="lbl">Gross rent</span><span class="lead"></span><span class="val fig">96,000</span></div>
+        <div class="slug"><span class="lbl">Deductible expenses</span><span class="lead"></span><span class="val fig" data-sign="neg">8,000</span></div>
+        <div class="slug slug--sub"><span class="lbl">Taxable base</span><span class="lead"></span><span class="val fig">88,000</span></div>
+        <div class="slug slug--total"><span class="lbl">Tax due</span><span class="lead"></span><span class="val fig">9,600</span></div>
+      </div>
+
+      <div class="estimate">
+        <p style="font-family:var(--f-ui);font-size:.8125rem;letter-spacing:.08em;text-transform:uppercase;color:var(--slate)">Estimated annual tax</p>
+        <p class="range"><span class="fig">₪9,600</span> <small>to</small> <span class="fig">₪10,400</span>
+          <small>· depending on how expenses are characterised</small></p>
+        <!-- A range rather than a paragraph of qualifiers: van der Bles et al.
+             (PNAS, 5,780 participants + a BBC field trial) found ranges raise
+             perceived uncertainty while preserving trust in the figure and its
+             source. Hedging words and long caveats did not. -->
+        <details class="excl">
+          <summary>What this estimate leaves out (4)</summary>
+          <ol>
+            <li>National Insurance contributions, which can reach <span class="fig">12%</span> on the progressive route.</li>
+            <li>Municipal rates and building levies.</li>
+            <li>Any credit for tax paid abroad on the same rent.</li>
+            <li>Surtax, where total annual income exceeds <span class="fig">₪721,560</span>.</li>
+          </ol>
+        </details>
+      </div>
+
+      <div class="notice">
+        <h3>Calculated on your device</h3>
+        <p>Nothing you type is transmitted. The figures never leave this browser - there is no server to send them to.</p>
+      </div>
+    </div>
+    <aside class="note" style="font-family:var(--f-ui);font-size:.8125rem;color:var(--slate);border-top:1px solid var(--rule);padding-top:.75rem;margin-top:9rem">
+      Flat route stays cheapest until deductible expenses exceed about <span class="fig">₪28,000</span>.
+    </aside>
+  </div>
+</section>
+
+<!-- ============================ TREATY TABLE ============================ -->
+<section class="band">
+  <div class="doc">
+    <aside class="rail">
+      <span class="mark">§ 3</span>
+      <cite>Treaty texts as<br />published by the<br />Israel Tax Authority</cite>
+    </aside>
+    <div class="wide">
+      <h2>Withholding ceilings</h2>
+      <p class="lede" style="max-width:60ch">The most valuable artefact on the site, and currently the most generically styled. A rates table is a reference instrument: it should be the most distinctively designed thing here.</p>
+
+      <!-- Scroll region, keyboard-reachable and named, per Roselli's pattern.
+           Deliberately NOT stacked into cards on mobile: stacking is only
+           right when rows are independent, and a rates table exists to be
+           compared across rows. -->
+      <div class="table-wrap" role="region" aria-labelledby="rates-cap" tabindex="0">
+        <table>
+          <caption id="rates-cap">Maximum rates the treaty permits the source state to withhold. A lower domestic rate always prevails - a treaty is a ceiling, not a floor.</caption>
+          <thead>
+            <tr>
+              <th scope="col">Country</th>
+              <th scope="col" class="num">Dividends</th>
+              <th scope="col" class="num">Parent co.</th>
+              <th scope="col" class="num">Interest</th>
+              <th scope="col" class="num">Royalties</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="country">United States</td>
+              <td class="num">25.0%</td>
+              <td class="num">12.5%<span class="cond">≥10% voting</span></td>
+              <td class="num">17.5%</td>
+              <td class="num">15.0%</td>
+            </tr>
+            <tr>
+              <td class="country">United Kingdom</td>
+              <td class="num">15.0%</td>
+              <td class="num">5.0%<span class="cond">≥10%, 365 days</span></td>
+              <td class="num">10.0%</td>
+              <td class="num">0.0%</td>
+            </tr>
+            <tr>
+              <td class="country">Germany</td>
+              <td class="num">10.0%</td>
+              <td class="num">5.0%<span class="cond">≥10% direct</span></td>
+              <td class="num">5.0%</td>
+              <td class="num">0.0%</td>
+            </tr>
+            <tr>
+              <td class="country">Canada</td>
+              <td class="num">15.0%</td>
+              <td class="num">5.0%<span class="cond">≥25% capital</span></td>
+              <td class="num">10.0%</td>
+              <td class="num">10.0%</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <p style="font-family:var(--f-ui);font-size:.8125rem;color:var(--slate);margin-top:1rem">
+        Every rate carries one decimal place on purpose. Fixing the decimals makes every string the same width, so right-alignment becomes decimal alignment - CSS still cannot align on the decimal point, twenty-three years after the bug was filed.
+      </p>
+    </div>
+  </div>
+</section>
+
+<!-- ============================ RATIONALE ============================ -->
+<section class="band band--desk">
+  <div class="doc">
+    <aside class="rail"><span class="mark">Note</span><cite>Why this looks<br />different</cite></aside>
+    <div>
+      <h2>The brand was already there</h2>
+      <p class="lede">Sampling the pixels of the firm's own logo returns four colours. Neither of the two the site is built on is among them.</p>
+
+      <div class="swatches">
+        <span class="sw"><i style="background:#10141A"></i>#10141A<br />monogram</span>
+        <span class="sw"><i style="background:#44586F"></i>#44586F<br />"CPA" line</span>
+        <span class="sw"><i style="background:#EBF3F5"></i>#EBF3F5<br />ice square</span>
+        <span class="sw"><i style="background:#FFFFFF"></i>#FFFFFF<br />matte</span>
+      </div>
+
+      <p style="margin-top:2rem">That mismatch has a visible consequence. Because the invented blue makes the dark, hand-brushed mark impossible to place, the live footer wraps the logo in a white card to rescue it - the code comment says so outright. Build the palette from the mark instead and the problem disappears: the logo simply sits on the page, as it does at the top of this one.</p>
+      <p>Blue survives, with a real job. It is the link colour, and nothing else. Gold survives as a rule, never as a fill behind text.</p>
+
+      <h3>Same content, two treatments</h3>
+      <div class="compare">
+        <div class="spec spec--now">
+          <h4>Now</h4>
+          <div class="old-hero">
+            <span class="badge">🔍 International Tax Law Overview</span>
+            <h5>Relocating to Israel</h5>
+            <p>A structured overview of tax residency rules and treaty benefits.</p>
+            <span class="btn">Explore the Guide ↓</span>
+          </div>
+        </div>
+        <div class="spec">
+          <h4>Proposed</h4>
+          <div class="new-hero">
+            <h5>Relocating to Israel</h5>
+            <p>Residency, the United States treaty, aliyah relief and withholding - sourced and dated.</p>
+            <span class="go">Read the guide</span>
+          </div>
+        </div>
+      </div>
+
+      <h3>What goes</h3>
+      <ul class="kill">
+        <li>Seven gradients and two lattice pattern overlays.</li>
+        <li>Every <span class="fig">50</span>px pill and the badge above the headline.</li>
+        <li>Thirty box-shadows on static content; the uniform <span class="fig">10</span>px radius.</li>
+        <li>Fifty-three emoji, including the globe that greets you on the rates table.</li>
+        <li>Thirteen uses of weight <span class="fig">800</span>. Rank comes from size, rule and position.</li>
+        <li>Blue on twenty-nine headings. Headings are ink; blue means link.</li>
+        <li>Scroll-fade on reference material you are trying to scan.</li>
+        <li>Fourteen inline margin styles, replaced by one spacing scale.</li>
+      </ul>
+
+      <div class="notice notice--seal">
+        <h3>What this concept does not yet do</h3>
+        <p>It uses system fonts only, which is the guaranteed floor. Self-hosted woff2 would go further: IBM Plex Sans plus IBM Plex Sans Hebrew share an identical digit width, so a bilingual rates table would align digit-for-digit across both scripts - which matters, because on a default English Windows install the only Hebrew-capable fonts are Arial, Times, Tahoma and Segoe UI. Note also that Georgia and Constantia default to old-style figures and are wrong for a rates table. Hebrew has no italics; an <em>em</em> rendered in Hebrew is algorithmically slanted by the browser, and that fake slant is the clearest sign a bilingual site was built by someone who does not read it.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<footer class="plate-foot">
+  <div class="doc">
+    <div>
+      <p><strong>Zitnitski Weinstein &amp; Co.</strong> - design concept, <span class="fig">27</span> July <span class="fig">2026</span>.</p>
+      <p style="margin-top:.5rem">Not published. The live site remains at <a href="index.html">index.html</a>, unchanged by this file.</p>
+    </div>
+  </div>
+</footer>
+
+</body>
+</html>
