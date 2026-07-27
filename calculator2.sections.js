@@ -225,11 +225,51 @@
     // "oleh" (new immigrant) variant that the two-option Step 1 question does
     // not capture, and hiding the control would make that unreachable.
     var prefilledResidency = null;
-    if (entity === 'individual' && (origin === 'israeli' || origin === 'foreign')) {
-      ['shares_residency', 'intr_residency', 'cryp_residency', 'shcg_residency'].forEach(function (id) {
-        var sel = document.getElementById(id);
-        if (!sel || !section.contains(sel) || sel.value === origin) return;
-        sel.value = origin;
+    if (entity === 'individual' && ['israeli', 'foreign', 'oleh'].indexOf(origin) !== -1) {
+      var RES_LABELS = {
+        israeli: 'Israeli resident',
+        foreign: 'Foreign resident',
+        oleh:    'New immigrant / returning resident (10-year window)'
+      };
+      // cryp_/shcg_ carry "oleh" as a select option; shares_/intr_ express it as
+      // a separate checkbox, so an oleh maps to "Israeli resident" + that box.
+      // Safe either way: the engine consults `oleh` only on the Israeli-resident
+      // foreign-source branch (see tax-engine.js interestIndividual).
+      [{ sel: 'shares_residency', box: 'shares_oleh' },
+       { sel: 'intr_residency',   box: 'intr_oleh'   },
+       { sel: 'cryp_residency',   box: null },
+       { sel: 'shcg_residency',   box: null }].forEach(function (m) {
+        var sel = document.getElementById(m.sel);
+        if (!sel || !section.contains(sel)) return;
+
+        var hasOlehOption = !!sel.querySelector('option[value="oleh"]');
+        sel.value = (origin === 'oleh' && !hasOlehOption) ? 'israeli' : origin;
+
+        if (m.box) {
+          var box = document.getElementById(m.box);
+          if (box) {
+            box.checked = (origin === 'oleh');
+            // Determined by Step 1 now - hide it so it cannot contradict that.
+            var row = box.closest('label.checkbox-row');
+            if (row) row.style.display = 'none';
+          }
+        }
+
+        // Replace the question with a read-only echo rather than hiding it
+        // outright: residency swings the result by tens of percent, so the
+        // assumption behind the numbers has to stay visible.
+        var field = sel.closest('.field');
+        sel.style.display = 'none';
+        if (field && !field.querySelector('.residency-locked')) {
+          var shown = document.createElement('div');
+          shown.className = 'residency-locked';
+          shown.textContent = RES_LABELS[origin];
+          var hint = document.createElement('div');
+          hint.className = 'input-hint';
+          hint.textContent = 'Chosen in Step 1 - go back to change it.';
+          field.appendChild(shown);
+          field.appendChild(hint);
+        }
         prefilledResidency = sel;
       });
     }

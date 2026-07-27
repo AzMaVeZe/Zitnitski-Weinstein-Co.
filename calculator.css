@@ -427,6 +427,13 @@
       cursor: pointer; accent-color: var(--blue);
     }
 
+    /* Residency echoed read-only in Step 2 (the question is asked in Step 1).
+       Matches select height/weight so the field row keeps its rhythm. */
+    .residency-locked {
+      font-weight: 600; font-size: .92rem; color: var(--text);
+      padding: .5rem 0 .1rem;
+    }
+
     /* hint text below input */
     .input-hint {
       font-size: .78rem; color: var(--muted);
