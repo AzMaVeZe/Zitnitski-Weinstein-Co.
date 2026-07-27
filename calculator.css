@@ -181,10 +181,51 @@
       display: flex; align-items: center; justify-content: space-between;
       padding: .9rem 1.5rem;
     }
-    .nav-brand { font-weight: 700; font-size: 1.05rem; color: var(--blue); text-decoration: none; }
-    .brand-by { font-size: .72rem; font-weight: 600; color: var(--muted); letter-spacing: .04em; white-space: nowrap; }
-    @media (max-width: 480px) { .brand-by { display: none; } }
-    /* (the old per-page .back-link pattern was replaced by this shared nav) */
+    /* Brand lockup: firm logo + site name + beta marker + outbound links.
+       The logo is the primary identity here; it must stay a local asset. */
+    .nav-brand-group { display: flex; align-items: center; gap: .55rem; min-width: 0; }
+    .nav-brand {
+      text-decoration: none; display: flex; align-items: center; gap: .55rem; min-width: 0;
+    }
+    .nav-logo { height: 34px; width: auto; display: block; flex-shrink: 0; }
+    .nav-title {
+      font-weight: 700; font-size: .95rem; color: var(--blue); white-space: nowrap;
+      padding-left: .55rem; border-left: 1px solid var(--border);
+    }
+    .beta-badge {
+      flex-shrink: 0;
+      background: var(--amber-light); color: var(--amber); border: 1px solid #fcd34d;
+      border-radius: 4px; padding: .1rem .38rem;
+      font-size: .6rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+    }
+    .nav-social {
+      display: flex; align-items: center; gap: .1rem;
+      padding-left: .4rem; border-left: 1px solid var(--border);
+    }
+    .nav-social a {
+      display: flex; align-items: center; justify-content: center;
+      width: 34px; height: 34px; border-radius: 8px;
+      color: var(--muted); transition: color .2s, background .2s;
+    }
+    .nav-social a:hover { color: var(--blue); background: var(--blue-light); }
+    .nav-social svg { width: 17px; height: 17px; fill: currentColor; display: block; }
+    @media (max-width: 820px) {
+      /* Outbound icons drop out of the crowded mobile bar — the footer keeps them */
+      .nav-social { display: none; }
+    }
+    @media (max-width: 600px) {
+      .nav-title { display: none; }
+      .nav-logo { height: 28px; }
+    }
+
+    /* BETA NOTICE BAR */
+    .beta-bar {
+      background: var(--amber-light); border-bottom: 1px solid #fcd34d;
+      color: #7a4a08; font-size: .85rem; line-height: 1.5;
+      text-align: center; padding: .65rem 1.5rem;
+    }
+    .beta-bar strong { font-weight: 800; }
+
     /* Shared four-item primary nav (Guide · Treaty Rates · Contact · Calculator) */
     .nav-links {
       display: flex; align-items: center; gap: .25rem;

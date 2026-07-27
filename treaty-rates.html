@@ -138,8 +138,50 @@
     padding: .8rem 1.5rem; display: flex; align-items: center; justify-content: space-between;
     gap: 1rem; flex-wrap: wrap; position: sticky; top: 0; z-index: 20;
   }
-  .nav-brand { font-weight: 700; font-size: 1.05rem; color: var(--blue); text-decoration: none; }
-  .brand-by { font-size: .72rem; font-weight: 600; color: var(--muted); letter-spacing: .04em; white-space: nowrap; }
+  /* Brand lockup: firm logo + site name + beta marker + outbound links.
+     Logical properties throughout — this page flips to RTL at runtime. */
+  .nav-brand-group { display: flex; align-items: center; gap: .55rem; min-width: 0; }
+  .nav-brand {
+    text-decoration: none; display: flex; align-items: center; gap: .55rem; min-width: 0;
+  }
+  .nav-logo { height: 34px; width: auto; display: block; flex-shrink: 0; }
+  .nav-title {
+    font-weight: 700; font-size: .95rem; color: var(--blue); white-space: nowrap;
+    padding-inline-start: .55rem; border-inline-start: 1px solid var(--border);
+  }
+  .beta-badge {
+    flex-shrink: 0;
+    background: var(--amber-light); color: var(--amber); border: 1px solid #fcd34d;
+    border-radius: 4px; padding: .1rem .38rem;
+    font-size: .6rem; font-weight: 800; letter-spacing: .1em; text-transform: uppercase;
+  }
+  .nav-social {
+    display: flex; align-items: center; gap: .1rem;
+    padding-inline-start: .4rem; border-inline-start: 1px solid var(--border);
+  }
+  .nav-social a {
+    display: flex; align-items: center; justify-content: center;
+    width: 34px; height: 34px; border-radius: 8px;
+    color: var(--muted); transition: color .2s, background .2s;
+  }
+  .nav-social a:hover { color: var(--blue); background: var(--blue-light); }
+  .nav-social svg { width: 17px; height: 17px; fill: currentColor; display: block; }
+  @media (max-width: 820px) {
+    /* Outbound icons drop out of the crowded mobile bar — the footer keeps them */
+    .nav-social { display: none; }
+  }
+  @media (max-width: 600px) {
+    .nav-title { display: none; }
+    .nav-logo { height: 28px; }
+  }
+
+  /* Beta notice bar */
+  .beta-bar {
+    background: var(--amber-light); border-bottom: 1px solid #fcd34d;
+    color: #7a4a08; font-size: .85rem; line-height: 1.5;
+    text-align: center; padding: .65rem 1.5rem;
+  }
+  .beta-bar strong { font-weight: 800; }
   .nav-actions { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
   .nav-link {
     text-decoration: none; color: var(--muted); font-size: .875rem;
@@ -281,9 +323,20 @@
 <a href="#main-content" class="skip-link" data-i18n="skipLink">Skip to main content</a>
 
 <nav>
-  <div>
-    <a href="index.html" class="nav-brand" data-i18n="brand">🇮🇱 Israel Tax Guide</a>
-    <span class="brand-by" data-i18n="brandBy">by Zitnitski Weinstein &amp; Co.</span>
+  <div class="nav-brand-group">
+    <a href="index.html" class="nav-brand">
+      <img src="assets/zwco-logo-full.png" alt="Zitnitski Weinstein &amp; Co." class="nav-logo" />
+      <span class="nav-title" data-i18n="brand">Israel Tax Guide</span>
+    </a>
+    <span class="beta-badge" data-i18n="betaBadge">Beta</span>
+    <span class="nav-social">
+      <a href="https://www.zw-co.com/eng" target="_blank" rel="noopener noreferrer" data-i18n-aria="ariaSite" aria-label="Firm website (opens in a new tab)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm6.93 6h-2.95a15.65 15.65 0 0 0-1.38-3.56A8.03 8.03 0 0 1 18.93 8zM12 4.04c.83 1.2 1.48 2.53 1.91 3.96h-3.82c.43-1.43 1.08-2.76 1.91-3.96zM4.26 14A7.82 7.82 0 0 1 4 12c0-.69.1-1.36.26-2h3.38a16.5 16.5 0 0 0 0 4H4.26zm.81 2h2.95c.32 1.25.78 2.45 1.38 3.56A7.99 7.99 0 0 1 5.07 16zm2.95-8H5.07a7.99 7.99 0 0 1 4.33-3.56A15.65 15.65 0 0 0 8.02 8zM12 19.96c-.83-1.2-1.48-2.53-1.91-3.96h3.82c-.43 1.43-1.08 2.76-1.91 3.96zM14.34 14H9.66a14.5 14.5 0 0 1 0-4h4.68a14.5 14.5 0 0 1 0 4zm.25 5.56c.6-1.11 1.06-2.31 1.38-3.56h2.95a7.99 7.99 0 0 1-4.33 3.56zM16.36 14a16.5 16.5 0 0 0 0-4h3.38c.16.64.26 1.31.26 2s-.1 1.36-.26 2h-3.38z"/></svg>
+      </a>
+      <a href="https://www.linkedin.com/company/zitnitski-weinstein-&amp;-co-certified-public-accountants/" target="_blank" rel="noopener noreferrer" data-i18n-aria="ariaLinkedIn" aria-label="LinkedIn (opens in a new tab)">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20.45 20.45h-3.56v-5.57c0-1.33-.02-3.04-1.85-3.04-1.85 0-2.14 1.45-2.14 2.94v5.67H9.35V9h3.41v1.56h.05c.48-.9 1.63-1.85 3.37-1.85 3.6 0 4.27 2.37 4.27 5.46v6.28zM5.34 7.43a2.06 2.06 0 1 1 0-4.13 2.06 2.06 0 0 1 0 4.13zM7.12 20.45H3.56V9h3.56v11.45zM22.22 0H1.77C.79 0 0 .77 0 1.72v20.56C0 23.23.79 24 1.77 24h20.45c.98 0 1.78-.77 1.78-1.72V1.72C24 .77 23.2 0 22.22 0z"/></svg>
+      </a>
+    </span>
   </div>
   <div class="nav-actions">
     <a href="index.html" class="nav-link" data-i18n="tabGuide">Guide</a>
@@ -292,6 +345,11 @@
     <button type="button" class="lang-toggle" id="langToggle">עברית</button>
   </div>
 </nav>
+
+<div class="beta-bar" role="note">
+  <strong data-i18n="betaBarLead">Beta version.</strong>
+  <span data-i18n="betaBar">This page is still under development and may contain errors. It is a general overview only — not tax advice — and treaty rates are subject to conditions, protocols, and legislative change. Please verify against the binding treaty text before relying on any figure.</span>
+</div>
 
 <header class="hero">
   <h1 data-i18n="title">Israel Tax Treaty Withholding Rates</h1>
@@ -350,8 +408,12 @@
 // ── i18n dictionary ─────────────────────────────────────────────────
 const I18N = {
   en: {
-    brand: '🇮🇱 Israel Tax Guide',
-    brandBy: 'by Zitnitski Weinstein & Co.',
+    brand: 'Israel Tax Guide',
+    betaBadge: 'Beta',
+    betaBar: 'This page is still under development and may contain errors. It is a general overview only — not tax advice — and treaty rates are subject to conditions, protocols, and legislative change. Please verify against the binding treaty text before relying on any figure.',
+    betaBarLead: 'Beta version.',
+    ariaSite: 'Firm website (opens in a new tab)',
+    ariaLinkedIn: 'LinkedIn (opens in a new tab)',
     title: 'Israel Tax Treaty Withholding Rates',
     subtitle: "Maximum withholding rates on dividends, interest, and royalties under Israel's income tax treaties — a quick-reference table published by Zitnitski Weinstein & Co.",
     dTopTitle: '⚠️ General overview only — not advice',
@@ -375,8 +437,12 @@ const I18N = {
     toggleLabel: 'עברית',
   },
   he: {
-    brand: '🇮🇱 מדריך המס הישראלי',
-    brandBy: 'מאת ז\'יטניצקי וינשטין ושות\'',
+    brand: 'מדריך המס הישראלי',
+    betaBadge: 'בטא',
+    betaBar: 'העמוד נמצא בפיתוח ועשויות ליפול בו טעויות. מדובר בסקירה כללית בלבד — אין לראות בכך ייעוץ מס — ושיעורי האמנות כפופים לתנאים, לפרוטוקולים ולשינויי חקיקה. יש לאמת מול נוסח האמנה המחייב לפני הסתמכות על נתון כלשהו.',
+    betaBarLead: 'גרסת בטא.',
+    ariaSite: 'אתר הפירמה (נפתח בלשונית חדשה)',
+    ariaLinkedIn: 'לינקדאין (נפתח בלשונית חדשה)',
     title: 'שיעורי ניכוי במקור באמנות המס של ישראל',
     subtitle: 'שיעורי הניכוי במקור המרביים על דיבידנד, ריבית ותמלוגים לפי אמנות המס של ישראל — טבלת עיון מהירה מבית ז\'יטניצקי וינשטין ושות\'.',
     dTopTitle: '⚠️ סקירה כללית בלבד — אין לראות בכך ייעוץ',
@@ -513,6 +579,11 @@ function applyStatic() {
   });
   document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
     el.placeholder = I18N[lang][el.getAttribute('data-i18n-placeholder')] || '';
+  });
+  // Icon-only links carry their label in aria-label, not in text content
+  document.querySelectorAll('[data-i18n-aria]').forEach(el => {
+    const v = I18N[lang][el.getAttribute('data-i18n-aria')];
+    if (typeof v === 'string') { el.setAttribute('aria-label', v); el.title = v; }
   });
   document.getElementById('langToggle').textContent = t('toggleLabel');
   document.title = lang === 'he'
