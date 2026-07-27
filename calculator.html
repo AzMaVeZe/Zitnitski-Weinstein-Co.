@@ -7,7 +7,7 @@
     // frame-ancestors headers, so this page is embeddable in an iframe from
     // any origin by default. Break out of any frame whose ancestor is not on
     // the allowlist (the firm's own Wix site). Add the confirmed Wix embed
-    // hostname here once known — for now only the firm's own domain is trusted.
+    // hostname here once known - for now only the firm's own domain is trusted.
     (function () {
       try {
         if (window.self === window.top) return;
@@ -25,7 +25,7 @@
           try { allowed = hostAllowed(new URL(document.referrer).hostname); } catch (e) {}
         }
         if (!allowed) { window.top.location = window.self.location.href; return; }
-        // Legitimately embedded — flag it so CSS can drop viewport-relative
+        // Legitimately embedded - flag it so CSS can drop viewport-relative
         // sizing (e.g. body's sticky-footer min-height:100vh) that would
         // otherwise feed back into the iframe auto-resize script below.
         document.documentElement.classList.add('zwco-embedded');
@@ -35,7 +35,7 @@
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Interactive two-step Israel tax calculator for individuals and companies — real estate, shares, interest, crypto, and stock-option scenarios, by Zitnitski Weinstein &amp; Co." />
+  <meta name="description" content="Interactive two-step Israel tax calculator for individuals and companies - real estate, shares, interest, crypto, and stock-option scenarios, by Zitnitski Weinstein &amp; Co." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231a4b8c'/%3E%3Ctext x='32' y='43' font-family='Arial, sans-serif' font-size='26' font-weight='700' fill='white' text-anchor='middle'%3EZW%3C/text%3E%3C/svg%3E" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#1a4b8c" />
@@ -47,10 +47,10 @@
   <meta property="og:site_name" content="Zitnitski Weinstein &amp; Co." />
   <meta property="og:url" content="https://tax.zw-co.com/calculator" />
   <meta property="og:title" content="Israel Tax Calculator" />
-  <meta property="og:description" content="Estimate Israeli tax on rental income, real-estate and share capital gains, dividends, interest, crypto and stock options — for individuals and companies, resident and non-resident." />
+  <meta property="og:description" content="Estimate Israeli tax on rental income, real-estate and share capital gains, dividends, interest, crypto and stock options - for individuals and companies, resident and non-resident." />
   <meta property="og:image" content="https://tax.zw-co.com/assets/zwco-logo-full.png" />
   <meta name="twitter:card" content="summary" />
-  <title>Israel Tax Calculator — Step 1 | Zitnitski Weinstein &amp; Co.</title>
+  <title>Israel Tax Calculator - Step 1 | Zitnitski Weinstein &amp; Co.</title>
   <link rel="stylesheet" href="calculator.css" />
 </head>
 <body class="step1">
@@ -83,7 +83,7 @@
 </nav>
 
 <div class="beta-bar" role="note">
-  <strong>Beta version.</strong> This calculator is still under development and may contain errors. Results are indicative estimates only — not tax advice, and not a substitute for a professional calculation. Please verify any figure before relying on it.
+  <strong>Beta version.</strong> This calculator is still under development and may contain errors. Results are indicative estimates only - not tax advice, and not a substitute for a professional calculation. Please verify any figure before relying on it.
 </div>
 
 <header class="hero">
@@ -112,7 +112,7 @@
       <div class="field">
         <label for="entityType">Entity Type</label>
         <select id="entityType">
-          <option value="">— Select entity type —</option>
+          <option value="">- Select entity type -</option>
           <option value="individual">Individual</option>
           <option value="company">Company (LTD)</option>
         </select>
@@ -121,7 +121,7 @@
       <div class="field">
         <label for="assetType">Asset Type</label>
         <select id="assetType">
-          <option value="">— Select asset type —</option>
+          <option value="">- Select asset type -</option>
           <option value="real_estate">Real Estate</option>
           <option value="shares">Shares</option>
           <option value="interest">Interest</option>
@@ -134,7 +134,7 @@
       <div class="field" id="originField" data-conditional style="display:none">
         <label for="companyOrigin">Company Origin</label>
         <select id="companyOrigin">
-          <option value="">— Select company origin —</option>
+          <option value="">- Select company origin -</option>
           <option value="israeli">Israeli Company</option>
           <option value="foreign">Foreign Company</option>
         </select>
@@ -144,7 +144,7 @@
       <div class="field" id="purposeField" data-conditional style="display:none">
         <label for="purpose">Purpose</label>
         <select id="purpose">
-          <option value="">— Select purpose —</option>
+          <option value="">- Select purpose -</option>
           <option value="capital_gain">Capital Gain</option>
           <option value="income">Rental Income</option>
         </select>
@@ -154,7 +154,7 @@
       <div class="field" id="propertyField" data-conditional style="display:none">
         <label for="propertyType">Property Type</label>
         <select id="propertyType">
-          <option value="">— Select property type —</option>
+          <option value="">- Select property type -</option>
           <option value="residential">Residential</option>
           <option value="commercial">Commercial</option>
         </select>
@@ -164,7 +164,7 @@
       <div class="field" id="shareActivityField" data-conditional style="display:none">
         <label for="shareActivity">Share Activity</label>
         <select id="shareActivity">
-          <option value="">— Select activity —</option>
+          <option value="">- Select activity -</option>
           <option value="dividend">Receiving Dividends</option>
           <option value="capital_gain">Selling Shares (Capital Gain)</option>
         </select>
@@ -195,7 +195,7 @@
     <a href="index.html#accessibility">Accessibility Statement</a>
     <a href="index.html#privacy">Privacy Notice</a>
   </nav>
-  <p class="footer-legal"><strong>Israel International Tax Guide</strong> — General information only. Not legal or tax advice. Tax rates, brackets, and thresholds reflect the <strong>2026 tax year</strong>, including the 2026 bracket adjustment; figures are subject to change with future legislation.</p>
+  <p class="footer-legal"><strong>Israel International Tax Guide</strong> - General information only. Not legal or tax advice. Tax rates, brackets, and thresholds reflect the <strong>2026 tax year</strong>, including the 2026 bracket adjustment; figures are subject to change with future legislation.</p>
   <p class="footer-copy">© 2026 Zitnitski Weinstein &amp; Co. All rights reserved.</p>
 </footer>
 
@@ -221,7 +221,7 @@
   }
 
   function validate() {
-    // Use JS-based check — CSS [style*="display:none"] breaks after first JS toggle
+    // Use JS-based check - CSS [style*="display:none"] breaks after first JS toggle
     // because browsers normalize to "display: none;" (with space), not "display:none"
     const allFields = Array.from(document.querySelectorAll('#fieldsGrid .field'));
     const visibleSelects = allFields
@@ -287,11 +287,11 @@
 <script>
   // Report height to an embedding parent (e.g. the firm's Wix site) so an
   // iframe embed can auto-size and avoid a double scrollbar. No-ops outside
-  // a frame — pairs with the frame-ancestor guard in <head>.
+  // a frame - pairs with the frame-ancestor guard in <head>.
   //
   // Measures document.body, not documentElement: per spec, the root
   // element's scrollHeight always floors at the current viewport height,
-  // which — combined with the parent growing the iframe on every report —
+  // which - combined with the parent growing the iframe on every report -
   // creates unbounded feedback growth. body has no such floor (as long as
   // it isn't itself stretched to 100vh; see the .zwco-embedded CSS override
   // for pages with a sticky-footer layout).
@@ -321,7 +321,7 @@
 </script>
 
 <script>
-  // Offline support. Registered only over https — service workers are
+  // Offline support. Registered only over https - service workers are
   // unavailable over file:// and the site must keep working there too.
   (function () {
     if (!('serviceWorker' in navigator) || window.location.protocol !== 'https:') return;

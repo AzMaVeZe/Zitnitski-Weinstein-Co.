@@ -1,6 +1,6 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     /* Token superset shared conceptually with index.html and
-       treaty-rates.html — keep the three :root blocks in sync. */
+       treaty-rates.html - keep the three :root blocks in sync. */
     :root {
       --blue:        #1a4b8c;
       --blue-mid:    #2563b0;
@@ -39,13 +39,13 @@
     html.zwco-embedded body { min-height: 0; }
     /* Form controls don't inherit the body font by default */
     input, select, button { font-family: inherit; }
-    /* Keyboard navigation — visible focus on links (controls have their own rings) */
+    /* Keyboard navigation - visible focus on links (controls have their own rings) */
     a:focus-visible { outline: 3px solid rgba(37,99,176,.35); outline-offset: 2px; border-radius: 4px; }
 
     /* CONSULTATION PROMPT
        Modal invitation to book a consultation, shown once per session after
        the visitor has actually run a calculation (never before content, never
-       repeatedly — see the trigger logic in calculator2.html). */
+       repeatedly - see the trigger logic in calculator2.html). */
     .consult-overlay {
       position: fixed; inset: 0; z-index: 200;
       display: none; align-items: center; justify-content: center;
@@ -140,7 +140,7 @@
       .app-tabbar { display: flex; }
       body { padding-bottom: 64px; }
     }
-    /* Higher specificity than the media rules above — no !important needed. */
+    /* Higher specificity than the media rules above - no !important needed. */
     html.zwco-embedded .app-tabbar { display: none; }
     html.zwco-embedded body { padding-bottom: 0; }
 
@@ -210,7 +210,7 @@
     .nav-social a:hover { color: var(--blue); background: var(--blue-light); }
     .nav-social svg { width: 17px; height: 17px; fill: currentColor; display: block; }
     @media (max-width: 820px) {
-      /* Outbound icons drop out of the crowded mobile bar — the footer keeps them */
+      /* Outbound icons drop out of the crowded mobile bar - the footer keeps them */
       .nav-social { display: none; }
     }
     @media (max-width: 600px) {
@@ -252,7 +252,7 @@
       .nav-inner { flex-wrap: wrap; row-gap: .4rem; }
     }
 
-    /* HERO — same gradient, pattern, and gold keyline as the guide's hero so
+    /* HERO - same gradient, pattern, and gold keyline as the guide's hero so
        every page reads as one designed site. */
     .hero {
       background: linear-gradient(135deg, var(--blue) 0%, var(--blue-deep) 100%);
@@ -306,7 +306,7 @@
     /* PAGE */
     .page { max-width: 960px; margin: 0 auto; padding: 2.5rem 1.5rem 4rem; flex: 1; }
 
-    /* CARD / RESULT PANEL — shared shell so inputs and results read as one system */
+    /* CARD / RESULT PANEL - shared shell so inputs and results read as one system */
     .card, .track-section {
       background: var(--white); border: 1px solid var(--border);
       border-radius: var(--radius); box-shadow: var(--shadow);
@@ -395,7 +395,7 @@
     }
     @media (max-width: 720px) { .two-col { grid-template-columns: 1fr; } }
 
-    /* METRICS GRID — auto-fit keeps 2 or 3 metrics on one scannable row */
+    /* METRICS GRID - auto-fit keeps 2 or 3 metrics on one scannable row */
     .metrics {
       display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
       gap: .75rem; margin-top: 1.5rem;
@@ -503,7 +503,7 @@
     .track-result-label { color: var(--muted); }
     .track-result-val   { font-weight: 700; color: var(--text); }
     .track-badge-area   { min-height: 1.75rem; margin-top: .25rem; }
-    /* The verdict is the calculator's answer — a proper callout, not an
+    /* The verdict is the calculator's answer - a proper callout, not an
        italic afterthought. :empty hides the pill until there is content. */
     .track-verdict {
       margin-top: 1.25rem; font-size: .92rem; color: var(--text);
@@ -550,14 +550,14 @@
     /* CG extras area below the input table */
     .cg-extras { margin-top: 1.25rem; }
 
-    /* OPTION GRID — two-column option fields that stack on small screens */
+    /* OPTION GRID - two-column option fields that stack on small screens */
     .opt-grid {
       display: grid; grid-template-columns: 1fr 1fr;
       gap: 1.25rem 2rem; margin-top: 1.5rem; align-items: start;
     }
     @media (max-width: 560px) { .opt-grid { grid-template-columns: 1fr; } }
 
-    /* MOBILE — keep input tables usable on ~375px screens */
+    /* MOBILE - keep input tables usable on ~375px screens */
     @media (max-width: 580px) {
       .input-row-label { white-space: normal; width: 38%; min-width: 100px; }
       .input-table td { padding: .45rem .5rem; }
@@ -590,11 +590,11 @@
     }
     .footer-legal { color: rgba(255,255,255,.7); font-size: .8rem; max-width: 620px; margin: 0 auto .35rem; }
     .footer-copy  { color: rgba(255,255,255,.55); font-size: .75rem; margin-top: 1rem; }
-    /* Full logo is dark multi-tone artwork — white card for contrast on the blue footer */
+    /* Full logo is dark multi-tone artwork - white card for contrast on the blue footer */
     .footer-logo-full-link { display: inline-block; margin-top: 1.25rem; background: var(--white); padding: .6rem 1rem; border-radius: 10px; }
     .footer-logo-full { display: block; width: auto; height: auto; max-width: min(300px, 75vw); max-height: 110px; }
 
-    /* ── Step-1 classifier page (calculator.html) — rules used only there ── */
+    /* ── Step-1 classifier page (calculator.html) - rules used only there ── */
     .field[data-conditional] {
       animation: slideIn .18s ease;
       padding-left: .85rem; border-left: 3px solid var(--blue-light);
@@ -622,7 +622,7 @@
     body.step1 .card        { margin-bottom: 0; }
     body.step1 .card-header { margin-bottom: 1.75rem; }
 
-    /* ── NUMERIC TYPOGRAPHY — aligned digits on every figure surface ── */
+    /* ── NUMERIC TYPOGRAPHY - aligned digits on every figure surface ── */
     .metric-val, .track-card-rate, .track-result-val,
     .bracket-table-wrap tbody td, .input-table input[type="text"] {
       font-variant-numeric: tabular-nums;

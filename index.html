@@ -7,7 +7,7 @@
     // frame-ancestors headers, so this page is embeddable in an iframe from
     // any origin by default. Break out of any frame whose ancestor is not on
     // the allowlist (the firm's own Wix site). Add the confirmed Wix embed
-    // hostname here once known — for now only the firm's own domain is trusted.
+    // hostname here once known - for now only the firm's own domain is trusted.
     (function () {
       try {
         if (window.self === window.top) return;
@@ -25,7 +25,7 @@
           try { allowed = hostAllowed(new URL(document.referrer).hostname); } catch (e) {}
         }
         if (!allowed) { window.top.location = window.self.location.href; return; }
-        // Legitimately embedded — flag it so CSS can drop viewport-relative
+        // Legitimately embedded - flag it so CSS can drop viewport-relative
         // sizing (e.g. body's sticky-footer min-height:100vh) that would
         // otherwise feed back into the iframe auto-resize script below.
         document.documentElement.classList.add('zwco-embedded');
@@ -35,13 +35,13 @@
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="An international tax guide and calculator for individuals relocating to Israel, prepared by Zitnitski Weinstein &amp; Co. General information only — not legal or tax advice." />
+  <meta name="description" content="An international tax guide and calculator for individuals relocating to Israel, prepared by Zitnitski Weinstein &amp; Co. General information only - not legal or tax advice." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231a4b8c'/%3E%3Ctext x='32' y='43' font-family='Arial, sans-serif' font-size='26' font-weight='700' fill='white' text-anchor='middle'%3EZW%3C/text%3E%3C/svg%3E" />
   <link rel="canonical" href="https://tax.zw-co.com/" />
   <meta property="og:type" content="website" />
   <meta property="og:site_name" content="Zitnitski Weinstein &amp; Co." />
   <meta property="og:url" content="https://tax.zw-co.com/" />
-  <meta property="og:title" content="Relocating to Israel — International Tax Guide" />
+  <meta property="og:title" content="Relocating to Israel - International Tax Guide" />
   <meta property="og:description" content="A structured overview of tax residency rules, treaty benefits, aliyah incentives, and cross-border reporting obligations, prepared by Zitnitski Weinstein &amp; Co." />
   <!-- Absolute URL is required: LinkedIn and Facebook do not resolve relative og:image paths. -->
   <meta property="og:image" content="https://tax.zw-co.com/assets/zwco-logo-full.png" />
@@ -51,12 +51,12 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-title" content="ZW Tax" />
   <link rel="apple-touch-icon" href="assets/icon-192.png" />
-  <title>Relocating to Israel — International Tax Guide | Zitnitski Weinstein &amp; Co.</title>
+  <title>Relocating to Israel - International Tax Guide | Zitnitski Weinstein &amp; Co.</title>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     /* Token superset shared conceptually with calculator.css and
-       treaty-rates.html — keep the three :root blocks in sync. */
+       treaty-rates.html - keep the three :root blocks in sync. */
     :root {
       --blue:        #1a4b8c;
       --blue-mid:    #2563b0;
@@ -132,7 +132,7 @@
       .app-tabbar { display: flex; }
       body { padding-bottom: 64px; }
     }
-    /* Higher specificity than the media rules above — no !important needed. */
+    /* Higher specificity than the media rules above - no !important needed. */
     html.zwco-embedded .app-tabbar { display: none; }
     html.zwco-embedded body { padding-bottom: 0; }
 
@@ -381,7 +381,7 @@
       border-radius: var(--radius); padding: 1.75rem;
       box-shadow: var(--shadow-sm); transition: transform .2s, box-shadow .2s;
     }
-    /* No lift on hover — cards aren't links, motion would imply clickability */
+    /* No lift on hover - cards aren't links, motion would imply clickability */
     .card:hover { box-shadow: var(--shadow); border-color: #b9c8e0; }
     .card-icon {
       width: 46px; height: 46px; border-radius: 10px;
@@ -539,7 +539,7 @@
     }
     .footer-legal { color: rgba(255,255,255,.7); font-size: .8rem; max-width: 620px; margin: 0 auto .35rem; }
     .footer-copy  { color: rgba(255,255,255,.55); font-size: .75rem; margin-top: 1rem; }
-    /* Full logo is dark multi-tone artwork — white card for contrast on the blue footer */
+    /* Full logo is dark multi-tone artwork - white card for contrast on the blue footer */
     .footer-logo-full-link { display: inline-block; margin-top: 1.25rem; background: var(--white); padding: .6rem 1rem; border-radius: 10px; }
     .footer-logo-full { display: block; width: auto; height: auto; max-width: min(300px, 75vw); max-height: 110px; }
 
@@ -556,12 +556,12 @@
       .nav-dropdown { display: block; position: static; min-width: 0;
         border: none; box-shadow: none; padding: 0; }
       /* The bottom tabbar (visible whenever we're NOT in the Wix embed at this
-         width) already carries Guide/Calculator/Treaties/Contact — hide the
+         width) already carries Guide/Calculator/Treaties/Contact - hide the
          duplicates so ☰ shows only the guide sections. In the embed the tabbar
          is hidden, so the cross-page links stay. */
       html:not(.zwco-embedded) .nav-links .nav-x { display: none; }
       .nav-links a.nav-cta { border-radius: 8px; margin-left: 0; text-align: center; }
-      /* Outbound icons drop out of the crowded mobile bar — the footer keeps them */
+      /* Outbound icons drop out of the crowded mobile bar - the footer keeps them */
       .nav-social { display: none; }
     }
     @media (max-width: 600px) {
@@ -650,7 +650,7 @@
 <main id="main-content">
 
 <div class="beta-bar" role="note">
-  <strong>Beta version.</strong> This guide is still under development and may contain errors or incomplete information. It is general information only — not tax or legal advice. Please verify anything you intend to rely on with a qualified professional.
+  <strong>Beta version.</strong> This guide is still under development and may contain errors or incomplete information. It is general information only - not tax or legal advice. Please verify anything you intend to rely on with a qualified professional.
 </div>
 
 <!-- HERO -->
@@ -684,7 +684,7 @@
 
         <div class="two-col reveal">
           <div class="info-block">
-            <h3>Primary Test — Center of Life</h3>
+            <h3>Primary Test - Center of Life</h3>
             <ul>
               <li><span class="dot"></span>Your permanent home is in Israel</li>
               <li><span class="dot"></span>Family (spouse, minor children) reside in Israel</li>
@@ -708,7 +708,7 @@
         <div class="highlight-box reveal" style="margin-top:2.5rem">
           <div>
             <h3>Worldwide Income Scope</h3>
-            <p>Once you become an Israeli tax resident, Israel taxes your <strong>worldwide income</strong> — including foreign salaries, dividends, rental income, capital gains, and business profits earned anywhere on the globe. Non-residents are taxed only on Israeli-source income.</p>
+            <p>Once you become an Israeli tax resident, Israel taxes your <strong>worldwide income</strong> - including foreign salaries, dividends, rental income, capital gains, and business profits earned anywhere on the globe. Non-residents are taxed only on Israeli-source income.</p>
           </div>
           <div class="highlight-stat">
             <div class="num">50%</div>
@@ -764,7 +764,7 @@
           <div class="card">
             <div class="card-icon">⚠️</div>
             <h3>US Citizenship Override</h3>
-            <p>The US taxes its citizens and green-card holders on worldwide income regardless of residence. The treaty does not override this obligation — dual-filers must still file US returns annually.</p>
+            <p>The US taxes its citizens and green-card holders on worldwide income regardless of residence. The treaty does not override this obligation - dual-filers must still file US returns annually.</p>
           </div>
         </div>
 
@@ -811,13 +811,13 @@
   <div class="container">
     <details class="section-acc">
       <summary class="section-summary">
-        <span class="section-tag gold">Section 03 — Key Incentive</span>
+        <span class="section-tag gold">Section 03 - Key Incentive</span>
         <h2 class="summary-title">Aliyah Tax Benefits</h2>
         <span class="summary-chevron" aria-hidden="true"></span>
       </summary>
       <div class="section-acc-body">
         <div class="section-header reveal">
-          <p>Israel's Income Tax Ordinance — together with a newly enacted temporary budget provision — provides extraordinary tax relief to new immigrants (<em>olim chadashim</em>) and returning residents (<em>toshavim chozrim</em>) as an incentive for aliyah. Two distinct benefits are described below: a long-standing 10-year exemption on foreign-source income, and a new, time-limited exemption on Israeli-source earned income for individuals arriving in the November 2025–December 2026 window.</p>
+          <p>Israel's Income Tax Ordinance - together with a newly enacted temporary budget provision - provides extraordinary tax relief to new immigrants (<em>olim chadashim</em>) and returning residents (<em>toshavim chozrim</em>) as an incentive for aliyah. Two distinct benefits are described below: a long-standing 10-year exemption on foreign-source income, and a new, time-limited exemption on Israeli-source earned income for individuals arriving in the November 2025–December 2026 window.</p>
         </div>
 
         <div class="highlight-box reveal">
@@ -837,14 +837,14 @@
              Israeli-source personal-services income for arrivals between
              2025-11-05 and 2026-12-31. This runs alongside, not instead of,
              the §14/97(b) exemption above. At publication, implementing ITA
-             regulations/circulars were not yet finalized — the figures below
+             regulations/circulars were not yet finalized - the figures below
              are drawn from published professional-firm summaries of the
              legislation (cross-checked across multiple firms) and should be
              confirmed against final ITA guidance before being relied upon. -->
         <div class="highlight-box reveal" style="margin-top:2rem">
           <div>
             <h3>New for 2026: A Separate Exemption on Israeli-Source Earned Income</h3>
-            <p>A temporary provision to the Income Tax Ordinance, enacted as part of Israel's 2026 State Budget Law, introduces a further benefit that runs <strong>alongside</strong> — not instead of — the 10-year foreign-income exemption above. It exempts <strong>Israeli-source income from personal services</strong> (employment and self-employment) earned by an eligible new immigrant or veteran returning resident who first became an Israeli tax resident between <strong>November 5, 2025</strong> and <strong>December 31, 2026</strong>. Passive income (interest, dividends, rent, capital gains) is not covered by this new exemption; it continues to be addressed by the 10-year foreign-income exemption where applicable. As very recently enacted legislation, exact terms are subject to confirmation and change — the figures below reflect published professional-firm summaries, not a final ITA circular.</p>
+            <p>A temporary provision to the Income Tax Ordinance, enacted as part of Israel's 2026 State Budget Law, introduces a further benefit that runs <strong>alongside</strong> - not instead of - the 10-year foreign-income exemption above. It exempts <strong>Israeli-source income from personal services</strong> (employment and self-employment) earned by an eligible new immigrant or veteran returning resident who first became an Israeli tax resident between <strong>November 5, 2025</strong> and <strong>December 31, 2026</strong>. Passive income (interest, dividends, rent, capital gains) is not covered by this new exemption; it continues to be addressed by the 10-year foreign-income exemption where applicable. As very recently enacted legislation, exact terms are subject to confirmation and change - the figures below reflect published professional-firm summaries, not a final ITA circular.</p>
           </div>
           <div class="highlight-stat">
             <div class="num">5</div>
@@ -857,20 +857,20 @@
             <div class="info-block">
               <h3>Annual Exemption Caps by Year</h3>
               <ul>
-                <li><span class="dot gold"></span>2026 — ₪600,000 (pro-rated from the month of arrival)</li>
-                <li><span class="dot gold"></span>2027–2028 — ₪1,000,000 per year</li>
-                <li><span class="dot gold"></span>2029 — ₪350,000</li>
-                <li><span class="dot gold"></span>2030 — ₪150,000</li>
+                <li><span class="dot gold"></span>2026 - ₪600,000 (pro-rated from the month of arrival)</li>
+                <li><span class="dot gold"></span>2027–2028 - ₪1,000,000 per year</li>
+                <li><span class="dot gold"></span>2029 - ₪350,000</li>
+                <li><span class="dot gold"></span>2030 - ₪150,000</li>
                 <li><span class="dot"></span>Income from a related party (e.g. a family member's business): a lower cap, reported at approximately ₪140,000/year through 2029</li>
               </ul>
             </div>
             <div class="info-block">
               <h3>Key Conditions</h3>
               <ul>
-                <li><span class="dot"></span>Applies to individuals becoming Israeli tax residents for the first time — or as a qualifying returning resident — within the November 2025–December 2026 arrival window</li>
+                <li><span class="dot"></span>Applies to individuals becoming Israeli tax residents for the first time - or as a qualifying returning resident - within the November 2025–December 2026 arrival window</li>
                 <li><span class="dot"></span>Covers Israeli-source salary and self-employment income specifically, a category the 10-year exemption does not reach</li>
                 <li><span class="dot"></span>National Insurance (Bituach Leumi) contributions continue to apply to the exempted income separately</li>
-                <li><span class="dot"></span>Reported eligibility conditions include a minimum-presence test in Israel each year — confirm the exact threshold and its consequences with a professional</li>
+                <li><span class="dot"></span>Reported eligibility conditions include a minimum-presence test in Israel each year - confirm the exact threshold and its consequences with a professional</li>
               </ul>
             </div>
           </div>
@@ -886,12 +886,12 @@
             <div class="card">
               <div class="card-icon gold">👤</div>
               <h3>Who Qualifies</h3>
-              <p><strong>New immigrants (olim)</strong> who were not Israeli residents for the 10 years preceding aliyah. <strong>Veteran returning residents</strong> (toshav chozer vatik) who lived abroad for at least 10 consecutive years receive the full 10-year exemption. <strong>Regular returning residents</strong> who lived abroad for at least 6 consecutive years receive a narrower benefit — generally a 5-year exemption limited to passive income (interest, dividends, rent, royalties, pensions) from assets acquired abroad while non-resident.</p>
+              <p><strong>New immigrants (olim)</strong> who were not Israeli residents for the 10 years preceding aliyah. <strong>Veteran returning residents</strong> (toshav chozer vatik) who lived abroad for at least 10 consecutive years receive the full 10-year exemption. <strong>Regular returning residents</strong> who lived abroad for at least 6 consecutive years receive a narrower benefit - generally a 5-year exemption limited to passive income (interest, dividends, rent, royalties, pensions) from assets acquired abroad while non-resident.</p>
             </div>
             <div class="card">
               <div class="card-icon gold">📅</div>
               <h3>Timing &amp; Election</h3>
-              <p>The exemption begins on the date you first become an Israeli tax resident. It is automatic — no special election is required. However, eligible individuals may choose to <em>opt out</em> if foreign tax credits from Israeli reporting would produce a better outcome.</p>
+              <p>The exemption begins on the date you first become an Israeli tax resident. It is automatic - no special election is required. However, eligible individuals may choose to <em>opt out</em> if foreign tax credits from Israeli reporting would produce a better outcome.</p>
             </div>
           </div>
         </div>
@@ -918,7 +918,7 @@
           <div class="timeline-item">
             <div class="timeline-dot">Y5</div>
             <div class="timeline-content">
-              <h3>Mid-Point Review — Plan Ahead</h3>
+              <h3>Mid-Point Review - Plan Ahead</h3>
               <p>A good time to engage an Israeli and a US tax advisor to model what happens when the exemption expires. Consider restructuring foreign holdings, trust arrangements, or timing of asset disposals.</p>
             </div>
           </div>
@@ -942,7 +942,7 @@
           <div class="accordion-item">
             <button class="accordion-trigger">Does the 10-year exemption affect US tax obligations?<span class="accordion-icon">+</span></button>
             <div class="accordion-body">
-              <p>No — the Israeli exemption has <strong>no effect on US obligations</strong>. US citizens and green-card holders must still file annual US tax returns (Form 1040) and report worldwide income to the IRS regardless of the Israeli exemption. The exemption simply means Israel will not tax that income during the 10-year period, but the IRS still expects full reporting and may still tax it (subject to the FEIE, FTC, and treaty provisions).</p>
+              <p>No - the Israeli exemption has <strong>no effect on US obligations</strong>. US citizens and green-card holders must still file annual US tax returns (Form 1040) and report worldwide income to the IRS regardless of the Israeli exemption. The exemption simply means Israel will not tax that income during the 10-year period, but the IRS still expects full reporting and may still tax it (subject to the FEIE, FTC, and treaty provisions).</p>
             </div>
           </div>
           <div class="accordion-item">
@@ -954,13 +954,13 @@
           <div class="accordion-item">
             <button class="accordion-trigger">Can I extend or renew the exemption?<span class="accordion-icon">+</span></button>
             <div class="accordion-body">
-              <p>No — the 10-year exemption cannot be extended or renewed. It is a one-time benefit. If you leave Israel and return, a separate "returning resident" analysis is required, and the conditions are stricter (generally 10+ years abroad for full benefits). Some individuals explore relocating temporarily before expiry, but this has significant legal and tax implications and should only be considered with comprehensive professional advice.</p>
+              <p>No - the 10-year exemption cannot be extended or renewed. It is a one-time benefit. If you leave Israel and return, a separate "returning resident" analysis is required, and the conditions are stricter (generally 10+ years abroad for full benefits). Some individuals explore relocating temporarily before expiry, but this has significant legal and tax implications and should only be considered with comprehensive professional advice.</p>
             </div>
           </div>
           <div class="accordion-item">
             <button class="accordion-trigger">How does the new 2026 earned-income exemption interact with the 10-year exemption?<span class="accordion-icon">+</span></button>
             <div class="accordion-body">
-              <p>The two benefits are separate and, for an eligible arrival, can apply together. The 10-year exemption under Sections 14 and 97(b) covers <strong>foreign-source</strong> income and gains. The new temporary-provision exemption covers a different category — <strong>Israeli-source</strong> employment and self-employment income — for individuals arriving within the November 2025–December 2026 window, subject to the declining annual caps described above. It does not extend, replace, or shorten the 10-year foreign-income exemption, and it does not reach passive income of any source.</p>
+              <p>The two benefits are separate and, for an eligible arrival, can apply together. The 10-year exemption under Sections 14 and 97(b) covers <strong>foreign-source</strong> income and gains. The new temporary-provision exemption covers a different category - <strong>Israeli-source</strong> employment and self-employment income - for individuals arriving within the November 2025–December 2026 window, subject to the declining annual caps described above. It does not extend, replace, or shorten the 10-year foreign-income exemption, and it does not reach passive income of any source.</p>
             </div>
           </div>
         </div>
@@ -981,16 +981,16 @@
       </summary>
       <div class="section-acc-body">
         <div class="section-header reveal">
-          <p>A Permanent Establishment is the legal threshold that decides whether a foreign business — a company or an individual operating through one — has enough of an active presence in Israel to be taxed here. If a foreign business triggers a PE in Israel, Israel can tax the net profits attributable to that local presence. If no PE is triggered, those business profits stay taxable only in the company's home country.</p>
+          <p>A Permanent Establishment is the legal threshold that decides whether a foreign business - a company or an individual operating through one - has enough of an active presence in Israel to be taxed here. If a foreign business triggers a PE in Israel, Israel can tax the net profits attributable to that local presence. If no PE is triggered, those business profits stay taxable only in the company's home country.</p>
         </div>
 
         <div class="two-col reveal">
           <div class="info-block">
             <h3>The Three Classic Triggers</h3>
             <ul>
-              <li><span class="dot"></span><strong>Fixed place of business</strong> — carrying on business through a physical location such as a place of management, branch, office, factory, or workshop</li>
-              <li><span class="dot"></span><strong>Dependent agent</strong> — a person in Israel who habitually concludes contracts in the company's name (a genuinely independent broker acting in their own ordinary course does not count)</li>
-              <li><span class="dot"></span><strong>Construction or installation project</strong> — under the US–Israel treaty, one lasting more than 6 months (other treaties commonly use 12 months, per the OECD model)</li>
+              <li><span class="dot"></span><strong>Fixed place of business</strong> - carrying on business through a physical location such as a place of management, branch, office, factory, or workshop</li>
+              <li><span class="dot"></span><strong>Dependent agent</strong> - a person in Israel who habitually concludes contracts in the company's name (a genuinely independent broker acting in their own ordinary course does not count)</li>
+              <li><span class="dot"></span><strong>Construction or installation project</strong> - under the US–Israel treaty, one lasting more than 6 months (other treaties commonly use 12 months, per the OECD model)</li>
             </ul>
           </div>
           <div class="info-block">
@@ -1000,7 +1000,7 @@
               <li><span class="dot"></span>Keeping stock only for processing by another enterprise</li>
               <li><span class="dot"></span>Purchasing goods or collecting information</li>
               <li><span class="dot"></span>Advertising, research, or supplying information</li>
-              <li><span class="dot"></span><strong>The catch:</strong> if such an "auxiliary" activity is actually the company's core business — warehousing as the whole business model, for example — the Israel Tax Authority overrides the exception and treats it as a taxable PE</li>
+              <li><span class="dot"></span><strong>The catch:</strong> if such an "auxiliary" activity is actually the company's core business - warehousing as the whole business model, for example - the Israel Tax Authority overrides the exception and treats it as a taxable PE</li>
             </ul>
           </div>
         </div>
@@ -1031,7 +1031,7 @@
         <div class="highlight-box reveal" style="margin-top:2.5rem">
           <div>
             <h3>Tax Consequences</h3>
-            <p>A PE is treated as a separate, independent entity. The foreign company pays standard Israeli corporate tax on the net profits attributable to the Israeli operation, and may deduct expenses incurred for that operation — including executive and administrative costs incurred abroad. If a PE is discovered after the fact, corporate tax, VAT, and payroll obligations can apply retroactively to the date the activity began.</p>
+            <p>A PE is treated as a separate, independent entity. The foreign company pays standard Israeli corporate tax on the net profits attributable to the Israeli operation, and may deduct expenses incurred for that operation - including executive and administrative costs incurred abroad. If a PE is discovered after the fact, corporate tax, VAT, and payroll obligations can apply retroactively to the date the activity began.</p>
           </div>
           <div class="highlight-stat">
             <div class="num">23%</div>
@@ -1043,7 +1043,7 @@
           <div class="accordion-item">
             <button class="accordion-trigger">Does the 183-day rule create a corporate PE?<span class="accordion-icon">+</span></button>
             <div class="accordion-body">
-              <p>No. The 183-day rule is a residency test for individuals, not a corporate PE trigger. A company's PE is decided by the fixed-place, dependent-agent, or 12-month construction tests — never by counting days of corporate presence.</p>
+              <p>No. The 183-day rule is a residency test for individuals, not a corporate PE trigger. A company's PE is decided by the fixed-place, dependent-agent, or 12-month construction tests - never by counting days of corporate presence.</p>
             </div>
           </div>
         </div>
@@ -1064,7 +1064,7 @@
       </summary>
       <div class="section-acc-body">
         <div class="section-header reveal">
-          <p>When an Israeli payer releases funds for a deal, they are often legally required to withhold tax at source before the money reaches the recipient — unless the recipient holds a valid exemption or reduction certificate from the Israel Tax Authority. The payer must check the ITA's online system close to the actual moment of payment; if no valid certificate shows up, the high statutory default rate is deducted automatically before any funds are released.</p>
+          <p>When an Israeli payer releases funds for a deal, they are often legally required to withhold tax at source before the money reaches the recipient - unless the recipient holds a valid exemption or reduction certificate from the Israel Tax Authority. The payer must check the ITA's online system close to the actual moment of payment; if no valid certificate shows up, the high statutory default rate is deducted automatically before any funds are released.</p>
         </div>
 
         <div class="section-header reveal" style="margin-top:3.5rem">
@@ -1092,7 +1092,7 @@
 
         <div class="section-header reveal" style="margin-top:3.5rem">
           <h2 class="subsection-title">The Foreign-Resident Trap</h2>
-          <p>Treaty benefits are not automatic — a foreign payee is locked out of the system that issues certificates to Israeli residents on autopilot.</p>
+          <p>Treaty benefits are not automatic - a foreign payee is locked out of the system that issues certificates to Israeli residents on autopilot.</p>
         </div>
 
         <div class="two-col reveal">
@@ -1119,11 +1119,11 @@
           <div class="accordion-item">
             <button class="accordion-trigger">Why do payment agents hold funds in escrow?<span class="accordion-icon">+</span></button>
             <div class="accordion-body">
-              <p>When a deal runs through an escrow agent or paying trustee, the ITA shifts the entire withholding duty onto the agent, who commits in writing to deduct the tax at the time of actual payment to the seller. If the agent releases gross funds to a foreign vendor who has not produced a valid ITA certificate, the agent becomes personally liable for the missing 23%, 25%, or 30% — so holding the funds in escrow, often for up to half a year, is the only way the agent protects themselves while the vendor pursues the manual review.</p>
+              <p>When a deal runs through an escrow agent or paying trustee, the ITA shifts the entire withholding duty onto the agent, who commits in writing to deduct the tax at the time of actual payment to the seller. If the agent releases gross funds to a foreign vendor who has not produced a valid ITA certificate, the agent becomes personally liable for the missing 23%, 25%, or 30% - so holding the funds in escrow, often for up to half a year, is the only way the agent protects themselves while the vendor pursues the manual review.</p>
               <ul>
                 <li>The agent deducts the statutory rate and remits it to the ITA</li>
                 <li>The net remainder is sent to the vendor</li>
-                <li>The vendor is left to claim any refund by filing a full Israeli annual tax return — the longer, costlier route</li>
+                <li>The vendor is left to claim any refund by filing a full Israeli annual tax return - the longer, costlier route</li>
               </ul>
             </div>
           </div>
@@ -1144,13 +1144,13 @@
     <div class="disclaimer reveal">
       <div class="disclaimer-icon">⚖️</div>
       <div>
-        <h3>This is General Information Only — Not Legal or Tax Advice</h3>
+        <h3>This is General Information Only - Not Legal or Tax Advice</h3>
         <p>
-          The information on this website is provided for general educational and informational purposes only. It does not constitute legal advice, tax advice, accounting advice, or any other professional advice, and it does not create an attorney-client or advisor-client relationship. Tax laws — including Israeli income tax law, US Internal Revenue Code provisions, treaty interpretations, and FinCEN regulations — are complex, frequently amended, and fact-specific. The application of any tax rule depends on your individual circumstances, including your citizenship, domicile, asset profile, income sources, and tax elections made.
+          The information on this website is provided for general educational and informational purposes only. It does not constitute legal advice, tax advice, accounting advice, or any other professional advice, and it does not create an attorney-client or advisor-client relationship. Tax laws - including Israeli income tax law, US Internal Revenue Code provisions, treaty interpretations, and FinCEN regulations - are complex, frequently amended, and fact-specific. The application of any tax rule depends on your individual circumstances, including your citizenship, domicile, asset profile, income sources, and tax elections made.
         </p>
         <br>
         <p>
-          <strong>Always consult a qualified tax professional</strong> — ideally one licensed in both the United States and Israel with experience in cross-border taxation — before making any financial, investment, or residency decisions. Penalties for non-compliance can be severe. This content has not been reviewed or verified by a licensed tax professional. Zitnitski Weinstein &amp; Co., the publisher of this site, makes no representations as to the accuracy, completeness, or currentness of the information provided, and accepts no liability for any errors, omissions, or outcomes arising from reliance on this material.
+          <strong>Always consult a qualified tax professional</strong> - ideally one licensed in both the United States and Israel with experience in cross-border taxation - before making any financial, investment, or residency decisions. Penalties for non-compliance can be severe. This content has not been reviewed or verified by a licensed tax professional. Zitnitski Weinstein &amp; Co., the publisher of this site, makes no representations as to the accuracy, completeness, or currentness of the information provided, and accepts no liability for any errors, omissions, or outcomes arising from reliance on this material.
         </p>
       </div>
     </div>
@@ -1203,7 +1203,7 @@
 <!-- Added on the launch security review: Israeli Privacy Protection Law
      (incl. Amendment 13) transparency duties attach even to a site that
      collects nothing itself, because the host (Cloudflare) processes
-     visitor IPs/logs. Keep every claim here in sync with the code — the
+     visitor IPs/logs. Keep every claim here in sync with the code - the
      "nothing leaves the device" statement is load-bearing. -->
 <section class="section" id="privacy">
   <div class="container">
@@ -1217,17 +1217,17 @@
         <div class="disclaimer reveal">
           <div class="disclaimer-icon">🔒</div>
           <div>
-            <h3>What This Site Does — and Does Not — Collect</h3>
+            <h3>What This Site Does - and Does Not - Collect</h3>
             <p>
               This site sets no cookies, runs no analytics or tracking scripts, and hosts no forms. Anything you enter in the calculator is processed entirely on your own device and is never transmitted to Zitnitski Weinstein &amp; Co. or to anyone else. The calculator keeps its working state in your browser's session storage, which your browser clears when the tab is closed.
             </p>
             <br>
             <p>
-              <strong>Hosting.</strong> The site is delivered through Cloudflare's content-delivery network. Like any web host, Cloudflare processes technical connection data — such as your IP address, browser type, and the pages requested — in its server logs in order to serve and secure the site. That processing is governed by Cloudflare's own privacy policy.
+              <strong>Hosting.</strong> The site is delivered through Cloudflare's content-delivery network. Like any web host, Cloudflare processes technical connection data - such as your IP address, browser type, and the pages requested - in its server logs in order to serve and secure the site. That processing is governed by Cloudflare's own privacy policy.
             </p>
             <br>
             <p>
-              <strong>Contacting us.</strong> If you choose to reach out, your message travels through the channel you pick — email, telephone, or the contact form on our main website (www.zw-co.com, built on Wix) — and is subject to that provider's privacy terms as well as the firm's own handling. Links from this site to the contact form carry a short, non-identifying tag indicating which page you came from; figures you entered in the calculator are never included.
+              <strong>Contacting us.</strong> If you choose to reach out, your message travels through the channel you pick - email, telephone, or the contact form on our main website (www.zw-co.com, built on Wix) - and is subject to that provider's privacy terms as well as the firm's own handling. Links from this site to the contact form carry a short, non-identifying tag indicating which page you came from; figures you entered in the calculator are never included.
             </p>
             <br>
             <p>
@@ -1261,7 +1261,7 @@
     <a href="#accessibility">Accessibility Statement</a>
     <a href="#privacy">Privacy Notice</a>
   </nav>
-  <p class="footer-legal"><strong>Israel International Tax Guide</strong> &mdash; General information only. Not legal or tax advice. Always consult a qualified US–Israel cross-border tax professional for your specific situation.</p>
+  <p class="footer-legal"><strong>Israel International Tax Guide</strong> - General information only. Not legal or tax advice. Always consult a qualified US–Israel cross-border tax professional for your specific situation.</p>
   <p class="footer-copy">© 2026 Zitnitski Weinstein &amp; Co. All rights reserved.</p>
 </footer>
 
@@ -1309,7 +1309,7 @@
 
   // ── Expand a section's accordion when navigated to ──
   // Opens the target section's <details> and returns the section element (or
-  // null). Deliberately not called on page load — a reload starts collapsed.
+  // null). Deliberately not called on page load - a reload starts collapsed.
   function openSectionAccordion(hash) {
     if (!hash || hash === '#') return null;
     let target;
@@ -1321,7 +1321,7 @@
   }
   // Nav links: scroll explicitly via JS (rather than relying on the native
   // hash-jump + scroll-margin-top) so this is robust inside embedding
-  // contexts — e.g. Wix Editor Preview — where native anchor-scroll can
+  // contexts - e.g. Wix Editor Preview - where native anchor-scroll can
   // behave inconsistently. The hash is still pushed to the URL (unlike
   // "Explore the Guide" below) so links stay shareable/bookmarkable; it's
   // stripped on the next full load by the head script.
@@ -1471,7 +1471,7 @@
   // Install prompt: surfaced only where the browser offers it (Chromium).
   // Safari/iOS never fires beforeinstallprompt, so the button simply stays
   // hidden there; contact.html carries the written Share-sheet instructions.
-  // Never shown inside the Wix embed — an iframe is not installable.
+  // Never shown inside the Wix embed - an iframe is not installable.
   (function () {
     var btn = document.getElementById('installBtn');
     if (!btn || window.self !== window.top) return;
@@ -1496,11 +1496,11 @@
 <script>
   // Report height to an embedding parent (e.g. the firm's Wix site) so an
   // iframe embed can auto-size and avoid a double scrollbar. No-ops outside
-  // a frame — pairs with the frame-ancestor guard in <head>.
+  // a frame - pairs with the frame-ancestor guard in <head>.
   //
   // Measures document.body, not documentElement: per spec, the root
   // element's scrollHeight always floors at the current viewport height,
-  // which — combined with the parent growing the iframe on every report —
+  // which - combined with the parent growing the iframe on every report -
   // creates unbounded feedback growth. body has no such floor (as long as
   // it isn't itself stretched to 100vh; see the .zwco-embedded CSS override
   // for pages with a sticky-footer layout).
@@ -1522,7 +1522,7 @@
       new MutationObserver(report).observe(document.body, { childList: true, subtree: true, attributes: true });
     }
     // Accordions and other reveal transitions can change height without
-    // firing a resize/mutation signal on some browsers — a short poll for
+    // firing a resize/mutation signal on some browsers - a short poll for
     // the first few seconds covers late layout shifts (fonts, images).
     var ticks = 0;
     var iv = setInterval(function () {
@@ -1533,7 +1533,7 @@
 </script>
 
 <script>
-  // Offline support. Registered only over https — service workers are
+  // Offline support. Registered only over https - service workers are
   // unavailable over file:// and the site must keep working there too.
   (function () {
     if (!('serviceWorker' in navigator) || window.location.protocol !== 'https:') return;

@@ -6,7 +6,7 @@
   // ── Tax brackets (monthly NIS, 2026) ────────────────────────────
   // 2026 bracket widening (חוק ההתייעלות הכלכלית): the 20% bracket now ends at
   // ₪19,000/mo and the 31% bracket at ₪25,100/mo. The annual 31%→35% stacking
-  // threshold used below (301,200) is BRACKETS[3].max × 12 — keep them in sync.
+  // threshold used below (301,200) is BRACKETS[3].max × 12 - keep them in sync.
   const BRACKETS = [
     { min: 0,     max: 7010,     rate: 0.10, label: '₪0 – ₪7,010'       },
     { min: 7010,  max: 10060,    rate: 0.14, label: '₪7,011 – ₪10,060'  },
@@ -84,8 +84,8 @@
       fullyExempt = true;
     } else if (R >= 2 * C_EXEMPT) {
       // Above 2x the ceiling the standard exemption is fully phased out, so the
-      // rent is taxed exactly like the progressive track (Track C) — the full
-      // ladder for an over-60, other-income stacking otherwise — not the under-60
+      // rent is taxed exactly like the progressive track (Track C) - the full
+      // ladder for an over-60, other-income stacking otherwise - not the under-60
       // passive floor (per ITA, rental income of an individual aged 60+ uses the
       // personal-exertion starting brackets).
       exemptTax = progTax;
@@ -127,7 +127,7 @@
   // employee, or under special relations is recharacterized and taxed on the
   // marginal ladder (mirrors computeTracks Track C; reuses calcTaxActive /
   // calcTaxPassive). Companies use the ordinary corporate pipeline, not this
-  // helper. Statute refs live in comments only — never in a return value.
+  // helper. Statute refs live in comments only - never in a return value.
   function interestIndividual({
     amount = 0,
     residency = 'foreign',          // 'foreign' | 'israeli'
@@ -161,7 +161,7 @@
 
     // Permanent-establishment carve-out (takes precedence over every branch below):
     // PE re-sources the income to Israel and taxes it as business profits
-    // attributable to the PE — outside this passive helper; disclosed in UI. This
+    // attributable to the PE - outside this passive helper; disclosed in UI. This
     // stops a blanket 0%/exempt path from silently misstating a PE-connected case.
     if (connectedToIsraeliPE) {
       return { amount, exempt: false, statutoryTax: 0, israeliTax: 0, treatyTax: null,
@@ -220,7 +220,7 @@
         }
       } else if (recharacterize) {
         // Recharacterized interest (substantial shareholder / employee / special
-        // relations) is taxed on the marginal ladder — mirrors computeTracks
+        // relations) is taxed on the marginal ladder - mirrors computeTracks
         // Track C exactly.
         if (over60) {
           israeliTax = calcTaxActive(amount);
@@ -256,7 +256,7 @@
   // ── Individual crypto / digital-asset capital gain (§88 property) ─
   // INDIVIDUALS ONLY. A digital asset is "property" under ITO §88, not a bond, so
   // a disposal is an ordinary capital gain taxed on the NOMINAL gain (no inflation
-  // indexing — see CLAUDE.md) at the §91/§121B 25% capital-gains rate. Source
+  // indexing - see CLAUDE.md) at the §91/§121B 25% capital-gains rate. Source
   // matters only for an oleh: the §14 new-immigrant relief exempts a FOREIGN-source
   // gain for ten years, while an Israeli-source gain is taxed from day one. A
   // foreign resident has no traded-bond / FX-deposit carve-out here (crypto is §88
@@ -264,15 +264,15 @@
   // Israeli resident's foreign tax is a direct FTC capped at the Israeli liability
   // (no refund of excess), so the burden collapses to max(Israeli tax, foreign tax).
   // Crypto has no permanent-establishment carve-out. A security token granting
-  // equity rights in a corporation can attract a different rate — that case is not
+  // equity rights in a corporation can attract a different rate - that case is not
   // modeled here (standard crypto only); it's disclosed in the UI. Statute refs
-  // live in comments only — never in a return value.
+  // live in comments only - never in a return value.
   function cryptoIndividual({
     amount = 0,                     // gross proceeds (NIS)
     costBasis = 0,                  // FIFO cost basis incl. fees (NIS)
     residency = 'foreign',          // 'foreign' | 'israeli' | 'oleh'
-    source = 'foreign',             // 'foreign' | 'israeli' — only distinguishes the oleh branch
-    foreignWithheld = 0,            // foreign tax withheld (NIS) — FTC input for the Israeli-resident branch
+    source = 'foreign',             // 'foreign' | 'israeli' - only distinguishes the oleh branch
+    foreignWithheld = 0,            // foreign tax withheld (NIS) - FTC input for the Israeli-resident branch
   }) {
     const RATE = 0.25;
     const gain = Math.max(0, amount - costBasis);
@@ -324,10 +324,10 @@
   // INDIVIDUALS ONLY. A share disposal is an ordinary capital gain. The §91/§121B
   // rate is 25%, raised to 30% for a "substantial shareholder" (10%+ of the means
   // of control now or in the prior 12 months). Computed on the NOMINAL gain only
-  // (no inflation indexing — see CLAUDE.md): share CG is legally assessed on the
+  // (no inflation indexing - see CLAUDE.md): share CG is legally assessed on the
   // REAL (CPI-adjusted) gain, so the UI collects an already-indexed cost basis and
   // passes it as costBasis; the engine treats (proceeds − costBasis) as the taxable
-  // gain exactly as cryptoIndividual does — the "real gain" lives in the input, not
+  // gain exactly as cryptoIndividual does - the "real gain" lives in the input, not
   // in engine machinery. Branch reliefs: a foreign resident is exempt on ordinary
   // Israeli shares (domestic §97(b2)/(b3); treaties generally give the residence
   // country exclusive rights) but NOT on shares of a real-estate association
@@ -336,14 +336,14 @@
   // Israeli resident is taxable on any source, with a direct foreign tax credit
   // (capped at the Israeli liability, no refund of excess) for a foreign-source gain.
   // A permanent establishment is a UI disclosure note only, not modeled here.
-  // Statute refs live in comments only — never in a return value.
+  // Statute refs live in comments only - never in a return value.
   function sharesIndividualCG({
     proceeds = 0,                   // sale proceeds (NIS)
     costBasis = 0,                  // CPI-ADJUSTED (indexed) cost basis (NIS)
     residency = 'foreign',          // 'foreign' | 'israeli' | 'oleh'
     source = 'israeli',             // 'israeli' | 'foreign'
     substantialHolder = false,      // 10%+ of means of control (now / prior 12mo) → 30%
-    foreignWithheld = 0,            // foreign tax paid (NIS) — FTC input
+    foreignWithheld = 0,            // foreign tax paid (NIS) - FTC input
     realEstateAssoc = false,        // Israeli real-estate association (איגוד מקרקעין)
   }) {
     const gain  = Math.max(0, proceeds - costBasis);
@@ -403,7 +403,7 @@
 
   // ── Employee equity: §102 options / RSUs + §3(i) ─────────────────
   // INDIVIDUALS (employees) ONLY. Models the four §102 / §3(i) outcomes for an
-  // option or RSU exit, on the NOMINAL gain (no indexing — see CLAUDE.md).
+  // option or RSU exit, on the NOMINAL gain (no indexing - see CLAUDE.md).
   //   • Capital-gains trustee track (24-month holding): if the company was PRIVATE
   //     at grant the whole gain is a §91/§121B 25% capital gain; if it was LISTED
   //     at grant (or listed within 90 days) the value up to the 30-day pre-grant
@@ -418,10 +418,10 @@
   // Surtax (5% on the capital portion / 3% on the employment portion above the
   // threshold) and Bituach-Leumi / health are DISCLOSED by the UI, never computed
   // here; the engine only flags whether a BL/health note applies (blHealthApplies).
-  // Statute refs live in comments only — never in a return value.
+  // Statute refs live in comments only - never in a return value.
 
   // Marginal (incremental) tax of stacking an employment-income portion on top of
-  // other annual income, on the full bracket ladder (calcTaxActive — no inline
+  // other annual income, on the full bracket ladder (calcTaxActive - no inline
   // bracket logic). over60 is accepted for input parity but carries NO rate effect:
   // employment income is personal-exertion ("active") income taxed on the full
   // ladder at any age (over60 changes only the PASSIVE-income starting bracket
@@ -546,7 +546,7 @@
   }
 
   // A company's Israeli real-estate capital gain is taxed at the FLAT corporate
-  // rate (23%) on the nominal gain (inflation indexing is not applied) — no
+  // rate (23%) on the nominal gain (inflation indexing is not applied) - no
   // individual-style §48A 47/20/25 historical split and no single-residence
   // exemption, regardless of holding period; residential and commercial are
   // computationally identical for a company. Distribution then follows the
@@ -565,11 +565,11 @@
 
   // Israeli company receiving a dividend on shares it holds.
   // A dividend out of another ISRAELI company's Israeli-source income is excluded
-  // from the recipient company's taxable income — 0% corporate (ITO §126(b)). A
+  // from the recipient company's taxable income - 0% corporate (ITO §126(b)). A
   // FOREIGN-source dividend is included at the 23% corporate rate (ITO §126(c)),
   // with a DIRECT foreign tax credit for foreign withholding (excess is not
   // refunded). An indirect/underlying FTC election can further offset the foreign
-  // corporate tax — NOT computed here (disclosed in the UI). Distributing the
+  // corporate tax - NOT computed here (disclosed in the UI). Distributing the
   // after-tax amount to a substantial individual shareholder then adds 30% (§125B).
   function companyDividendIsraeli({ dividend, source = 'israeli', foreignWithheldPct = 0, ownershipPct = 100 }) {
     const CORP_RATE     = 0.23;

@@ -1,7 +1,7 @@
 /* Service worker for the ZW Tax app (tax.zw-co.com).
  *
  * Strategy: NETWORK-FIRST for everything. Tax figures must never be served
- * stale while the network is available — the cache exists only as an offline
+ * stale while the network is available - the cache exists only as an offline
  * fallback. This was a security-review decision; do not switch to
  * cache-first.
  *
@@ -14,7 +14,7 @@
 var KILL_SWITCH = false;
 
 /* Bumping the version drops the old cache on activate. Not needed for
- * content freshness (network-first handles that) — bump only if the cached
+ * content freshness (network-first handles that) - bump only if the cached
  * URL set changes shape or a corrupt-cache reset is ever needed. */
 var CACHE_NAME = 'zwco-app-v1';
 
@@ -40,7 +40,7 @@ self.addEventListener('install', function (event) {
   event.waitUntil(
     caches.open(CACHE_NAME).then(function (cache) {
       /* Seed one-by-one: a single failed fetch must not abort the whole
-       * install — anything missed here gets picked up by runtime caching. */
+       * install - anything missed here gets picked up by runtime caching. */
       return Promise.all(PRECACHE.map(function (url) {
         return cache.add(url).catch(function () {});
       }));
@@ -63,7 +63,7 @@ self.addEventListener('activate', function (event) {
 });
 
 /* Internal links use the .html form, but the cache holds the extensionless
- * form the 308 resolves to — map one onto the other for offline matching. */
+ * form the 308 resolves to - map one onto the other for offline matching. */
 function extensionlessPath(request) {
   var path = new URL(request.url).pathname;
   if (path.slice(-11) === '/index.html') path = path.slice(0, -10);
@@ -81,7 +81,7 @@ self.addEventListener('fetch', function (event) {
     fetch(request).then(function (response) {
       /* Navigations carry redirect mode "manual": the 308 for a .html URL
        * arrives as an opaqueredirect that must be passed through untouched
-       * for the browser to follow — it fails every condition below, and the
+       * for the browser to follow - it fails every condition below, and the
        * follow-up extensionless request is what gets cached. */
       if (response && response.ok && response.type === 'basic' && !response.redirected) {
         var copy = response.clone();

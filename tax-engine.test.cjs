@@ -1,5 +1,5 @@
 // ─────────────────────────────────────────────────────────────────────────
-// tax-engine.test.cjs — characterization / regression baseline for tax-engine.js
+// tax-engine.test.cjs - characterization / regression baseline for tax-engine.js
 //
 //   node tax-engine.test.cjs
 //
@@ -10,11 +10,11 @@
 //     baseline in tax-engine.baseline.json (created on first run). On later runs,
 //     any drift from that snapshot is reported as DRIFT. Re-baseline by deleting
 //     the json.
-//   • This is a GOLDEN-MASTER of "what the engine does today" — NOT a claim that
+//   • This is a GOLDEN-MASTER of "what the engine does today" - NOT a claim that
 //     the numbers are tax-correct. Fill the EXPECT slots below with hand-verified
 //     figures to additionally assert correctness; mismatches between the engine
 //     and your EXPECT value are reported separately.
-//   • Pure functions only — no DOM, no jsdom.
+//   • Pure functions only - no DOM, no jsdom.
 // ─────────────────────────────────────────────────────────────────────────
 
 const fs   = require('fs');
@@ -57,7 +57,7 @@ function norm(v) {
 //   independent calc from the confirmed annual brackets and matched the
 //   engine exactly.
 //
-//   TWO PREVIOUSLY OMITTED CASES — now resolved (see chat):
+//   TWO PREVIOUSLY OMITTED CASES - now resolved (see chat):
 //   • residential | gross>2*C_EXEMPT | no other | OVER60
 //       Fixed in the engine: above 2x the ceiling the standard exemption is fully
 //       phased out, so Track A now equals the progressive track (Track C = 29392,
@@ -892,7 +892,7 @@ for (const inc of [0, 50000, 84120, 269280, 269281, 400000, 560280, 700000])
 for (const inc of [0, 50000, 84120, 200000, 269280, 560280, 700000])
   add('calcTaxActive', `income ${inc}`, calcTaxActive(inc));
 
-// ===== computeTracks — RESIDENTIAL =====
+// ===== computeTracks - RESIDENTIAL =====
 add('computeTracks', 'residential | gross<C_EXEMPT | no other | under60',
   computeTracks({ grossAnnual: 50000, isResidential: true }));
 add('computeTracks', 'residential | gross=C_EXEMPT | no other | under60',
@@ -914,7 +914,7 @@ add('computeTracks', 'residential | gross>2*C_EXEMPT | no other | OVER60',
 add('computeTracks', 'residential | gross>C_EXEMPT | expenses 40k | under60',
   computeTracks({ grossAnnual: 100000, annualExpenses: 40000, isResidential: true }));
 
-// ===== computeTracks — COMMERCIAL (Tracks A & B must be null) =====
+// ===== computeTracks - COMMERCIAL (Tracks A & B must be null) =====
 add('computeTracks', 'commercial | gross>C_EXEMPT | no other | under60',
   computeTracks({ grossAnnual: 100000, isResidential: false }));
 add('computeTracks', 'commercial | gross>C_EXEMPT | other 600k | under60',
@@ -934,7 +934,7 @@ add('linearSplit',   'cutoff before purchase (ignored)', sp(linearSplit(800000, 
 add('linearSplit',   'sale before purchase → []', sp(linearSplit(800000, D(2020,1,1), D(2010,1,1), [D(2014,1,1)])));
 add('linearSplit',   'same day → []',             sp(linearSplit(800000, D(2014,1,1), D(2014,1,1), [D(2014,1,1)])));
 
-// ===== companyRealEstateCG — flat 23% corporate CG; distribution per rental rules =====
+// ===== companyRealEstateCG - flat 23% corporate CG; distribution per rental rules =====
 //   sale 2.0M / basis 1.0M (no depr/improv/expenses) → nominal gain 1.0M
 add('companyRealEstateCG', 'israeli | sale 2.0M / basis 1.0M | 100% own',
   companyRealEstateCG({ purchasePrice: 1000000, salePrice: 2000000, israeli: true, ownershipPct: 100 }));
@@ -943,7 +943,7 @@ add('companyRealEstateCG', 'israeli | sale 2.0M / basis 1.0M | 50% own',
 add('companyRealEstateCG', 'foreign | sale 2.0M / basis 1.0M',
   companyRealEstateCG({ purchasePrice: 1000000, salePrice: 2000000, israeli: false }));
 
-// ===== companyDividendIsraeli — Israeli company receiving a dividend on shares =====
+// ===== companyDividendIsraeli - Israeli company receiving a dividend on shares =====
 //   domestic (§126(b) 0% corporate) vs foreign (§126(c) 23% with direct FTC), then
 //   §125B 30% on distribution to a substantial individual shareholder
 add('companyDividendIsraeli', 'domestic | dividend 100k | own 100%',
@@ -955,7 +955,7 @@ add('companyDividendIsraeli', 'foreign | 100k | withholding 15% | own 100%',
 add('companyDividendIsraeli', 'foreign | 100k | withholding 30% | own 100%',
   companyDividendIsraeli({ dividend: 100000, source: 'foreign', foreignWithheldPct: 30, ownershipPct: 100 }));
 
-// ===== interestIndividual — §125C individual interest (amount 100k) =====
+// ===== interestIndividual - §125C individual interest (amount 100k) =====
 //   one case per branch; modeled:false on the Israeli-resident foreign-source ASSUMPTION
 add('interestIndividual', 'foreign | israeli-source | other | no treaty',
   interestIndividual({ amount: 100000, residency: 'foreign', source: 'israeli', instrument: 'other' }));
@@ -991,7 +991,7 @@ add('interestIndividual', 'foreign | israeli-source | other | PE-connected',
 add('interestIndividual', 'foreign | foreign-source | PE-connected',
   interestIndividual({ amount: 100000, residency: 'foreign', source: 'foreign', connectedToIsraeliPE: true }));
 
-// ===== cryptoIndividual — §88 individual crypto CG (proceeds 150k, basis 50k → gain 100k) =====
+// ===== cryptoIndividual - §88 individual crypto CG (proceeds 150k, basis 50k → gain 100k) =====
 //   one case per branch; nominal gain only; FTC capped at the Israeli liability
 add('cryptoIndividual', 'foreign | gain 100k',
   cryptoIndividual({ amount: 150000, costBasis: 50000, residency: 'foreign' }));
@@ -1008,7 +1008,7 @@ add('cryptoIndividual', 'oleh | israeli-source (taxed day one)',
 add('cryptoIndividual', 'foreign | underwater (gain floored at 0)',
   cryptoIndividual({ amount: 50000, costBasis: 80000, residency: 'foreign' }));
 
-// ===== section102 — §102 / §3(i) employee equity (NOMINAL gain) =====
+// ===== section102 - §102 / §3(i) employee equity (NOMINAL gain) =====
 //   Branch precedence: 10%-holder → cg early-sale violation → cg (private 25% |
 //   listed split) → income track (+ violation) → non-trustee / §3(i). Marginal
 //   branches stack the employment portion on otherAnnualIncome via the active
@@ -1043,7 +1043,7 @@ add('section102', 'is10PctHolder (cg/private/holdingMet overridden) → 3i_contr
 add('section102', 'gain 0 (proceeds <= exercise) → all zeros, effective 0',
   section102({ saleProceeds: 40000, exercisePrice: 50000, track: 'cg', listedAtGrant: false, holdingMet: true }));
 
-// ===== sharesIndividualCG — §91/§121B individual share CG (NOMINAL gain) =====
+// ===== sharesIndividualCG - §91/§121B individual share CG (NOMINAL gain) =====
 //   proceeds 150k / indexed basis 50k → gain 100k; rate 25% (30% substantial).
 //   Foreign resident exempt on ordinary Israeli shares but taxed on real-estate-
 //   association shares; oleh foreign-source exempt; Israeli resident taxable with a
@@ -1079,7 +1079,7 @@ add('parseDMY', "'31/02/2020' invalid", dmy('31/02/2020'));
 add('parseDMY', "'' empty",             dmy(''));
 add('daysBetween', '01/01/2020 → 31/01/2020', daysBetween(D(2020,1,1), D(2020,1,31)));
 
-// ===== fmt (bonus — NaN behavior flagged in PROBES) =====
+// ===== fmt (bonus - NaN behavior flagged in PROBES) =====
 add('fmt', '1234567', fmt(1234567));
 add('fmt', '0',       fmt(0));
 add('fmt', '-5000',   fmt(-5000));
@@ -1115,7 +1115,7 @@ const show = v => JSON.stringify(v);
 
 console.log('═'.repeat(78));
 console.log(haveBaseline ? 'REGRESSION RUN (comparing to tax-engine.baseline.json)'
-                         : 'BASELINE CAPTURE (first run — creating tax-engine.baseline.json)');
+                         : 'BASELINE CAPTURE (first run - creating tax-engine.baseline.json)');
 console.log('═'.repeat(78));
 
 let lastGroup = '';
@@ -1146,7 +1146,7 @@ for (const c of cases) {
 }
 
 console.log('\n' + '─'.repeat(78));
-console.log('INTERNAL-CONSISTENCY PROBES (observational — see notes in chat):');
+console.log('INTERNAL-CONSISTENCY PROBES (observational - see notes in chat):');
 for (const l of probes()) console.log('  • ' + l);
 
 if (!haveBaseline) {

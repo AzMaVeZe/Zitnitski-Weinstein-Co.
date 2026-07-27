@@ -6,8 +6,8 @@
 
   // Currency fields are capped at 13 integer digits (max ₪9,999,999,999,999):
   // past 2^53 the parseInt/toLocaleString round-trip is inexact and corrupts
-  // the user's own keystrokes. 13 keeps every derived figure — including the
-  // ×12 syncPair mirror — exactly representable.
+  // the user's own keystrokes. 13 keeps every derived figure - including the
+  // ×12 syncPair mirror - exactly representable.
   const MAX_CURRENCY_INT_DIGITS = 13;
 
   // Live thousands-separator formatting for a currency text input; pairs with
@@ -40,8 +40,8 @@
   }
 
   // DD/MM/YYYY input mask for a date text input. Strips the value to digits
-  // (max 8) and re-renders with slashes inserted lazily — only once a digit
-  // exists beyond the day/month group ("15" stays "15"; "156" renders "15/6") —
+  // (max 8) and re-renders with slashes inserted lazily - only once a digit
+  // exists beyond the day/month group ("15" stays "15"; "156" renders "15/6") -
   // so deleting a character never re-inserts what was just removed. Pastes like
   // "15062020" or "15/06/2020" normalize to 15/06/2020. Display-layer only:
   // parsing and validation stay in parseDMY. Calls onInput after normalizing,
@@ -67,7 +67,7 @@
 
   // Classify a DD/MM/YYYY field so calculations can tell "not entered"
   // (allowed) apart from "typed but invalid" (blocks with a message).
-  // UI-layer year sanity floor: parseDMY (frozen — exercised by the locked test
+  // UI-layer year sanity floor: parseDMY (frozen - exercised by the locked test
   // suite) accepts any 4-digit year from 0100, so "15/06/0999" would otherwise
   // compute; years before 1900 are treated as typos and classified invalid,
   // reusing every existing bad-date pathway.
@@ -87,7 +87,7 @@
   }
 
   // Like pn(), but applies `dflt` only when the field is blank/non-numeric.
-  // A genuinely entered 0 is respected — unlike `pn(id) || dflt`, where pn()'s
+  // A genuinely entered 0 is respected - unlike `pn(id) || dflt`, where pn()'s
   // 0-for-blank makes a real 0 (e.g. 0% ownership) collapse to the default.
   function pnOr(id, dflt) {
     const raw = (document.getElementById(id).value || '').replace(/,/g, '').trim();
@@ -104,10 +104,10 @@
   // The mirror write carries the same overflow cap as liveComma: a mirrored
   // product beyond exact integer representation would render corrupted digits,
   // so it writes blank instead (unreachable while sources honor the 13-digit
-  // cap — max mirror is 13 digits ×12 ≈ 1.2e14, well inside 2^53). The cap is
+  // cap - max mirror is 13 digits ×12 ≈ 1.2e14, well inside 2^53). The cap is
   // deliberately NOT a 13-digit test on the mirrored output: the annual mirror
-  // of a maximal 13-digit monthly value legitimately renders 15 digits — still
-  // exact — and the company rental calcs read the annual field, so suppressing
+  // of a maximal 13-digit monthly value legitimately renders 15 digits - still
+  // exact - and the company rental calcs read the annual field, so suppressing
   // it would change computed figures for in-cap inputs.
   function syncPair(monthlyId, annualId) {
     function mirror(fromEl, toId, factor) {
@@ -130,7 +130,7 @@
   // ── Section router ────────────────────────────────────────────────
   function showSection() {
     // Routing data may be absent (direct visit), malformed (corrupted JSON),
-    // or unreadable (storage disabled) — never let that blank the page.
+    // or unreadable (storage disabled) - never let that blank the page.
     let saved     = {};
     let storageOk = true;
     try {
@@ -212,7 +212,7 @@
     // Missing/unreadable Step 1 data → explain, rather than the generic stub text
     if (key === 'fallback' && !storageOk) {
       document.getElementById('fallback_msg').textContent =
-        'We could not read your selections from Step 1 — the session may have expired. Please start again.';
+        'We could not read your selections from Step 1 - the session may have expired. Please start again.';
     }
 
     if      (key === 'Ind_RE_Inc')     initIndividualResidential();
@@ -233,7 +233,7 @@
     else if (key === 'Co_FOR_Shares')  initCoFORShares();
   }
 
-  // ── Individual + Real Estate + Income (Rental) — event wiring ────
+  // ── Individual + Real Estate + Income (Rental) - event wiring ────
   function initIndividualResidential() {
 
     document.getElementById('hasOtherIncome').addEventListener('change', function () {
@@ -315,7 +315,7 @@
       if (fullyExempt) {
         document.getElementById('exemptCard').classList.add('track-recommended');
         document.getElementById('exemptBadge').innerHTML = '<span class="badge badge-recommended">Fully Exempt ✓</span>';
-        document.getElementById('trackVerdict').textContent = 'You are fully exempt on Track A — ₪0 tax owed.';
+        document.getElementById('trackVerdict').textContent = 'You are fully exempt on Track A - ₪0 tax owed.';
         return;
       }
 
@@ -331,7 +331,7 @@
           }
         });
         document.getElementById('trackVerdict').textContent =
-          'Results are within ' + fmt(THRESHOLD) + '/year — review all tracks carefully.';
+          'Results are within ' + fmt(THRESHOLD) + '/year - review all tracks carefully.';
       } else if (cheapest.label === 'Track C') {
         document.getElementById('progCard').classList.add('track-recommended');
         document.getElementById('progBadge').innerHTML = '<span class="badge badge-recommended">Verify after Bituach Leumi ✓</span>';
@@ -341,7 +341,7 @@
         document.getElementById(cheapest.id).classList.add('track-recommended');
         document.getElementById(cheapest.badge).innerHTML = '<span class="badge badge-recommended">Recommended ✓</span>';
         document.getElementById('trackVerdict').textContent =
-          cheapest.label + ' is cheapest at ' + fmt(cheapest.tax) + '/year — saving you ' + fmt(margin) + ' vs. the next best option.';
+          cheapest.label + ' is cheapest at ' + fmt(cheapest.tax) + '/year - saving you ' + fmt(margin) + ' vs. the next best option.';
       }
     }
 
@@ -358,7 +358,7 @@
   // ── Individual + Real Estate + Capital Gain (Residential) ───────
   function initIndCGRes() {
     const FULL_EXEMPTION_CAP = 5008000;
-    const LINEAR_CUTOFF      = new Date(2014, 0, 1);   // 1 Jan 2014 — local midnight, matches parseDMY
+    const LINEAR_CUTOFF      = new Date(2014, 0, 1);   // 1 Jan 2014 - local midnight, matches parseDMY
     const POST_RATE          = 0.25;
     const THRESHOLD          = 500;
 
@@ -391,7 +391,7 @@
       }
       if (sale <= purchase) {
         flagEl.className   = 'cg-flag cg-flag-na';
-        flagEl.textContent = 'Check the dates — sale must be after purchase';
+        flagEl.textContent = 'Check the dates - sale must be after purchase';
         return;
       }
       const months   = (sale.getFullYear() - purchase.getFullYear()) * 12 +
@@ -446,7 +446,7 @@
 
       // Reversed or same-day dates block computation. A computed treatment for a
       // same-day disposal (e.g. full gain at the post-cutoff rate) would be a
-      // tax-math decision requiring tax-AI sign-off — this deliberately blocks instead.
+      // tax-math decision requiring tax-AI sign-off - this deliberately blocks instead.
       if (purchaseDate && saleDate_ && saleDate_ <= purchaseDate) {
         resetCGResCards();
         document.getElementById('cg_res_dateOrderWarn').style.display = '';
@@ -454,7 +454,7 @@
       }
 
       // The sale date prefills to today, so it is only empty if the user
-      // actively cleared it — prompt for it instead of computing silently.
+      // actively cleared it - prompt for it instead of computing silently.
       const noPurchase = !purchaseDate;
       const noSale     = !saleDate_;
       if (noSale) {
@@ -476,7 +476,7 @@
         });
         document.getElementById('cg_res_A_effective').textContent = '0.0%';
         document.getElementById('cg_res_B_effective').textContent = '0.0%';
-        document.getElementById('cg_res_verdict').textContent     = 'No taxable gain — no capital gains tax owed on either track.';
+        document.getElementById('cg_res_verdict').textContent     = 'No taxable gain - no capital gains tax owed on either track.';
         return;
       }
 
@@ -491,7 +491,7 @@
 
       const ineligibleReasons = [];
       if (!onlyApt)      ineligibleReasons.push('only-apartment box not checked');
-      if (noPurchase)    ineligibleReasons.push('purchase date not entered — holding period unknown');
+      if (noPurchase)    ineligibleReasons.push('purchase date not entered - holding period unknown');
       else if (!owned18) ineligibleReasons.push('held < 18 months');
       if (!foreignOK)    ineligibleReasons.push('home-country certificate not confirmed');
       const ineligible = !eligible;
@@ -515,7 +515,7 @@
             : [{ gain: taxableGainA }];
           const postGain = periods.length > 1 ? periods[periods.length - 1].gain : taxableGainA;
           taxA        = postGain * POST_RATE;
-          partialNote = 'Proportional estimate — only the gain attributable to the sale price above ₪5,008,000 is taxed at 25%.';
+          partialNote = 'Proportional estimate - only the gain attributable to the sale price above ₪5,008,000 is taxed at 25%.';
         }
       }
 
@@ -538,7 +538,7 @@
       document.getElementById('cg_res_noDateWarn').style.display = noPurchase ? '' : 'none';
 
       document.getElementById('cg_res_gainDisplay').textContent =
-        fmt(gain) + ' (nominal — inflation indexing not applied)';
+        fmt(gain) + ' (nominal - inflation indexing not applied)';
 
       // Track A display
       if (ineligible) {
@@ -581,7 +581,7 @@
         document.getElementById('cg_res_A_badge').innerHTML =
           '<span class="badge badge-recommended">Fully Exempt ✓</span>';
         document.getElementById('cg_res_verdict').textContent =
-          'Track A gives full exemption — ₪0 total tax.'
+          'Track A gives full exemption - ₪0 total tax.'
           + ' Consider Track B if you plan to sell a higher-value property within the next 18 months, '
           + 'as using the exemption now forfeits it for that future sale.';
         return;
@@ -594,7 +594,7 @@
             '<span class="badge badge-close">Too close to call</span>';
         });
         document.getElementById('cg_res_verdict').textContent =
-          'Results are within ' + fmt(THRESHOLD) + ' — either track is reasonable. '
+          'Results are within ' + fmt(THRESHOLD) + ' - either track is reasonable. '
           + 'Track B also preserves your single-home exemption for a future, higher-value sale.';
       } else if (totalA < totalB) {
         document.getElementById('cg_res_A_card').classList.add('track-recommended');
@@ -604,15 +604,15 @@
           '<span class="badge badge-close">Saves exemption</span>';
         document.getElementById('cg_res_verdict').textContent =
           'Track A saves ' + fmt(totalB - totalA)
-          + ' — total ' + fmt(totalA) + ' vs ' + fmt(totalB) + ' on Track B. '
-          + 'Track B preserves your single-home exemption for a future, higher-value sale — consider which matters more.';
+          + ' - total ' + fmt(totalA) + ' vs ' + fmt(totalB) + ' on Track B. '
+          + 'Track B preserves your single-home exemption for a future, higher-value sale - consider which matters more.';
       } else {
         document.getElementById('cg_res_B_card').classList.add('track-recommended');
         document.getElementById('cg_res_B_badge').innerHTML =
           '<span class="badge badge-recommended">Lower total + saves exemption ✓</span>';
         document.getElementById('cg_res_verdict').textContent =
           'Track B is cheaper by ' + fmt(totalA - totalB)
-          + ' — total ' + fmt(totalB) + ' vs ' + fmt(totalA) + ' on Track A — and also preserves your single-home exemption.';
+          + ' - total ' + fmt(totalB) + ' vs ' + fmt(totalA) + ' on Track A - and also preserves your single-home exemption.';
       }
     }
 
@@ -636,9 +636,9 @@
 
   // ── Individual + Real Estate + Capital Gain (Commercial) ─────────
   function initIndCGCom() {
-    const CUTOFF_2001      = new Date(2001, 10, 7);   // 7 Nov 2001 — local midnight, matches parseDMY
-    const CUTOFF_2012      = new Date(2012, 0, 1);    // 1 Jan 2012 — local midnight
-    const PRE_RATE         = 0.47;   // marginal rate — worst-case when no purchase date
+    const CUTOFF_2001      = new Date(2001, 10, 7);   // 7 Nov 2001 - local midnight, matches parseDMY
+    const CUTOFF_2012      = new Date(2012, 0, 1);    // 1 Jan 2012 - local midnight
+    const PRE_RATE         = 0.47;   // marginal rate - worst-case when no purchase date
     const MID_RATE         = 0.20;   // 7 Nov 2001 – 31 Dec 2011
     const POST_RATE        = 0.25;   // 1 Jan 2012 onward
 
@@ -694,7 +694,7 @@
 
       // Reversed or same-day dates block computation (linearSplit would return []
       // and every bucket would render ₪0). A computed treatment for a same-day
-      // disposal would be a tax-math decision requiring tax-AI sign-off — this
+      // disposal would be a tax-math decision requiring tax-AI sign-off - this
       // deliberately blocks instead.
       if (purchaseDate && saleDate_ && saleDate_ <= purchaseDate) {
         resetComCards();
@@ -703,7 +703,7 @@
       }
 
       // The sale date prefills to today, so it is only empty if the user
-      // actively cleared it — prompt for it instead of computing silently.
+      // actively cleared it - prompt for it instead of computing silently.
       const noPurchase = !purchaseDate;
       const noSale     = !saleDate_;
       if (noSale) {
@@ -728,14 +728,14 @@
           document.getElementById(id).textContent = '—';
         });
         document.getElementById('cg_com_effective').textContent = '0.0%';
-        document.getElementById('cg_com_verdict').textContent   = 'No taxable gain — no capital gains tax owed.';
+        document.getElementById('cg_com_verdict').textContent   = 'No taxable gain - no capital gains tax owed.';
         return;
       }
 
       document.getElementById('cg_com_gainDisplay').textContent =
-        fmt(gain) + ' (nominal — inflation indexing not applied)';
+        fmt(gain) + ' (nominal - inflation indexing not applied)';
 
-      // §48A linear split — or worst-case (full gain at PRE_RATE) if no purchase date
+      // §48A linear split - or worst-case (full gain at PRE_RATE) if no purchase date
       let pre2001 = 0, mid = 0, post = 0;
 
       if (purchaseDate && saleDate_) {
@@ -751,7 +751,7 @@
 
       // Belt-and-braces with the chronology/no-sale guards above: linearSplit only
       // returns [] for a non-positive date range, which is blocked before this
-      // point — but never render a ₪0 split or a garbled "Split: ." verdict if
+      // point - but never render a ₪0 split or a garbled "Split: ." verdict if
       // that invariant is ever broken.
       if (pre2001 + mid + post <= 0) {
         resetComCards();
@@ -777,7 +777,7 @@
 
       // Plain-English summary
       const parts = [];
-      if (pre2001 > 0) parts.push(noPurchase ? 'full gain at 47% (worst case — no purchase date)' : 'pre-2001 at 47%');
+      if (pre2001 > 0) parts.push(noPurchase ? 'full gain at 47% (worst case - no purchase date)' : 'pre-2001 at 47%');
       if (mid     > 0) parts.push('2001–2011 at 20%');
       if (post    > 0) parts.push('post-2012 at 25%');
       document.getElementById('cg_com_verdict').textContent =
@@ -813,7 +813,7 @@
       verdict.textContent = 'Enter a dividend amount above to see estimates.';
     }
 
-    // 2026 figures. Surtax (mas yesef) is not computed here — disclosed in the
+    // 2026 figures. Surtax (mas yesef) is not computed here - disclosed in the
     // disclaimer only, matching the other sections.
     function runSharesCalc() {
       const dividend              = pn('shares_dividend');
@@ -857,7 +857,7 @@
           israeliTax  = rate * dividend;
           totalBurden = israeliTax;
           context = oleh
-            ? 'The 10-year exemption does not apply to Israeli-source dividends — the standard rate applies from day one.'
+            ? 'The 10-year exemption does not apply to Israeli-source dividends - the standard rate applies from day one.'
             : '';
         } else if (oleh) {
           israeliTax  = 0;
@@ -923,14 +923,14 @@
 
     // Branch → plain-English note (no statute numbers); '' means no note shown.
     const NOTE = {
-      foreign_resident_israeli_source: "As a foreign resident, Israel withholds at the statutory rate. A treaty may reduce this, but the reduction isn't automatic — you must apply to the tax authority for a reduced-rate certificate; the full rate is withheld until one issues.",
-      exempt_traded_bond_15D: "Interest on Israeli traded and government bonds is generally exempt for foreign residents — provided the holding isn't through a business you operate in Israel.",
+      foreign_resident_israeli_source: "As a foreign resident, Israel withholds at the statutory rate. A treaty may reduce this, but the reduction isn't automatic - you must apply to the tax authority for a reduced-rate certificate; the full rate is withheld until one issues.",
+      exempt_traded_bond_15D: "Interest on Israeli traded and government bonds is generally exempt for foreign residents - provided the holding isn't through a business you operate in Israel.",
       exempt_fx_deposit: "Interest on a foreign-currency deposit in an Israeli bank is generally exempt for foreign residents who meet the bank-declaration and no-Israeli-partner conditions.",
       foreign_resident_foreign_source: "Foreign-source interest paid to a foreign resident isn't taxed by Israel.",
-      pe_business_profits: "Because this interest is connected to a business you operate in Israel, it's taxed as Israeli business profits rather than at the withholding rate — that calculation isn't covered here.",
+      pe_business_profits: "Because this interest is connected to a business you operate in Israel, it's taxed as Israeli business profits rather than at the withholding rate - that calculation isn't covered here.",
       israeli_resident_unlinked_15: "",
       israeli_resident_linked_25: "",
-      recharacterized_marginal: "The capped rate doesn't apply here, so the interest is taxed at your marginal rate. If you have other Israeli income this may be higher — consult an advisor.",
+      recharacterized_marginal: "The capped rate doesn't apply here, so the interest is taxed at your marginal rate. If you have other Israeli income this may be higher - consult an advisor.",
       oleh_foreign_source_exempt: "Within the 10-year new-immigrant exemption, foreign-source interest is fully exempt from Israeli tax. Tax withheld abroad isn't refundable.",
       israeli_resident_foreign_source: "Israel taxes this foreign-source interest and credits the foreign tax already withheld, so you effectively pay the higher of the two rates.",
       israeli_resident_foreign_source_recharacterized: "Israel taxes this foreign-source interest and credits the foreign tax already withheld, so you effectively pay the higher of the two rates.",
@@ -1001,7 +1001,7 @@
         recharacterize: (foreignSource ? $('intr_recharFOR') : $('intr_recharIL')).checked,
         oleh: $('intr_oleh').checked,
         over60: $('intr_over60').checked,
-        otherAnnualIncome: pn('intr_otherIncome'),   // field is annual NIS — no monthly→annual conversion
+        otherAnnualIncome: pn('intr_otherIncome'),   // field is annual NIS - no monthly→annual conversion
         treatyRatePct: treatyRaw !== '' ? pn('intr_treatyPct') : null,
         foreignWithheldPct: pn('intr_foreignWithheld'),
         connectedToIsraeliPE: $('intr_pe').checked,
@@ -1013,7 +1013,7 @@
       $('intr_verdict').style.display   = 'none';
       $('intr_baseDisplay').textContent = fmt(r.amount);
 
-      // PE-connected: re-sourced to Israeli business profits — not estimated here.
+      // PE-connected: re-sourced to Israeli business profits - not estimated here.
       if (!r.modeled && r.branch === 'pe_business_profits') {
         $('intr_rate').textContent            = '—';
         $('intr_taxDisplay').textContent      = '—';
@@ -1069,10 +1069,10 @@
 
     // Branch → plain-English note (no statute numbers); '' means no note shown.
     const NOTE = {
-      foreign_resident_crypto: "As a foreign resident, Israel taxes the gain on a digital-asset disposal at the standard capital-gains rate. Your country's tax treaty may affect this — consult an advisor.",
+      foreign_resident_crypto: "As a foreign resident, Israel taxes the gain on a digital-asset disposal at the standard capital-gains rate. Your country's tax treaty may affect this - consult an advisor.",
       israeli_resident_crypto: "Israel taxes the gain and credits the foreign tax already paid, so you effectively pay the higher of the two rates.",
       oleh_foreign_source_exempt: "Within the 10-year new-immigrant exemption, gains on foreign-source digital assets are exempt from Israeli tax. Tax paid abroad isn't refundable.",
-      oleh_israeli_source_crypto: "The 10-year exemption doesn't cover Israeli-source gains — the standard rate applies from day one.",
+      oleh_israeli_source_crypto: "The 10-year exemption doesn't cover Israeli-source gains - the standard rate applies from day one.",
     };
 
     const OUTPUT_IDS = [
@@ -1144,7 +1144,7 @@
         $('cryp_taxDisplay').textContent       = fmt(0);
         $('cryp_effectiveDisplay').textContent = '0.0%';
         const note = $('cryp_note');
-        note.textContent   = 'No taxable gain — no capital-gains tax owed on this disposal.';
+        note.textContent   = 'No taxable gain - no capital-gains tax owed on this disposal.';
         note.style.display = '';
         return;
       }
@@ -1180,7 +1180,7 @@
   // Pure DOM/UI layer over sharesIndividualCG(); all rates come from the engine.
   // Shares are capital property: nominal gain (proceeds − INDEXED cost basis) taxed
   // at the capital-gains rate (25%, or 30% for a 10%+ holder). The user supplies an
-  // already-CPI-indexed cost basis — no inflation indexing happens in the engine.
+  // already-CPI-indexed cost basis - no inflation indexing happens in the engine.
   // Foreign residents are exempt on ordinary Israeli shares (taxable on real-estate-
   // association shares); an oleh's foreign-source gain is exempt; an Israeli resident
   // is taxed on any source with an FTC for foreign tax on a foreign-source gain.
@@ -1194,7 +1194,7 @@
       foreign_resident_israeli_shares_exempt: "A foreign resident is generally exempt from Israeli tax on Israeli shares, and most treaties give the taxing right to your country of residence. Confirm your treaty position with an advisor.",
       foreign_resident_israeli_real_estate_assoc: "Because the company's value comes mainly from Israeli real estate, the foreign-resident exemption does not apply and the gain is taxable in Israel.",
       oleh_foreign_source_exempt: "Foreign-company shares fall under the new-immigrant exemption for the qualifying window.",
-      oleh_israeli_source: "The new-immigrant exemption does not cover Israeli-company shares — the gain is taxable from day one of residency.",
+      oleh_israeli_source: "The new-immigrant exemption does not cover Israeli-company shares - the gain is taxable from day one of residency.",
       israeli_resident_shares: "The real gain is taxed at the capital-gains rate.",
     };
 
@@ -1272,7 +1272,7 @@
         $('shcg_taxDisplay').textContent     = fmt(0);
         $('shcg_effectiveDisplay').textContent = '0.0%';
         const note = $('shcg_note');
-        note.textContent   = 'No taxable gain — the proceeds do not exceed your indexed cost basis, so no capital-gains tax is owed.';
+        note.textContent   = 'No taxable gain - the proceeds do not exceed your indexed cost basis, so no capital-gains tax is owed.';
         note.style.display = '';
         return;
       }
@@ -1324,11 +1324,11 @@
     // line is folded into every employment-income branch's text; cg_private is the
     // only employment-free branch and intentionally omits it.
     const NOTE = {
-      cg_private: "Held past the required period in a private company — the whole gain is taxed at the capital-gains rate.",
+      cg_private: "Held past the required period in a private company - the whole gain is taxed at the capital-gains rate.",
       cg_listed_split: "Because the company was listed at grant, the portion up to the pre-grant average is taxed as employment income and only the appreciation above it gets the capital-gains rate.",
-      cg_violation_early_sale: "Sold before the required holding period — the whole gain is reclassified as employment income at marginal rates. National Insurance and health tax also apply.",
+      cg_violation_early_sale: "Sold before the required holding period - the whole gain is reclassified as employment income at marginal rates. National Insurance and health tax also apply.",
       income_track: "On the income track the whole gain is taxed as employment income at marginal rates. National Insurance and health tax also apply.",
-      income_violation_early_sale: "Sold before the required holding period — the whole gain is employment income at marginal rates. National Insurance and health tax also apply.",
+      income_violation_early_sale: "Sold before the required holding period - the whole gain is employment income at marginal rates. National Insurance and health tax also apply.",
       nontrustee: "On a non-trustee arrangement the whole gain is employment income at marginal rates. National Insurance and health tax also apply.",
       '3i': "Outside the 102 tracks, the whole gain is employment income at marginal rates. National Insurance and health tax also apply.",
       '3i_controlling_holder': "A 10%-or-greater holder can't use the 102 tracks, so the whole gain is taxed as employment income at marginal rates. National Insurance and health tax also apply.",
@@ -1410,7 +1410,7 @@
         flagEl.textContent = '✓ Holding period met (' + info.months + ' months)';
       } else {
         flagEl.className = 'cg-flag cg-flag-no';
-        flagEl.textContent = '✗ Not met (' + info.months + ' months — early sale)';
+        flagEl.textContent = '✗ Not met (' + info.months + ' months - early sale)';
       }
     }
 
@@ -1441,7 +1441,7 @@
         $('so_totalTax').textContent           = fmt(0);
         $('so_effectiveDisplay').textContent   = '0.0%';
         const note = $('so_note');
-        note.textContent   = 'No taxable gain — the proceeds do not exceed the exercise price, so no tax is owed.';
+        note.textContent   = 'No taxable gain - the proceeds do not exceed the exercise price, so no tax is owed.';
         note.style.display = '';
         return;
       }
@@ -1454,9 +1454,9 @@
         if (info.dateProblem) {
           resetCard();
           $('so_verdict').textContent = info.dateProblem === 'invalid'
-            ? 'Check the date format — dates must be DD/MM/YYYY (e.g. 15/06/2020).'
+            ? 'Check the date format - dates must be DD/MM/YYYY (e.g. 15/06/2020).'
             : info.dateProblem === 'order'
-              ? 'The sale date is before the grant date — check the dates above.'
+              ? 'The sale date is before the grant date - check the dates above.'
               : 'Enter the grant and sale dates above to determine the holding period.';
           return;
         }
@@ -1503,13 +1503,13 @@
 
       // Listed-at-grant split needs the 30-day pre-grant average to find the
       // employment-income floor. A blank average reads as 0, so the engine puts
-      // the WHOLE gain in the (lower) capital bucket — which would otherwise show
+      // the WHOLE gain in the (lower) capital bucket - which would otherwise show
       // the split note's "taxed as employment income" wording next to ₪0 of it.
       // Replace the note with an actionable prompt until the average is entered.
       const avg30Blank = ($('so_avg30Base').value || '').trim() === '';
       if (r.branch === 'cg_listed_split' && avg30Blank) {
         const note = $('so_note');
-        note.textContent = 'You marked the company as listed at grant but haven’t entered the 30-day pre-grant average — until you do, the entire gain is shown at the capital-gains rate. Enter the average above to split out the employment-income portion.';
+        note.textContent = 'You marked the company as listed at grant but haven’t entered the 30-day pre-grant average - until you do, the entire gain is shown at the capital-gains rate. Enter the average above to split out the employment-income portion.';
         note.style.display = '';
       } else {
         showNote(r.branch);
@@ -1586,12 +1586,12 @@
 
       document.getElementById('coil_reg_netDisplay').textContent = fmt(net);
 
-      // Card 1 — Profits Retained
+      // Card 1 - Profits Retained
       document.getElementById('coil_reg_corpTax').textContent         = fmt(corpTax);
       document.getElementById('coil_reg_afterTax').textContent        = fmt(afterTax);
       document.getElementById('coil_reg_retainEffective').textContent = (CORP_RATE * 100).toFixed(1) + '%';
 
-      // Card 2 — Fully Distributed
+      // Card 2 - Fully Distributed
       document.getElementById('coil_reg_corpTax2').textContent          = fmt(corpTax);
       document.getElementById('coil_reg_divTax').textContent            = fmt(divTax);
       document.getElementById('coil_reg_combined').textContent          = fmt(combined);
@@ -1602,7 +1602,7 @@
       document.getElementById('coil_reg_verdict').textContent =
         'Corporate tax: ' + fmt(corpTax) + ' (23% of net). '
         + 'Full distribution adds ' + fmt(divTax) + ' dividend tax'
-        + ' — total ' + fmt(combined) + ' (' + (combinedEffective * 100).toFixed(1) + '% combined).';
+        + ' - total ' + fmt(combined) + ' (' + (combinedEffective * 100).toFixed(1) + '% combined).';
 
       // Card 1 is always lower current tax; Card 2 shows the cost of access
       ['coil_reg_retainCard','coil_reg_distCard'].forEach(id => {
@@ -1615,7 +1615,7 @@
         '<span class="badge badge-warning">+' + fmt(extraCost) + ' to access funds</span>';
     }
 
-    // ── Transparent path (Family §64A / House §64) — reuses computeTracks ──
+    // ── Transparent path (Family §64A / House §64) - reuses computeTracks ──
     const TR_OUTPUT_IDS = [
       'coil_tr_exemptAnnual','coil_tr_exemptMonthly','coil_tr_exemptEffective',
       'coil_tr_flatAnnual','coil_tr_flatMonthly','coil_tr_flatEffective',
@@ -1670,7 +1670,7 @@
       document.getElementById('coil_tr_attrDisplay').textContent =
         fmt(attrGross) + ' (' + ownershipPct + '% of ' + fmt(grossRent) + ')';
 
-      // ── Tracks A & B — residential only ──
+      // ── Tracks A & B - residential only ──
       if (isResidential) {
         document.getElementById('coil_tr_exemptAnnual').textContent    = fullyExempt ? fmt(0) : fmt(exemptTax);
         document.getElementById('coil_tr_exemptMonthly').textContent   = fullyExempt ? fmt(0) : fmt(exemptTax / 12);
@@ -1686,7 +1686,7 @@
           ['coil_tr_flatAnnual','coil_tr_flatMonthly','coil_tr_flatEffective']);
       }
 
-      // ── Track C — always available ──
+      // ── Track C - always available ──
       document.getElementById('coil_tr_progAnnual').textContent    = fmt(progTotal);
       document.getElementById('coil_tr_progMonthly').textContent   = fmt(progTotal / 12);
       document.getElementById('coil_tr_progEffective').textContent = effPct(progTotal, attrGross);
@@ -1697,7 +1697,7 @@
         document.getElementById('coil_tr_progBadge').innerHTML =
           '<span class="badge badge-recommended">Only available track ✓</span>';
         document.getElementById('coil_tr_verdict').textContent =
-          'Residential-only tracks A & B are unavailable; commercial income must use the progressive track (C) — '
+          'Residential-only tracks A & B are unavailable; commercial income must use the progressive track (C) - '
           + fmt(progTotal) + '/year'
           + '. Factor in potential Bituach Leumi before deciding.';
         return;
@@ -1708,7 +1708,7 @@
         document.getElementById('coil_tr_exemptBadge').innerHTML =
           '<span class="badge badge-recommended">Fully Exempt ✓</span>';
         document.getElementById('coil_tr_verdict').textContent =
-          'Attributed income is fully exempt on Track A — ₪0 tax owed.';
+          'Attributed income is fully exempt on Track A - ₪0 tax owed.';
         return;
       }
 
@@ -1730,7 +1730,7 @@
           }
         });
         document.getElementById('coil_tr_verdict').textContent =
-          'Results are within ' + fmt(THRESHOLD) + '/year — review all tracks carefully.';
+          'Results are within ' + fmt(THRESHOLD) + '/year - review all tracks carefully.';
       } else if (cheapest.label === 'Track C') {
         document.getElementById('coil_tr_progCard').classList.add('track-recommended');
         document.getElementById('coil_tr_progBadge').innerHTML = '<span class="badge badge-recommended">Verify after Bituach Leumi ✓</span>';
@@ -1740,7 +1740,7 @@
         document.getElementById(cheapest.id).classList.add('track-recommended');
         document.getElementById(cheapest.badge).innerHTML = '<span class="badge badge-recommended">Recommended ✓</span>';
         document.getElementById('coil_tr_verdict').textContent =
-          cheapest.label + ' is cheapest at ' + fmt(cheapest.tax) + '/year — saving you ' + fmt(margin) + ' vs. the next best option.';
+          cheapest.label + ' is cheapest at ' + fmt(cheapest.tax) + '/year - saving you ' + fmt(margin) + ' vs. the next best option.';
       }
     }
 
@@ -1769,7 +1769,7 @@
   }
 
   // ── Israeli Company · Real Estate · Capital Gain (Residential = Commercial) ──
-  // One init drives both Co_IL_RE_CG_Res and Co_IL_RE_CG_Com — for a company the
+  // One init drives both Co_IL_RE_CG_Res and Co_IL_RE_CG_Com - for a company the
   // gain is taxed at the flat corporate rate (23%, ITO §126(a)) on the REAL gain
   // with no §48A holding-period split and no residential exemption, so the two
   // sections share this logic and differ only by element-id prefix.
@@ -1809,19 +1809,19 @@
       if (r.gain <= 0) {
         resetCards();
         document.getElementById(p + 'gainDisplay').textContent = fmt(0) + ' (no taxable gain)';
-        document.getElementById(p + 'verdict').textContent     = 'No taxable gain — no capital gains tax owed.';
+        document.getElementById(p + 'verdict').textContent     = 'No taxable gain - no capital gains tax owed.';
         return;
       }
 
       document.getElementById(p + 'gainDisplay').textContent =
-        fmt(r.gain) + ' (nominal — inflation indexing not applied)';
+        fmt(r.gain) + ' (nominal - inflation indexing not applied)';
 
-      // Card 1 — Profits Retained (corporate tax only)
+      // Card 1 - Profits Retained (corporate tax only)
       document.getElementById(p + 'corpTax').textContent         = fmt(r.corpTax);
       document.getElementById(p + 'afterTax').textContent        = fmt(r.afterTax);
       document.getElementById(p + 'retainEffective').textContent = effPct(r.corpTax, r.gain);
 
-      // Card 2 — Fully Distributed (adds the 30% dividend on the after-tax gain)
+      // Card 2 - Fully Distributed (adds the 30% dividend on the after-tax gain)
       document.getElementById(p + 'corpTax2').textContent          = fmt(r.corpTax);
       document.getElementById(p + 'divTax').textContent            = fmt(r.divTax);
       document.getElementById(p + 'combined').textContent          = fmt(r.combined);
@@ -1838,7 +1838,7 @@
       document.getElementById(p + 'verdict').textContent =
         'Corporate tax: ' + fmt(r.corpTax) + ' (23% of the gain). '
         + 'Full distribution adds ' + fmt(r.divTax) + ' dividend tax'
-        + ' — total ' + fmt(r.combined) + ' (' + effPct(r.combined, r.gain) + ' combined).';
+        + ' - total ' + fmt(r.combined) + ' (' + effPct(r.combined, r.gain) + ' combined).';
     }
 
     [p + 'purchasePrice', p + 'salePrice', p + 'acqExpenses', p + 'saleExpenses',
@@ -1898,7 +1898,7 @@
       }
 
       // Withholding basis: 23% of gross, expenses ignored (advance / de facto final tax).
-      // Return basis: 23% of net, floored at zero — the point of filing.
+      // Return basis: 23% of net, floored at zero - the point of filing.
       const base      = basis === 'withholding' ? gross : Math.max(0, gross - expenses);
       const tax       = CORP_RATE * base;
       const effective = gross > 0 ? tax / gross : 0;   // 23% on withholding, lower on a return
@@ -1913,16 +1913,16 @@
 
       if (basis === 'withholding') {
         document.getElementById('cofor_verdict').textContent =
-          'Statutory withholding of ' + fmt(tax) + ' (23% of gross ' + fmt(gross) + ') is deducted at source — an advance that becomes a de facto final tax if no Israeli return is filed. '
+          'Statutory withholding of ' + fmt(tax) + ' (23% of gross ' + fmt(gross) + ') is deducted at source - an advance that becomes a de facto final tax if no Israeli return is filed. '
           + 'Foreign shareholders owe no Israeli dividend tax on distribution, so the combined effective Israeli rate stays ' + (effective * 100).toFixed(1) + '%.';
       } else {
         document.getElementById('cofor_verdict').textContent =
-          'Filing an Israeli return taxes 23% of net (' + fmt(base) + ') — ' + fmt(tax) + ', an effective ' + (effective * 100).toFixed(1) + '% of gross, below the 23% gross withholding. '
+          'Filing an Israeli return taxes 23% of net (' + fmt(base) + ') - ' + fmt(tax) + ', an effective ' + (effective * 100).toFixed(1) + '% of gross, below the 23% gross withholding. '
           + 'Foreign shareholders owe no Israeli dividend tax on distribution, so the combined effective Israeli rate equals the corporate tax shown.';
       }
     }
 
-    // ── Transparent path (House Company) — reuses computeTracks ──
+    // ── Transparent path (House Company) - reuses computeTracks ──
     const COFOR_TR_OUTPUT_IDS = [
       'cofor_tr_exemptAnnual','cofor_tr_exemptMonthly','cofor_tr_exemptEffective',
       'cofor_tr_flatAnnual','cofor_tr_flatMonthly','cofor_tr_flatEffective',
@@ -1979,7 +1979,7 @@
       document.getElementById('cofor_tr_attrDisplay').textContent =
         fmt(attrGross) + ' (' + ownershipPct + '% of ' + fmt(grossRent) + ')';
 
-      // ── Tracks A & B — residential only ──
+      // ── Tracks A & B - residential only ──
       if (isResidential) {
         document.getElementById('cofor_tr_exemptAnnual').textContent    = fullyExempt ? fmt(0) : fmt(exemptTax);
         document.getElementById('cofor_tr_exemptMonthly').textContent   = fullyExempt ? fmt(0) : fmt(exemptTax / 12);
@@ -1995,7 +1995,7 @@
           ['cofor_tr_flatAnnual','cofor_tr_flatMonthly','cofor_tr_flatEffective']);
       }
 
-      // ── Track C — always available ──
+      // ── Track C - always available ──
       document.getElementById('cofor_tr_progAnnual').textContent    = fmt(progTotal);
       document.getElementById('cofor_tr_progMonthly').textContent   = fmt(progTotal / 12);
       document.getElementById('cofor_tr_progEffective').textContent = effPct(progTotal, attrGross);
@@ -2006,7 +2006,7 @@
         document.getElementById('cofor_tr_progBadge').innerHTML =
           '<span class="badge badge-recommended">Only available track ✓</span>';
         document.getElementById('cofor_tr_verdict').textContent =
-          'Residential-only tracks A & B are unavailable; commercial income must use the progressive track (C) — '
+          'Residential-only tracks A & B are unavailable; commercial income must use the progressive track (C) - '
           + fmt(progTotal) + '/year'
           + '. Factor in potential Bituach Leumi before deciding.';
         return;
@@ -2017,7 +2017,7 @@
         document.getElementById('cofor_tr_exemptBadge').innerHTML =
           '<span class="badge badge-recommended">Fully Exempt ✓</span>';
         document.getElementById('cofor_tr_verdict').textContent =
-          'Attributed income is fully exempt on Track A — ₪0 tax owed.';
+          'Attributed income is fully exempt on Track A - ₪0 tax owed.';
         return;
       }
 
@@ -2039,7 +2039,7 @@
           }
         });
         document.getElementById('cofor_tr_verdict').textContent =
-          'Results are within ' + fmt(THRESHOLD) + '/year — review all tracks carefully.';
+          'Results are within ' + fmt(THRESHOLD) + '/year - review all tracks carefully.';
       } else if (cheapest.label === 'Track C') {
         document.getElementById('cofor_tr_progCard').classList.add('track-recommended');
         document.getElementById('cofor_tr_progBadge').innerHTML = '<span class="badge badge-recommended">Verify after Bituach Leumi ✓</span>';
@@ -2049,7 +2049,7 @@
         document.getElementById(cheapest.id).classList.add('track-recommended');
         document.getElementById(cheapest.badge).innerHTML = '<span class="badge badge-recommended">Recommended ✓</span>';
         document.getElementById('cofor_tr_verdict').textContent =
-          cheapest.label + ' is cheapest at ' + fmt(cheapest.tax) + '/year — saving you ' + fmt(margin) + ' vs. the next best option.';
+          cheapest.label + ' is cheapest at ' + fmt(cheapest.tax) + '/year - saving you ' + fmt(margin) + ' vs. the next best option.';
       }
     }
 
@@ -2082,7 +2082,7 @@
   }
 
   // ── Foreign Company · Real Estate · Capital Gain (Residential = Commercial) ──
-  // One init drives both Co_FOR_RE_CG_Res and Co_FOR_RE_CG_Com — a foreign company
+  // One init drives both Co_FOR_RE_CG_Res and Co_FOR_RE_CG_Com - a foreign company
   // pays the flat corporate rate (23%, ITO §126(a)) on the REAL gain with no §48A
   // holding-period split and no residential exemption. There is no second tier:
   // foreign shareholders owe no Israeli dividend tax on distribution, so a single
@@ -2117,14 +2117,14 @@
       if (r.gain <= 0) {
         resetCards();
         document.getElementById(p + 'gainDisplay').textContent = fmt(0) + ' (no taxable gain)';
-        document.getElementById(p + 'verdict').textContent     = 'No taxable gain — no capital gains tax owed.';
+        document.getElementById(p + 'verdict').textContent     = 'No taxable gain - no capital gains tax owed.';
         return;
       }
 
       document.getElementById(p + 'gainDisplay').textContent =
-        fmt(r.gain) + ' (nominal — inflation indexing not applied)';
+        fmt(r.gain) + ' (nominal - inflation indexing not applied)';
 
-      // Single card — Israeli corporate tax on the nominal gain
+      // Single card - Israeli corporate tax on the nominal gain
       document.getElementById(p + 'taxDisplay').textContent       = fmt(r.tax);
       document.getElementById(p + 'effectiveDisplay').textContent = effPct(r.tax, r.gain);
 
@@ -2167,8 +2167,8 @@
 
     // Show the input group for the selected income type, and the foreign-
     // withholding field only for a foreign-source dividend. Clears the hidden
-    // group's values on switch — matching the setGroup pattern used elsewhere
-    // in this file — so a stale figure can never sit behind a hidden field.
+    // group's values on switch - matching the setGroup pattern used elsewhere
+    // in this file - so a stale figure can never sit behind a hidden field.
     // (The engine itself already guards foreignWithheldPct on source==='israeli',
     // so this was not an exploitable calc bug, but clearing keeps the pattern
     // consistent and removes the risk if that guard ever changes.)
@@ -2193,15 +2193,15 @@
     function render(base, companyTax, afterTax, divTax, combined, baseLabel, nominalNote, showFtcNote) {
       document.getElementById('coilsh_baseLabel').textContent   = baseLabel;
       document.getElementById('coilsh_baseDisplay').textContent =
-        fmt(base) + (nominalNote ? ' (nominal — inflation indexing not applied)' : '');
+        fmt(base) + (nominalNote ? ' (nominal - inflation indexing not applied)' : '');
 
-      // Card 1 — Retained in company
+      // Card 1 - Retained in company
       document.getElementById('coilsh_retainRate').textContent      = effPct(companyTax, base);
       document.getElementById('coilsh_companyTax').textContent      = fmt(companyTax);
       document.getElementById('coilsh_afterTax').textContent        = fmt(afterTax);
       document.getElementById('coilsh_retainEffective').textContent = effPct(companyTax, base);
 
-      // Card 2 — Distributed to shareholder
+      // Card 2 - Distributed to shareholder
       document.getElementById('coilsh_companyTax2').textContent       = fmt(companyTax);
       document.getElementById('coilsh_divTax').textContent            = fmt(divTax);
       document.getElementById('coilsh_combined').textContent          = fmt(combined);
@@ -2218,7 +2218,7 @@
 
       document.getElementById('coilsh_verdict').textContent =
         'Company-level tax: ' + fmt(companyTax) + '. Full distribution to the individual shareholder adds '
-        + fmt(divTax) + ' dividend tax — total ' + fmt(combined) + ' (' + effPct(combined, base) + ' combined).';
+        + fmt(divTax) + ' dividend tax - total ' + fmt(combined) + ' (' + effPct(combined, base) + ' combined).';
     }
 
     function runCalc() {
@@ -2246,7 +2246,7 @@
           resetCards();
           document.getElementById('coilsh_baseLabel').textContent   = 'Gain';
           document.getElementById('coilsh_baseDisplay').textContent = fmt(0) + ' (no taxable gain)';
-          document.getElementById('coilsh_verdict').textContent     = 'No taxable gain — no tax owed.';
+          document.getElementById('coilsh_verdict').textContent     = 'No taxable gain - no tax owed.';
           return;
         }
 
@@ -2272,7 +2272,7 @@
   // Israeli-tax card (foreign shareholders owe no Israeli tax on distribution):
   //   • Dividend  → statutory withholding on an Israeli-source dividend to a
   //     foreign resident: 25%, or 30% for a substantial (≥10%) holder. Inlined
-  //     here (matching the individual Shares section) — not an engine helper.
+  //     here (matching the individual Shares section) - not an engine helper.
   //     An optional treaty rate, if entered, shows the reduced figure.
   //   • Capital gain → a foreign resident's gain on Israeli shares is generally
   //     exempt (0%) when the qualifying conditions hold; otherwise 23% on the
@@ -2313,7 +2313,7 @@
       document.getElementById('coforsh_taxDisplay').textContent      = fmt(statutory);
       document.getElementById('coforsh_effectiveDisplay').textContent = effPct(statutory, dividend);
 
-      // Optional treaty override — a treaty is a ceiling, not a floor (CLAUDE.md):
+      // Optional treaty override - a treaty is a ceiling, not a floor (CLAUDE.md):
       // display min(statutory, treaty), so a rate at or above statutory shows the
       // statutory amount, never more.
       const treatyPct  = Math.min(100, Math.max(0, pn('coforsh_treatyPct')));
@@ -2353,7 +2353,7 @@
         resetCard();
         document.getElementById('coforsh_baseLabel').textContent   = 'Gain';
         document.getElementById('coforsh_baseDisplay').textContent = fmt(0) + ' (no taxable gain)';
-        document.getElementById('coforsh_verdict').textContent     = 'No taxable gain — no Israeli tax owed.';
+        document.getElementById('coforsh_verdict').textContent     = 'No taxable gain - no Israeli tax owed.';
         return;
       }
 
@@ -2361,14 +2361,14 @@
       const tax    = exempt ? 0 : corporateForeign({ grossAnnual: gain, annualExpenses: 0 }).tax;
 
       document.getElementById('coforsh_baseLabel').textContent   = 'Gain';
-      document.getElementById('coforsh_baseDisplay').textContent = fmt(gain) + ' (nominal — inflation indexing not applied)';
+      document.getElementById('coforsh_baseDisplay').textContent = fmt(gain) + ' (nominal - inflation indexing not applied)';
       document.getElementById('coforsh_rate').textContent        = exempt ? '0%' : '23%';
       document.getElementById('coforsh_taxLabel').textContent       = 'Israeli tax';
       document.getElementById('coforsh_taxDisplay').textContent      = fmt(tax);
       document.getElementById('coforsh_effectiveDisplay').textContent = effPct(tax, gain);
 
       document.getElementById('coforsh_verdict').textContent = exempt
-        ? 'Exemption applied — a qualifying foreign resident’s gain on Israeli shares is not taxed in Israel (0%).'
+        ? 'Exemption applied - a qualifying foreign resident’s gain on Israeli shares is not taxed in Israel (0%).'
         : 'Israeli tax: ' + fmt(tax) + ' (23% of the gain). Distribution to foreign shareholders is outside Israeli tax.';
     }
 

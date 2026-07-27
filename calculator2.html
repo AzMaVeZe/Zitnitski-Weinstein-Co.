@@ -7,7 +7,7 @@
     // frame-ancestors headers, so this page is embeddable in an iframe from
     // any origin by default. Break out of any frame whose ancestor is not on
     // the allowlist (the firm's own Wix site). Add the confirmed Wix embed
-    // hostname here once known — for now only the firm's own domain is trusted.
+    // hostname here once known - for now only the firm's own domain is trusted.
     (function () {
       try {
         if (window.self === window.top) return;
@@ -25,7 +25,7 @@
           try { allowed = hostAllowed(new URL(document.referrer).hostname); } catch (e) {}
         }
         if (!allowed) { window.top.location = window.self.location.href; return; }
-        // Legitimately embedded — flag it so CSS can drop viewport-relative
+        // Legitimately embedded - flag it so CSS can drop viewport-relative
         // sizing (e.g. body's sticky-footer min-height:100vh) that would
         // otherwise feed back into the iframe auto-resize script below.
         document.documentElement.classList.add('zwco-embedded');
@@ -35,7 +35,7 @@
     })();
   </script>
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta name="description" content="Interactive two-step Israel tax calculator for individuals and companies — real estate, shares, interest, crypto, and stock-option scenarios, by Zitnitski Weinstein &amp; Co." />
+  <meta name="description" content="Interactive two-step Israel tax calculator for individuals and companies - real estate, shares, interest, crypto, and stock-option scenarios, by Zitnitski Weinstein &amp; Co." />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='12' fill='%231a4b8c'/%3E%3Ctext x='32' y='43' font-family='Arial, sans-serif' font-size='26' font-weight='700' fill='white' text-anchor='middle'%3EZW%3C/text%3E%3C/svg%3E" />
   <link rel="manifest" href="manifest.json" />
   <meta name="theme-color" content="#1a4b8c" />
@@ -48,7 +48,7 @@
        ranking signals to Step 1 instead. -->
   <meta name="robots" content="noindex, follow" />
   <link rel="canonical" href="https://tax.zw-co.com/calculator" />
-  <title>Israel Tax Calculator — Step 2 | Zitnitski Weinstein &amp; Co.</title>
+  <title>Israel Tax Calculator - Step 2 | Zitnitski Weinstein &amp; Co.</title>
   <link rel="stylesheet" href="calculator.css" />
 </head>
 <body>
@@ -75,14 +75,14 @@
       <li><a href="index.html">Guide</a></li>
       <li><a href="treaty-rates.html">Treaty Rates</a></li>
       <li><a href="contact.html">Contact</a></li>
-      <!-- Links to Step 1 — the steps bar below carries the step context -->
+      <!-- Links to Step 1 - the steps bar below carries the step context -->
       <li><a href="calculator.html" class="nav-cta" aria-current="page">🧮 Calculator</a></li>
     </ul>
   </div>
 </nav>
 
 <div class="beta-bar" role="note">
-  <strong>Beta version.</strong> This calculator is still under development and may contain errors. Results are indicative estimates only — not tax advice, and not a substitute for a professional calculation. Please verify any figure before relying on it.
+  <strong>Beta version.</strong> This calculator is still under development and may contain errors. Results are indicative estimates only - not tax advice, and not a substitute for a professional calculation. Please verify any figure before relying on it.
 </div>
 
 <header class="hero">
@@ -106,7 +106,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>Individual — Rental Income</h2>
+        <h2>Individual - Rental Income</h2>
         <p>Enter your monthly rental income to see your tax options below.</p>
       </div>
 
@@ -229,7 +229,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>Individual — Residential Capital Gain</h2>
+        <h2>Individual - Residential Capital Gain</h2>
         <p>Enter the details of your property sale to estimate your capital gains tax.</p>
       </div>
 
@@ -294,7 +294,7 @@
         </label>
 
         <div class="foreign-notice">
-          <strong>Note — a second apartment does not always disqualify this track.</strong> Owning an additional apartment does not necessarily rule out the single-home exemption if it is held at a ≤1/3 share, subject to a protected tenancy predating 1997, a replacement apartment acquired within 24 months of this sale, or an apartment received by inheritance meeting the conditions of ITO §49ב(5) — a separate rule that can grant a <em>full</em> exemption on an inherited apartment even where the heir owns other apartments (broadly: the heir is a spouse, descendant, or descendant's spouse of the deceased; the deceased owned only one apartment; and the deceased would have qualified for the exemption). None of these scenarios are modeled by this calculator — if any may apply to you, the "only apartment" checkbox may understate your relief, and Track B's result should not be assumed to be your only option. Consult a tax professional before relying on either track.
+          <strong>Note - a second apartment does not always disqualify this track.</strong> Owning an additional apartment does not necessarily rule out the single-home exemption if it is held at a ≤1/3 share, subject to a protected tenancy predating 1997, a replacement apartment acquired within 24 months of this sale, or an apartment received by inheritance meeting the conditions of ITO §49ב(5) - a separate rule that can grant a <em>full</em> exemption on an inherited apartment even where the heir owns other apartments (broadly: the heir is a spouse, descendant, or descendant's spouse of the deceased; the deceased owned only one apartment; and the deceased would have qualified for the exemption). None of these scenarios are modeled by this calculator - if any may apply to you, the "only apartment" checkbox may understate your relief, and Track B's result should not be assumed to be your only option. Consult a tax professional before relying on either track.
         </div>
 
         <div style="margin-top:.85rem; font-size:.84rem; font-weight:600; color:var(--text)">
@@ -305,7 +305,7 @@
         <!-- Shown only when origin === 'foreign' -->
         <div id="cg_res_foreignNotice" style="display:none">
           <div class="foreign-notice">
-            <strong>Note — Foreign owner:</strong> The single-home capital gains exemption generally requires the seller to own no residential apartment abroad. As a foreign resident, this exemption is typically unavailable unless you hold a qualifying certificate from your home-country tax authority.
+            <strong>Note - Foreign owner:</strong> The single-home capital gains exemption generally requires the seller to own no residential apartment abroad. As a foreign resident, this exemption is typically unavailable unless you hold a qualifying certificate from your home-country tax authority.
           </div>
           <label class="checkbox-row">
             <input type="checkbox" id="cg_res_foreignCert" />
@@ -324,7 +324,7 @@
       </div>
 
       <div id="cg_res_badDateWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
-        <strong>Check the date format.</strong> Dates must be entered as DD/MM/YYYY — for example, 15/06/2020. Results will appear once the dates are valid.
+        <strong>Check the date format.</strong> Dates must be entered as DD/MM/YYYY - for example, 15/06/2020. Results will appear once the dates are valid.
       </div>
 
       <div id="cg_res_dateOrderWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
@@ -332,11 +332,11 @@
       </div>
 
       <div id="cg_res_noSaleWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
-        <strong>Enter the sale date to calculate — it was cleared.</strong>
+        <strong>Enter the sale date to calculate - it was cleared.</strong>
       </div>
 
       <div id="cg_res_noDateWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
-        <strong>Purchase date not entered.</strong> Track A requires a known holding period. Track B assumes the full gain accrued post-2014 (25% rate) — actual tax may be lower if you purchased before 2014.
+        <strong>Purchase date not entered.</strong> Track A requires a known holding period. Track B assumes the full gain accrued post-2014 (25% rate) - actual tax may be lower if you purchased before 2014.
       </div>
 
       <div class="track-cards track-cards-2">
@@ -384,7 +384,7 @@
       </div>
 
       <p class="track-verdict" id="cg_res_verdict"></p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. On a sale price above roughly ₪5.39M, capital gains carry a higher surtax component (up to 5%, versus 3% on other income) that is not included here. They exclude the betterment levy and VAT, and the gain shown is the nominal gain — inflation indexing of the cost basis is not applied. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. On a sale price above roughly ₪5.39M, capital gains carry a higher surtax component (up to 5%, versus 3% on other income) that is not included here. They exclude the betterment levy and VAT, and the gain shown is the nominal gain - inflation indexing of the cost basis is not applied. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div><!-- /Ind_RE_CG_Res -->
@@ -394,7 +394,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>Individual — Commercial Capital Gain</h2>
+        <h2>Individual - Commercial Capital Gain</h2>
         <p>Enter the details of your property sale to estimate your capital gains tax.</p>
       </div>
 
@@ -460,7 +460,7 @@
       </div>
 
       <div id="cg_com_badDateWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
-        <strong>Check the date format.</strong> Dates must be entered as DD/MM/YYYY — for example, 15/06/2020. Results will appear once the dates are valid.
+        <strong>Check the date format.</strong> Dates must be entered as DD/MM/YYYY - for example, 15/06/2020. Results will appear once the dates are valid.
       </div>
 
       <div id="cg_com_dateOrderWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
@@ -468,7 +468,7 @@
       </div>
 
       <div id="cg_com_noSaleWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
-        <strong>Enter the sale date to calculate — it was cleared.</strong>
+        <strong>Enter the sale date to calculate - it was cleared.</strong>
       </div>
 
       <div id="cg_com_noDateWarn" class="foreign-notice" style="display:none; margin-bottom:1rem;">
@@ -489,7 +489,7 @@
           <tbody>
             <tr>
               <td>Before 07/11/2001</td>
-              <td>Marginal — top 47% assumed</td>
+              <td>Marginal - top 47% assumed</td>
               <td id="cg_com_pre2001Gain">—</td>
               <td id="cg_com_pre2001Tax">—</td>
             </tr>
@@ -526,8 +526,8 @@
 
       <p class="track-verdict" id="cg_com_verdict"></p>
       <p class="input-hint" style="margin-top:.75rem">The pre-07/11/2001 slice is legally taxed at your marginal rate (and very old acquisitions may qualify for reduced historical rates); this estimate conservatively assumes the top 47% rate for that slice.</p>
-      <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">Casual sales to a registered dealer may also trigger VAT — verify separately.</p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. They exclude the betterment levy and VAT, and the gain shown is the nominal gain — inflation indexing of the cost basis is not applied. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">Casual sales to a registered dealer may also trigger VAT - verify separately.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. They exclude the betterment levy and VAT, and the gain shown is the nominal gain - inflation indexing of the cost basis is not applied. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div><!-- /Ind_RE_CG_Com -->
@@ -536,7 +536,7 @@
   <div class="calc-section" id="Ind_Shares" style="display:none">
     <div class="card">
       <div class="card-header">
-        <h2>Individual — Dividend Income</h2>
+        <h2>Individual - Dividend Income</h2>
         <p>Enter your annual dividend income and shareholding details below.</p>
       </div>
 
@@ -567,13 +567,13 @@
 
         <!-- Progressive disclosure (like Ind_Interest): shown only for an Israeli
              resident on a foreign-company dividend (the FTC branch); hidden and
-             cleared everywhere else — the engine ignores it in all other branches. -->
+             cleared everywhere else - the engine ignores it in all other branches. -->
         <div class="field" id="shares_fwField" style="display:none">
           <label for="shares_foreignWithheld">Foreign tax withheld (%)</label>
           <div class="income-wrap">
             <input type="number" id="shares_foreignWithheld" min="0" max="100" placeholder="0" style="padding:.65rem .9rem;" />
           </div>
-          <div class="input-hint">Tax already withheld abroad — credited against the Israeli tax (foreign tax credit). The credit is capped at the rate the applicable tax treaty permits that country to withhold — any excess above the treaty ceiling is generally not creditable here.</div>
+          <div class="input-hint">Tax already withheld abroad - credited against the Israeli tax (foreign tax credit). The credit is capped at the rate the applicable tax treaty permits that country to withhold - any excess above the treaty ceiling is generally not creditable here.</div>
         </div>
       </div>
 
@@ -606,7 +606,7 @@
         </div>
       </div>
 
-      <!-- Foreign tax credit breakdown — shown only for an Israeli resident on a foreign-company dividend (not Oleh-exempt) -->
+      <!-- Foreign tax credit breakdown - shown only for an Israeli resident on a foreign-company dividend (not Oleh-exempt) -->
       <div id="shares_ftcBreakdown" style="display:none; flex-direction:column; gap:.5rem; margin-top:1.25rem; background:var(--bg); border:1px solid var(--border); border-radius:8px; padding:1rem 1.25rem;">
         <div class="track-result-row">
           <span class="track-result-label">Gross Israeli tax</span>
@@ -684,7 +684,7 @@
           <div class="income-wrap">
             <input type="number" id="intr_treatyPct" min="0" max="100" placeholder="optional" style="padding:.65rem .9rem;" />
           </div>
-          <div class="input-hint">Optional — a tax treaty caps Israeli withholding. Enter your treaty rate to see the reduced figure. Look up a rate in our <a href="treaty-rates.html" target="_blank" rel="noopener noreferrer">treaty rates table</a>.</div>
+          <div class="input-hint">Optional - a tax treaty caps Israeli withholding. Enter your treaty rate to see the reduced figure. Look up a rate in our <a href="treaty-rates.html" target="_blank" rel="noopener noreferrer">treaty rates table</a>.</div>
         </div>
 
         <!-- Israeli resident + Foreign-source + not oleh: foreign tax withheld -->
@@ -693,7 +693,7 @@
           <div class="income-wrap">
             <input type="number" id="intr_foreignWithheld" min="0" max="100" placeholder="0" style="padding:.65rem .9rem;" />
           </div>
-          <div class="input-hint">Tax already withheld abroad — credited against the Israeli tax (foreign tax credit). The credit is capped at the rate the applicable tax treaty permits that country to withhold — any excess above the treaty ceiling is generally not creditable here.</div>
+          <div class="input-hint">Tax already withheld abroad - credited against the Israeli tax (foreign tax credit). The credit is capped at the rate the applicable tax treaty permits that country to withhold - any excess above the treaty ceiling is generally not creditable here.</div>
         </div>
       </div>
 
@@ -746,7 +746,7 @@
             <span class="income-prefix">₪</span>
             <input type="text" id="intr_otherIncome" inputmode="decimal" placeholder="0" />
           </div>
-          <div class="input-hint">Used only when the capped rate does not apply — has no effect on the 15% / 25% flat-rate branches.</div>
+          <div class="input-hint">Used only when the capped rate does not apply - has no effect on the 15% / 25% flat-rate branches.</div>
         </div>
       </div>
     </div><!-- /card -->
@@ -771,7 +771,7 @@
             <span class="track-result-label">Effective rate</span>
             <span class="track-result-val" id="intr_effectiveDisplay">—</span>
           </div>
-          <div class="input-hint">As a share of the interest amount. Where a foreign tax credit applies, this is the net Israeli tax after the credit — the combined burden appears in the "Total tax paid (foreign + Israeli)" row below.</div>
+          <div class="input-hint">As a share of the interest amount. Where a foreign tax credit applies, this is the net Israeli tax after the credit - the combined burden appears in the "Total tax paid (foreign + Israeli)" row below.</div>
           <div id="intr_treatyRow" style="display:none">
             <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
               <span class="track-result-label">Treaty-reduced withholding</span>
@@ -814,7 +814,7 @@
   <!-- Progressive disclosure (like Ind_Interest): the oleh-source select shows only
        for an oleh, the foreign-tax-credit field only for an Israeli resident. All
        math is delegated to cryptoIndividual(); see initIndCrypto. Crypto is §88
-       capital property — nominal gain only, no inflation indexing. -->
+       capital property - nominal gain only, no inflation indexing. -->
   <div class="calc-section" id="Ind_Crypto" style="display:none">
     <div class="card">
       <div class="card-header">
@@ -865,7 +865,7 @@
             <span class="income-prefix">₪</span>
             <input type="text" id="cryp_foreignWithheld" inputmode="decimal" placeholder="0" />
           </div>
-          <div class="input-hint">Tax already paid abroad — credited against the Israeli tax (foreign tax credit). The credit is capped at the rate the applicable tax treaty permits that country to withhold — any excess above the treaty ceiling is generally not creditable here.</div>
+          <div class="input-hint">Tax already paid abroad - credited against the Israeli tax (foreign tax credit). The credit is capped at the rate the applicable tax treaty permits that country to withhold - any excess above the treaty ceiling is generally not creditable here.</div>
         </div>
       </div>
 
@@ -907,7 +907,7 @@
             <span class="track-result-val" id="cryp_effectiveDisplay">—</span>
           </div>
           <div class="input-hint">As a share of the gain. Includes credited foreign tax where a foreign tax credit applies.</div>
-          <!-- Foreign tax credit breakdown — Israeli resident with foreign tax withheld -->
+          <!-- Foreign tax credit breakdown - Israeli resident with foreign tax withheld -->
           <div id="cryp_ftcRow" style="display:none">
             <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
               <span class="track-result-label">Gross Israeli tax</span>
@@ -931,9 +931,9 @@
 
       <p class="track-verdict" id="cryp_verdict">Enter your proceeds and cost basis above to see estimates.</p>
       <p id="cryp_note" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;"></p>
-      <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Sourcing: the tax authority has not finalized sourcing rules for decentralized assets (wallets, exchanges, chain of custody). The result above reflects your declared source selection — consult a tax advisor to confirm.</p>
-      <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Not computed here: a surtax applies on total income above ₪721,560 — 3% base plus an additional 2% on capital-source income including crypto gains. If your trading activity constitutes a business, gains may be taxed at marginal rates rather than the flat rate shown.</p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. The gain shown is the nominal gain — inflation indexing of the cost basis is not applied. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Sourcing: the tax authority has not finalized sourcing rules for decentralized assets (wallets, exchanges, chain of custody). The result above reflects your declared source selection - consult a tax advisor to confirm.</p>
+      <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Not computed here: a surtax applies on total income above ₪721,560 - 3% base plus an additional 2% on capital-source income including crypto gains. If your trading activity constitutes a business, gains may be taxed at marginal rates rather than the flat rate shown.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. The gain shown is the nominal gain - inflation indexing of the cost basis is not applied. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div>
@@ -942,7 +942,7 @@
   <!-- Progressive disclosure (like Ind_Crypto): the real-estate-association flag
        shows only for a foreign resident selling Israeli shares; the foreign-tax
        field only for an Israeli resident with a foreign-source gain. All math is
-       delegated to sharesIndividualCG(); see initIndSharesCG. NOMINAL gain only —
+       delegated to sharesIndividualCG(); see initIndSharesCG. NOMINAL gain only -
        the user supplies an already-CPI-indexed cost basis (no engine indexing). -->
   <div class="calc-section" id="Ind_Shares_CG" style="display:none">
     <div class="card">
@@ -966,7 +966,7 @@
             <span class="income-prefix">₪</span>
             <input type="text" id="shcg_costBasis" inputmode="decimal" placeholder="e.g. 50,000" />
           </div>
-          <div class="input-hint">Enter your cost basis adjusted for inflation (Israeli CPI) from the purchase date. Share gains are taxed on the real (inflation-adjusted) gain — the inflationary portion since 1994 is exempt. If you enter the raw purchase price instead, the tax shown will be higher than your actual liability. Consult a tax advisor or use the tax authority's indexing tables to compute the adjusted basis.</div>
+          <div class="input-hint">Enter your cost basis adjusted for inflation (Israeli CPI) from the purchase date. Share gains are taxed on the real (inflation-adjusted) gain - the inflationary portion since 1994 is exempt. If you enter the raw purchase price instead, the tax shown will be higher than your actual liability. Consult a tax advisor or use the tax authority's indexing tables to compute the adjusted basis.</div>
         </div>
 
         <div class="field">
@@ -993,7 +993,7 @@
             <span class="income-prefix">₪</span>
             <input type="text" id="shcg_foreignWithheld" inputmode="decimal" placeholder="0" />
           </div>
-          <div class="input-hint">Tax already paid abroad — credited against the Israeli tax (foreign tax credit). The credit is capped at the rate the applicable tax treaty permits that country to withhold — any excess above the treaty ceiling is generally not creditable here.</div>
+          <div class="input-hint">Tax already paid abroad - credited against the Israeli tax (foreign tax credit). The credit is capped at the rate the applicable tax treaty permits that country to withhold - any excess above the treaty ceiling is generally not creditable here.</div>
         </div>
       </div>
 
@@ -1044,7 +1044,7 @@
             <span class="track-result-label">Tax owed</span>
             <span class="track-result-val" id="shcg_taxDisplay">—</span>
           </div>
-          <!-- Foreign tax credit breakdown — Israeli resident with foreign tax paid -->
+          <!-- Foreign tax credit breakdown - Israeli resident with foreign tax paid -->
           <div id="shcg_ftcRow" style="display:none">
             <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
               <span class="track-result-label">Gross Israeli tax</span>
@@ -1074,7 +1074,7 @@
       <p class="track-verdict" id="shcg_verdict">Enter your sale proceeds above to see estimates.</p>
       <p id="shcg_note" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;"></p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Foreign residents and treaty positions: exemptions for foreign residents depend on your country's treaty with Israel and the nature of the company. This tool shows the general domestic position only. Consult a tax advisor.</p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">The capital gain is computed from the indexed cost basis you entered; results are before personal tax credit points (נקודות זיכוי). A surtax applies on total income above ₪721,560 — 5% on the capital-gains portion above the threshold — and is not included above. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">The capital gain is computed from the indexed cost basis you entered; results are before personal tax credit points (נקודות זיכוי). A surtax applies on total income above ₪721,560 - 5% on the capital-gains portion above the threshold - and is not included above. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div>
@@ -1172,7 +1172,7 @@
           <input type="checkbox" id="so_over60" />
           <span>I am over 60</span>
         </label>
-        <div class="input-hint">Age doesn't affect the stock-option tax rate — this option has no effect on the result here.</div>
+        <div class="input-hint">Age doesn't affect the stock-option tax rate - this option has no effect on the result here.</div>
       </div>
 
       <div class="fields">
@@ -1182,7 +1182,7 @@
             <span class="income-prefix">₪</span>
             <input type="text" id="so_otherIncome" inputmode="decimal" placeholder="0" />
           </div>
-          <div class="input-hint">Your annual salary — the gain stacks on top for the marginal-rate portion. Has no effect on the pure 25% capital-gains result.</div>
+          <div class="input-hint">Your annual salary - the gain stacks on top for the marginal-rate portion. Has no effect on the pure 25% capital-gains result.</div>
         </div>
       </div>
     </div><!-- /card -->
@@ -1233,8 +1233,8 @@
       <p class="track-verdict" id="so_verdict">Enter your sale proceeds above to see estimates.</p>
       <p id="so_note" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;"></p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Relocating from Israel: leaving Israeli residency can trigger a deemed sale of unsold shares and unvested options, with the Israeli portion allocated by Israeli vs. foreign workdays during vesting. That allocation isn't computed here. Consult a tax advisor before relocating.</p>
-      <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Spreading the tax (פריסה): the employment-income portion can often be spread backward over several earlier tax years by election, and the capital-gains portion over a shorter window — both can lower the marginal-rate and surtax impact shown above. This isn't computed here. Consult a tax advisor.</p>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי). A surtax applies on total income above ₪721,560 — 5% on the capital-gains portion and 3% on the employment-income portion of any amount above the threshold — and is not included above. National Insurance and health-tax contributions on employment-income portions are not computed. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Spreading the tax (פריסה): the employment-income portion can often be spread backward over several earlier tax years by election, and the capital-gains portion over a shorter window - both can lower the marginal-rate and surtax impact shown above. This isn't computed here. Consult a tax advisor.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי). A surtax applies on total income above ₪721,560 - 5% on the capital-gains portion and 3% on the employment-income portion of any amount above the threshold - and is not included above. National Insurance and health-tax contributions on employment-income portions are not computed. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div>
@@ -1244,7 +1244,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>Israeli Company — Rental Income</h2>
+        <h2>Israeli Company - Rental Income</h2>
         <p>Enter the company's rental income and the representative shareholder's details.</p>
       </div>
 
@@ -1267,7 +1267,7 @@
             <td></td>
             <td>
               <input type="text" inputmode="decimal" id="coil_expenses" placeholder="0" />
-              <div class="input-hint">Maintenance, interest, legal fees, depreciation — not deductible on the 10% flat track</div>
+              <div class="input-hint">Maintenance, interest, legal fees, depreciation - not deductible on the 10% flat track</div>
             </td>
           </tr>
           <tr>
@@ -1291,7 +1291,7 @@
           <div class="income-wrap">
             <input type="number" id="coil_ownershipPct" min="0" max="100" value="100" style="padding:.65rem .9rem;" />
           </div>
-          <div class="input-hint" style="margin-top:.4rem;">Your proportionate share of the company's rental income — relevant for Family and House company attribution</div>
+          <div class="input-hint" style="margin-top:.4rem;">Your proportionate share of the company's rental income - relevant for Family and House company attribution</div>
         </div>
         <div class="field">
           <label for="coil_companyType">Company Type</label>
@@ -1314,8 +1314,8 @@
         <strong style="color:var(--blue);">Classification guide</strong>
         <ol style="margin:.4rem 0 0 1.25rem; display:flex; flex-direction:column; gap:.25rem;">
           <li>No election filed within 3 months of incorporation → <strong>Regular</strong> (23% corporate rate; dividends taxed again at shareholder level).</li>
-          <li>Election made + all shareholders are relatives → <strong>Family</strong> — income attributed to the representative shareholder at individual progressive rates.</li>
-          <li>Election made + unrelated shareholders + 20 or fewer + holds only Israeli real estate → <strong>House</strong> — same attribution; individual tracks A, B, and C all available.</li>
+          <li>Election made + all shareholders are relatives → <strong>Family</strong> - income attributed to the representative shareholder at individual progressive rates.</li>
+          <li>Election made + unrelated shareholders + 20 or fewer + holds only Israeli real estate → <strong>House</strong> - same attribution; individual tracks A, B, and C all available.</li>
         </ol>
       </div>
     </div><!-- /card -->
@@ -1323,7 +1323,7 @@
     <!-- Regular company output sub-div -->
     <div id="coil_output_regular" class="track-section">
       <div class="track-section-header">
-        <h2>Regular Company — Estimated Tax</h2>
+        <h2>Regular Company - Estimated Tax</h2>
         <p>Net rental income: <strong id="coil_reg_netDisplay">—</strong></p>
       </div>
 
@@ -1346,7 +1346,7 @@
             <span class="track-result-val" id="coil_reg_retainEffective">—</span>
           </div>
           <div class="track-badge-area" id="coil_reg_retainBadge"></div>
-          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">This is the floor — corporate tax applies whether or not profits are distributed.</div>
+          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">This is the floor - corporate tax applies whether or not profits are distributed.</div>
         </div>
 
         <div class="track-card" id="coil_reg_distCard">
@@ -1381,7 +1381,7 @@
     <!-- Transparent company output sub-div (Family § 64A / House § 64) -->
     <div id="coil_output_transparent" class="track-section" style="display:none;">
       <div class="track-section-header">
-        <h2>Transparent Company — Which Track Is Better?</h2>
+        <h2>Transparent Company - Which Track Is Better?</h2>
         <p>Rental income is attributed to the representative shareholder at the individual level. Attributed income: <strong id="coil_tr_attrDisplay">—</strong></p>
       </div>
 
@@ -1448,7 +1448,7 @@
       </div>
 
       <p class="track-verdict" id="coil_tr_verdict"></p>
-      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">Because income is taxed at the individual (shareholder) level on attribution, there is <strong>no second-tier dividend tax</strong> on later distributions — unlike a Regular company.</p>
+      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">Because income is taxed at the individual (shareholder) level on attribution, there is <strong>no second-tier dividend tax</strong> on later distributions - unlike a Regular company.</p>
       <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. Income is attributed to the shareholder and taxed once at the individual level. Consult a tax advisor for your exact liability.</p>
     </div>
 
@@ -1457,13 +1457,13 @@
   <!-- ═══ Co_IL_RE_CG_Res: Israeli Company · Real Estate · CG · Residential ══════ -->
   <!-- For a company, residential and commercial CG are computationally identical
        (flat 23% corporate rate on the gain, no holding-period split), so this
-       section and Co_IL_RE_CG_Com share one init (initCoILRECG) — they differ only
+       section and Co_IL_RE_CG_Com share one init (initCoILRECG) - they differ only
        in heading text and element-id prefix (coilcg_res_ / coilcg_com_). -->
   <div class="calc-section" id="Co_IL_RE_CG_Res" style="display:none">
 
     <div class="card">
       <div class="card-header">
-        <h2>Israeli Company — Residential Capital Gain</h2>
+        <h2>Israeli Company - Residential Capital Gain</h2>
         <p>Enter the details of the company's property sale. A company pays the flat corporate rate on the gain regardless of how long it held the property, so no purchase or sale dates are needed.</p>
       </div>
 
@@ -1517,7 +1517,7 @@
           <div class="income-wrap">
             <input type="number" id="coilcg_res_ownershipPct" min="0" max="100" value="100" style="padding:.65rem .9rem;" />
           </div>
-          <div class="input-hint" style="margin-top:.4rem;">The representative shareholder's proportionate share — scales the dividend tax shown on full distribution</div>
+          <div class="input-hint" style="margin-top:.4rem;">The representative shareholder's proportionate share - scales the dividend tax shown on full distribution</div>
         </div>
       </div>
 
@@ -1550,7 +1550,7 @@
             <span class="track-result-val" id="coilcg_res_retainEffective">—</span>
           </div>
           <div class="track-badge-area" id="coilcg_res_retainBadge"></div>
-          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">This is the floor — corporate tax applies whether or not the gain is distributed.</div>
+          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">This is the floor - corporate tax applies whether or not the gain is distributed.</div>
         </div>
 
         <div class="track-card" id="coilcg_res_distCard">
@@ -1579,7 +1579,7 @@
       </div>
 
       <p class="track-verdict" id="coilcg_res_verdict"></p>
-      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the gain whether the property is residential or commercial, and regardless of how long it was held — there is no holding-period split and no residential exemption.</p>
+      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the gain whether the property is residential or commercial, and regardless of how long it was held - there is no holding-period split and no residential exemption.</p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Not computed here: any inflationary portion of the gain that accrued before 1994 is taxed at 10% (inflationary gain accrued from 1994 onward is exempt), and a capital-income surtax may apply above the high-income threshold.</p>
       <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results exclude the betterment levy and VAT, and the gain shown is the nominal gain (inflation indexing is not applied). Figures assume a substantial shareholder (10% or greater holding) at the 30% dividend rate. Consult a tax advisor for your exact liability.</p>
     </div>
@@ -1592,7 +1592,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>Israeli Company — Commercial Capital Gain</h2>
+        <h2>Israeli Company - Commercial Capital Gain</h2>
         <p>Enter the details of the company's property sale. A company pays the flat corporate rate on the gain regardless of how long it held the property, so no purchase or sale dates are needed.</p>
       </div>
 
@@ -1646,7 +1646,7 @@
           <div class="income-wrap">
             <input type="number" id="coilcg_com_ownershipPct" min="0" max="100" value="100" style="padding:.65rem .9rem;" />
           </div>
-          <div class="input-hint" style="margin-top:.4rem;">The representative shareholder's proportionate share — scales the dividend tax shown on full distribution</div>
+          <div class="input-hint" style="margin-top:.4rem;">The representative shareholder's proportionate share - scales the dividend tax shown on full distribution</div>
         </div>
       </div>
 
@@ -1679,7 +1679,7 @@
             <span class="track-result-val" id="coilcg_com_retainEffective">—</span>
           </div>
           <div class="track-badge-area" id="coilcg_com_retainBadge"></div>
-          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">This is the floor — corporate tax applies whether or not the gain is distributed.</div>
+          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">This is the floor - corporate tax applies whether or not the gain is distributed.</div>
         </div>
 
         <div class="track-card" id="coilcg_com_distCard">
@@ -1708,7 +1708,7 @@
       </div>
 
       <p class="track-verdict" id="coilcg_com_verdict"></p>
-      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the gain whether the property is residential or commercial, and regardless of how long it was held — there is no holding-period split and no residential exemption.</p>
+      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the gain whether the property is residential or commercial, and regardless of how long it was held - there is no holding-period split and no residential exemption.</p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Not computed here: any inflationary portion of the gain that accrued before 1994 is taxed at 10% (inflationary gain accrued from 1994 onward is exempt), and a capital-income surtax may apply above the high-income threshold.</p>
       <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results exclude the betterment levy and VAT, and the gain shown is the nominal gain (inflation indexing is not applied). Figures assume a substantial shareholder (10% or greater holding) at the 30% dividend rate. Consult a tax advisor for your exact liability.</p>
     </div>
@@ -1724,7 +1724,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>Israeli Company — Shares</h2>
+        <h2>Israeli Company - Shares</h2>
         <p>Choose whether the company received a dividend on shares it holds, or sold shares at a gain. Enter the figures below.</p>
       </div>
 
@@ -1741,7 +1741,7 @@
           <div class="income-wrap">
             <input type="number" id="coilsh_ownershipPct" min="0" max="100" value="100" style="padding:.65rem .9rem;" />
           </div>
-          <div class="input-hint">The individual shareholder's share — scales the dividend tax shown on full distribution</div>
+          <div class="input-hint">The individual shareholder's share - scales the dividend tax shown on full distribution</div>
         </div>
       </div>
 
@@ -1767,7 +1767,7 @@
             <div class="income-wrap">
               <input type="number" id="coilsh_foreignWithheld" min="0" max="100" placeholder="0" style="padding:.65rem .9rem;" />
             </div>
-            <div class="input-hint">Tax already withheld abroad — credited against the Israeli company tax (direct foreign tax credit). The credit is capped at the rate the applicable tax treaty permits that country to withhold — any excess above the treaty ceiling is generally not creditable here.</div>
+            <div class="input-hint">Tax already withheld abroad - credited against the Israeli company tax (direct foreign tax credit). The credit is capped at the rate the applicable tax treaty permits that country to withhold - any excess above the treaty ceiling is generally not creditable here.</div>
           </div>
         </div>
         <p class="input-hint" style="margin-top:.75rem">A dividend from another Israeli company (out of its Israeli-source income) is excluded from the recipient company's taxable income; a foreign-source dividend is taxed at the corporate rate, less a credit for foreign tax withheld.</p>
@@ -1807,11 +1807,11 @@
             </tr>
           </tbody>
         </table>
-        <p class="input-hint" style="margin-top:.75rem">A regular Israeli company pays the flat corporate rate on the gain — no participation exemption and no substantial-shareholder distinction.</p>
+        <p class="input-hint" style="margin-top:.75rem">A regular Israeli company pays the flat corporate rate on the gain - no participation exemption and no substantial-shareholder distinction.</p>
       </div>
     </div><!-- /card -->
 
-    <!-- Shared output panel — Retained / Distributed -->
+    <!-- Shared output panel - Retained / Distributed -->
     <div class="track-section">
       <div class="track-section-header">
         <h2>Estimated Israeli Company Tax</h2>
@@ -1837,7 +1837,7 @@
             <span class="track-result-val" id="coilsh_retainEffective">—</span>
           </div>
           <div class="track-badge-area" id="coilsh_retainBadge"></div>
-          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">This is the floor — company-level tax applies whether or not the after-tax amount is distributed.</div>
+          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">This is the floor - company-level tax applies whether or not the after-tax amount is distributed.</div>
         </div>
 
         <div class="track-card" id="coilsh_distCard">
@@ -1866,7 +1866,7 @@
       </div>
 
       <p class="track-verdict" id="coilsh_verdict"></p>
-      <p id="coilsh_ftcNote" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">For a foreign dividend, an indirect foreign tax credit election may further reduce the company-level tax by crediting the foreign subsidiary's own underlying corporate tax — not computed here.</p>
+      <p id="coilsh_ftcNote" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">For a foreign dividend, an indirect foreign tax credit election may further reduce the company-level tax by crediting the foreign subsidiary's own underlying corporate tax - not computed here.</p>
       <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. Figures assume distribution to a substantial individual shareholder (10% or greater holding) at the 30% dividend rate. Consult a tax advisor for your exact liability.</p>
     </div>
 
@@ -1877,7 +1877,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>Foreign Company — Rental Income</h2>
+        <h2>Foreign Company - Rental Income</h2>
         <p>Enter the company's rental income and the representative shareholder's details.</p>
       </div>
 
@@ -1900,7 +1900,7 @@
             <td></td>
             <td>
               <input type="text" inputmode="decimal" id="cofor_expenses" placeholder="0" />
-              <div class="input-hint">Maintenance, interest, legal fees, depreciation — not deductible on the 10% flat track</div>
+              <div class="input-hint">Maintenance, interest, legal fees, depreciation - not deductible on the 10% flat track</div>
             </td>
           </tr>
           <tr>
@@ -1931,13 +1931,13 @@
           <div class="income-wrap">
             <input type="number" id="cofor_ownershipPct" min="0" max="100" value="100" style="padding:.65rem .9rem;" />
           </div>
-          <div class="input-hint" style="margin-top:.4rem;">Your proportionate share of the company's rental income — relevant for transparent entity attribution</div>
+          <div class="input-hint" style="margin-top:.4rem;">Your proportionate share of the company's rental income - relevant for transparent entity attribution</div>
         </div>
         <div class="field">
           <label for="cofor_taxBasis">Taxation Basis</label>
           <select id="cofor_taxBasis">
             <option value="withholding">23% withholding on gross (default)</option>
-            <option value="return">File Israeli return — taxed on 23% of net</option>
+            <option value="return">File Israeli return - taxed on 23% of net</option>
           </select>
         </div>
         <div class="field">
@@ -1956,7 +1956,7 @@
       <!-- Regular (non-transparent) foreign-company result -->
       <div id="cofor_output_regular">
         <div class="track-section-header">
-          <h2>Foreign Company — Estimated Tax</h2>
+          <h2>Foreign Company - Estimated Tax</h2>
           <p>Taxed on: <strong id="cofor_baseDisplay">—</strong></p>
         </div>
 
@@ -2001,7 +2001,7 @@
       <!-- Transparent House Company result -->
       <div id="cofor_output_transparent" style="display:none;">
         <div class="track-section-header">
-          <h2>Transparent House Company — Which Track Is Better?</h2>
+          <h2>Transparent House Company - Which Track Is Better?</h2>
           <p>A House Company's rental income is attributed to the individual shareholder and taxed once at the individual level. Attributed income: <strong id="cofor_tr_attrDisplay">—</strong></p>
         </div>
 
@@ -2068,7 +2068,7 @@
         </div>
 
         <p class="track-verdict" id="cofor_tr_verdict"></p>
-        <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">Even on a transparent election, the Israeli payer still <strong>withholds 23% on the gross rent at source</strong> unless the company obtains an exemption certificate from the tax authority — any excess over the track liability shown here is recovered by filing an Israeli return.</p>
+        <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">Even on a transparent election, the Israeli payer still <strong>withholds 23% on the gross rent at source</strong> unless the company obtains an exemption certificate from the tax authority - any excess over the track liability shown here is recovered by filing an Israeli return.</p>
         <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי) and the high-income surtax. Foreign residents do not receive Israeli credit points, so the flat track is often cheaper than the progressive track at higher rents. Consult a tax advisor for your exact liability.</p>
       </div>
 
@@ -2087,7 +2087,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>Foreign Company — Residential Capital Gain</h2>
+        <h2>Foreign Company - Residential Capital Gain</h2>
         <p>Enter the details of the company's property sale. A company pays the flat corporate rate on the gain regardless of how long it held the property, so no purchase or sale dates are needed.</p>
       </div>
 
@@ -2138,7 +2138,7 @@
       <p class="input-hint" style="margin-top:.75rem">Any depreciation previously claimed is recaptured into the gain via the adjusted basis (basis = purchase price − depreciation + improvements).</p>
     </div><!-- /card -->
 
-    <!-- Residential CG output panel — single corporate-tax card -->
+    <!-- Residential CG output panel - single corporate-tax card -->
     <div class="track-section">
       <div class="track-section-header">
         <h2>Estimated Capital Gains Tax</h2>
@@ -2158,12 +2158,12 @@
             <span class="track-result-label">Effective rate on gain</span>
             <span class="track-result-val" id="coforcg_res_effectiveDisplay">—</span>
           </div>
-          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">Distribution to foreign shareholders is outside Israeli tax — no Israeli dividend tax applies, so the combined effective Israeli rate equals the corporate tax shown.</div>
+          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">Distribution to foreign shareholders is outside Israeli tax - no Israeli dividend tax applies, so the combined effective Israeli rate equals the corporate tax shown.</div>
         </div>
       </div>
 
       <p class="track-verdict" id="coforcg_res_verdict"></p>
-      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the gain whether the property is residential or commercial, and regardless of how long it was held — there is no holding-period split and no residential exemption.</p>
+      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the gain whether the property is residential or commercial, and regardless of how long it was held - there is no holding-period split and no residential exemption.</p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Not computed here: any inflationary portion of the gain that accrued before 1994 is taxed at 10% (inflationary gain accrued from 1994 onward is exempt), and a capital-income surtax may apply above the high-income threshold.</p>
       <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results exclude the betterment levy and VAT, and the gain shown is the nominal gain (inflation indexing is not applied). They assume a foreign company taxed on the gain at the corporate rate, with no Israeli dividend tax on distribution to foreign shareholders. Consult a tax advisor for your exact liability.</p>
     </div>
@@ -2176,7 +2176,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>Foreign Company — Commercial Capital Gain</h2>
+        <h2>Foreign Company - Commercial Capital Gain</h2>
         <p>Enter the details of the company's property sale. A company pays the flat corporate rate on the gain regardless of how long it held the property, so no purchase or sale dates are needed.</p>
       </div>
 
@@ -2227,7 +2227,7 @@
       <p class="input-hint" style="margin-top:.75rem">Any depreciation previously claimed is recaptured into the gain via the adjusted basis (basis = purchase price − depreciation + improvements).</p>
     </div><!-- /card -->
 
-    <!-- Commercial CG output panel — single corporate-tax card -->
+    <!-- Commercial CG output panel - single corporate-tax card -->
     <div class="track-section">
       <div class="track-section-header">
         <h2>Estimated Capital Gains Tax</h2>
@@ -2247,12 +2247,12 @@
             <span class="track-result-label">Effective rate on gain</span>
             <span class="track-result-val" id="coforcg_com_effectiveDisplay">—</span>
           </div>
-          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">Distribution to foreign shareholders is outside Israeli tax — no Israeli dividend tax applies, so the combined effective Israeli rate equals the corporate tax shown.</div>
+          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">Distribution to foreign shareholders is outside Israeli tax - no Israeli dividend tax applies, so the combined effective Israeli rate equals the corporate tax shown.</div>
         </div>
       </div>
 
       <p class="track-verdict" id="coforcg_com_verdict"></p>
-      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the gain whether the property is residential or commercial, and regardless of how long it was held — there is no holding-period split and no residential exemption.</p>
+      <p style="font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A company pays the flat corporate rate on the gain whether the property is residential or commercial, and regardless of how long it was held - there is no holding-period split and no residential exemption.</p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Not computed here: any inflationary portion of the gain that accrued before 1994 is taxed at 10% (inflationary gain accrued from 1994 onward is exempt), and a capital-income surtax may apply above the high-income threshold.</p>
       <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results exclude the betterment levy and VAT, and the gain shown is the nominal gain (inflation indexing is not applied). They assume a foreign company taxed on the gain at the corporate rate, with no Israeli dividend tax on distribution to foreign shareholders. Consult a tax advisor for your exact liability.</p>
     </div>
@@ -2268,7 +2268,7 @@
 
     <div class="card">
       <div class="card-header">
-        <h2>Foreign Company — Israeli Shares</h2>
+        <h2>Foreign Company - Israeli Shares</h2>
         <p>Choose whether the foreign company received a dividend from an Israeli company, or sold Israeli shares at a gain.</p>
       </div>
 
@@ -2297,7 +2297,7 @@
             <div class="income-wrap">
               <input type="number" id="coforsh_treatyPct" min="0" max="100" placeholder="optional" style="padding:.65rem .9rem;" />
             </div>
-            <div class="input-hint">Optional — enter your treaty's reduced rate to see the lower withholding. Look up a rate in our <a href="treaty-rates.html" target="_blank" rel="noopener noreferrer">treaty rates table</a>.</div>
+            <div class="input-hint">Optional - enter your treaty's reduced rate to see the lower withholding. Look up a rate in our <a href="treaty-rates.html" target="_blank" rel="noopener noreferrer">treaty rates table</a>.</div>
           </div>
         </div>
         <div class="cg-extras">
@@ -2382,12 +2382,12 @@
               <span class="track-result-val" id="coforsh_treatyEffective">—</span>
             </div>
           </div>
-          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">Distribution to foreign shareholders is outside Israeli tax — no further Israeli tax applies on distribution, so this is the total Israeli tax.</div>
+          <div class="bl-note" style="background:var(--bg); border-color:var(--border); color:var(--muted);">Distribution to foreign shareholders is outside Israeli tax - no further Israeli tax applies on distribution, so this is the total Israeli tax.</div>
         </div>
       </div>
 
       <p class="track-verdict" id="coforsh_verdict"></p>
-      <p id="coforsh_treatyNote" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A treaty commonly reduces the withholding to about 5% for a foreign company holding 10% or more, or about 15% otherwise — the exact rate depends on the specific treaty. Enter it above to see the reduced figure.</p>
+      <p id="coforsh_treatyNote" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">A treaty commonly reduces the withholding to about 5% for a foreign company holding 10% or more, or about 15% otherwise - the exact rate depends on the specific treaty. Enter it above to see the reduced figure.</p>
       <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before the high-income surtax. Treaty relief and the share-gain exemption depend on conditions specific to your facts and treaty. Consult a tax advisor for your exact liability.</p>
     </div>
 
@@ -2403,14 +2403,14 @@
 
   <!-- Shown regardless of which scenario is active, right after its results -->
   <div class="contact-cta">
-    <p>These figures are a starting point — the details of your situation can change the outcome. Zitnitski Weinstein &amp; Co. can walk you through the specifics.</p>
+    <p>These figures are a starting point - the details of your situation can change the outcome. Zitnitski Weinstein &amp; Co. can walk you through the specifics.</p>
     <a href="https://www.zw-co.com/%D7%A6%D7%A8%D7%95-%D7%A7%D7%A9%D7%A8?utm_source=zwco-app&amp;utm_medium=calculator&amp;utm_content=footer-cta" target="_blank" rel="noopener noreferrer" class="cta-btn">Request a consultation →</a>
   </div>
 
 </main>
 
 <!-- Consultation invitation. Shown once per session, and only after the
-     visitor has actually produced a figure — never as an entry interstitial.
+     visitor has actually produced a figure - never as an entry interstitial.
      Carries no personal data: the outbound link passes a scenario slug for
      attribution only, never the amounts entered. -->
 <div class="consult-overlay" id="consultOverlay" data-open="false">
@@ -2422,10 +2422,10 @@
     </p>
     <div class="consult-actions">
       <a href="https://www.zw-co.com/%D7%A6%D7%A8%D7%95-%D7%A7%D7%A9%D7%A8?utm_source=zwco-app&amp;utm_medium=calculator&amp;utm_content=result-modal" target="_blank" rel="noopener noreferrer" class="cta-btn" id="consultCta">Request a consultation →</a>
-      <button type="button" class="consult-dismiss" id="consultDismiss">Not now — keep exploring</button>
+      <button type="button" class="consult-dismiss" id="consultDismiss">Not now - keep exploring</button>
     </div>
     <p class="consult-fineprint">
-      Opens our contact form on zw-co.com. Nothing you entered here is sent to us — your figures stay on this device. Getting in touch does not create an accountant–client relationship, and please don't include confidential details until an engagement is agreed in writing.
+      Opens our contact form on zw-co.com. Nothing you entered here is sent to us - your figures stay on this device. Getting in touch does not create an accountant–client relationship, and please don't include confidential details until an engagement is agreed in writing.
     </p>
   </div>
 </div>
@@ -2447,7 +2447,7 @@
     <a href="index.html#accessibility">Accessibility Statement</a>
     <a href="index.html#privacy">Privacy Notice</a>
   </nav>
-  <p class="footer-legal"><strong>Israel International Tax Guide</strong> — General information only. Not legal or tax advice. Tax rates, brackets, and thresholds reflect the <strong>2026 tax year</strong>, including the 2026 bracket adjustment; figures are subject to change with future legislation.</p>
+  <p class="footer-legal"><strong>Israel International Tax Guide</strong> - General information only. Not legal or tax advice. Tax rates, brackets, and thresholds reflect the <strong>2026 tax year</strong>, including the 2026 bracket adjustment; figures are subject to change with future legislation.</p>
   <p class="footer-copy">© 2026 Zitnitski Weinstein &amp; Co. All rights reserved.</p>
 </footer>
 
@@ -2460,7 +2460,7 @@
   // actually produced a figure: it waits for (a) a real input/change from the
   // user and (b) a populated result value, then pauses briefly so it never
   // interrupts mid-typing. Shown at most once per session (sessionStorage),
-  // so re-running scenarios never nags. Generic by design — it observes the
+  // so re-running scenarios never nags. Generic by design - it observes the
   // shared result classes rather than hooking each of the 17 sections, so
   // adding a section doesn't require touching this.
   (function () {
@@ -2498,7 +2498,7 @@
       shown = true;
       try { sessionStorage.setItem(SEEN_KEY, '1'); } catch (e) {}
 
-      // Scenario slug for attribution only — never the amounts entered.
+      // Scenario slug for attribution only - never the amounts entered.
       var active = document.querySelector('.calc-section:not([style*="display:none"]):not([style*="display: none"])');
       var cta = document.getElementById('consultCta');
       if (active && active.id && active.id !== 'fallback' && cta) {
@@ -2513,7 +2513,7 @@
       overlay.setAttribute('data-open', 'true');
       document.addEventListener('keydown', onKeydown, true);
       var items = focusable();
-      if (items.length) items[items.length - 1].focus();   // "Not now" — least pushy default
+      if (items.length) items[items.length - 1].focus();   // "Not now" - least pushy default
     }
 
     // A result counts as real once a shared output shows something other than
@@ -2548,11 +2548,11 @@
 <script>
   // Report height to an embedding parent (e.g. the firm's Wix site) so an
   // iframe embed can auto-size and avoid a double scrollbar. No-ops outside
-  // a frame — pairs with the frame-ancestor guard in <head>.
+  // a frame - pairs with the frame-ancestor guard in <head>.
   //
   // Measures document.body, not documentElement: per spec, the root
   // element's scrollHeight always floors at the current viewport height,
-  // which — combined with the parent growing the iframe on every report —
+  // which - combined with the parent growing the iframe on every report -
   // creates unbounded feedback growth. body has no such floor (as long as
   // it isn't itself stretched to 100vh; see the .zwco-embedded CSS override
   // for pages with a sticky-footer layout).
@@ -2582,7 +2582,7 @@
 </script>
 
 <script>
-  // Offline support. Registered only over https — service workers are
+  // Offline support. Registered only over https - service workers are
   // unavailable over file:// and the site must keep working there too.
   (function () {
     if (!('serviceWorker' in navigator) || window.location.protocol !== 'https:') return;
