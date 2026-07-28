@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en" data-skin="current">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Recolour Demo | Zitnitski Weinstein &amp; Co.</title>
+
+<!--
+  RECOLOUR DEMO - NOT THE LIVE SITE. Nothing in index.html, calculator*.html,
+  treaty-rates.html or calculator.css is modified by this file.
+
+  This answers a narrower question than the earlier concept did. No structural
+  change: the guide stays a guide, the calculator stays a calculator, the treaty
+  table stays a table. Only two things move - the palette and the typeface.
+
+  It deliberately loads the REAL calculator.css and then overrides only the
+  :root custom properties. So every card, hero, track comparison and table
+  below is the shipping stylesheet; the difference you see when you press the
+  toggle is a variable swap and three font-family lines, nothing else. That is
+  the honest way to judge whether a recolour alone is enough.
+
+  Where the palette comes from: sampling the pixels of assets/zwco-logo-full.png
+  returns four colours - #FFFFFF, #EBF3F5 (the pale square behind the
+  monogram), #10141A (the brush monogram) and #44586F (the CERTIFIED PUBLIC
+  ACCOUNTANTS line). #1a4b8c and #c9a227, which the site is currently built on,
+  appear nowhere in the mark.
+-->
+
+<link rel="stylesheet" href="calculator.css" />
+
+<style>
+  /* ── PROPOSED SKIN ───────────────────────────────────────────────────────
+     Same token NAMES as the live stylesheet, so nothing structural has to
+     change - only their values. --blue is no longer navy but the logo's own
+     slate; --blue-light is literally the logo's ice; --gold becomes the ink,
+     since the brief was no blue and no gold. */
+  html[data-skin="proposed"] {
+    --blue:        #44586F;   /* the logo's "certified public accountants" line */
+    --blue-mid:    #35485C;   /* darker for hover - 9.40:1 with white text     */
+    --blue-deep:   #1B2630;   /* graphite, the hero gradient's far end          */
+    --blue-light:  #EBF3F5;   /* the logo's own pale square                     */
+    --gold:        #10141A;   /* the monogram ink, replacing the gold keyline   */
+    --gold-light:  #F2F6F7;
+    --green:       #1C6B4B;   /* semantic, retuned to sit with slate           */
+    --green-light: #E3F1EA;
+    --amber:       #8A5A16;
+    --amber-light: #F7EEDC;
+    --text:        #10141A;   /* the monogram ink                               */
+    --muted:       #5C6E7E;
+    --border:      #CFD9DE;
+    --bg:          #F6F9FA;
+    /* Shadows go neutral: a blue-tinted shadow under a slate palette reads as
+       a colour cast rather than depth. */
+    --shadow-sm:   0 1px 2px rgba(16,20,26,.05), 0 2px 8px  rgba(16,20,26,.05);
+    --shadow:      0 2px 4px rgba(16,20,26,.05), 0 6px 24px rgba(16,20,26,.08);
+    --shadow-lg:   0 4px 8px rgba(16,20,26,.06), 0 16px 48px rgba(16,20,26,.12);
+  }
+
+  /* Typography. A serif for headings only - it gives the pages a voice without
+     turning them into an essay; everything functional stays sans. Figures get
+     tabular numerals so rate and shekel columns line up, which the current
+     single-sans setup never did. */
+  html[data-skin="proposed"] body {
+    font-family: system-ui, "Segoe UI Variable Text", "Segoe UI", Roboto,
+                 "Helvetica Neue", Arial, sans-serif;
+  }
+  html[data-skin="proposed"] h1,
+  html[data-skin="proposed"] h2,
+  html[data-skin="proposed"] .track-card-name,
+  html[data-skin="proposed"] .demo-h2 {
+    font-family: ui-serif, "Iowan Old Style", Charter, "Palatino Linotype",
+                 Cambria, Georgia, serif;
+    font-weight: 600; letter-spacing: -.01em;
+  }
+  html[data-skin="proposed"] h1 { letter-spacing: -.018em; }
+  html[data-skin="proposed"] .metric-val,
+  html[data-skin="proposed"] .track-result-val,
+  html[data-skin="proposed"] .track-card-rate,
+  html[data-skin="proposed"] .fig,
+  html[data-skin="proposed"] .rate,
+  html[data-skin="proposed"] .bracket-table-wrap td {
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+  }
+
+  /* ── Demo chrome (not part of the proposal) ───────────────────────────── */
+  .demo-bar {
+    position: sticky; top: 0; z-index: 300;
+    background: #10141A; color: #fff; padding: .6rem 1rem;
+    display: flex; flex-wrap: wrap; align-items: center; gap: .75rem;
+    font-size: .82rem;
+  }
+  .demo-bar strong { color: #C9A227; }
+  html[data-skin="proposed"] .demo-bar strong { color: #9FD8C8; }
+  .demo-bar button {
+    margin-left: auto; cursor: pointer; font: inherit; font-weight: 700;
+    background: #fff; color: #10141A; border: 0; border-radius: 6px;
+    padding: .45rem .9rem; min-height: 38px;
+  }
+  .demo-bar button:focus-visible { outline: 3px solid #9FD8C8; outline-offset: 2px; }
+  .demo-note {
+    max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem 0;
+    font-size: .9rem; color: var(--muted);
+  }
+  .demo-label {
+    max-width: 900px; margin: 2.5rem auto .5rem; padding: 0 1rem;
+    font-size: .72rem; font-weight: 700; letter-spacing: .14em;
+    text-transform: uppercase; color: var(--muted);
+    border-top: 1px solid var(--border); padding-top: .9rem;
+  }
+  .swatches { display: flex; flex-wrap: wrap; gap: .6rem; margin-top: .8rem; }
+  .sw { font-size: .68rem; color: var(--muted); text-align: center; }
+  .sw i {
+    display: block; width: 76px; height: 44px; border: 1px solid var(--border);
+    border-radius: 4px; margin-bottom: .25rem;
+  }
+
+  /* Minimal treaty-table styling, copied in so the demo can show that page
+     too - the real rules live inline in treaty-rates.html. Uses the same
+     tokens, so it recolours with everything else. */
+  .t-wrap { background: var(--white); border: 1px solid var(--border);
+            border-radius: 10px; overflow-x: auto; }
+  .t-wrap table { width: 100%; border-collapse: collapse; font-size: .88rem; }
+  .t-wrap thead th { background: var(--blue); color: var(--white);
+    text-align: start; padding: .7rem .9rem; font-size: .82rem; white-space: nowrap; }
+  .t-wrap tbody td { padding: .65rem .9rem; border-top: 1px solid var(--border);
+    vertical-align: top; }
+  .t-wrap tbody tr:nth-child(even) { background: var(--bg); }
+  .t-wrap .country { font-weight: 700; color: var(--blue); white-space: nowrap; }
+  .t-wrap .cond { display: block; font-size: .78rem; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <span>Recolour demo &mdash; structure untouched. Showing: <strong id="skinName">CURRENT</strong></span>
+  <button type="button" id="skinToggle" aria-pressed="false">Switch to proposed palette</button>
+</div>
+
+<p class="demo-note">
+  Press the button to swap the palette and typeface. The markup, the layout and
+  <em>calculator.css</em> itself are identical in both states &mdash; only the
+  <code>:root</code> variables and three font-family lines differ. The proposed
+  values are taken from the firm's own logo: <strong>#10141A</strong> (the brush
+  monogram), <strong>#44586F</strong> (the CERTIFIED PUBLIC ACCOUNTANTS line)
+  and <strong>#EBF3F5</strong> (the pale square behind the monogram). Neither
+  #1a4b8c nor #c9a227 appears anywhere in the mark.
+  <span class="swatches">
+    <span class="sw"><i style="background:#10141A"></i>#10141A</span>
+    <span class="sw"><i style="background:#44586F"></i>#44586F</span>
+    <span class="sw"><i style="background:#EBF3F5"></i>#EBF3F5</span>
+    <span class="sw"><i style="background:#1B2630"></i>#1B2630</span>
+  </span>
+</p>
+
+<!-- ══════════ NAV - real markup, real classes ══════════ -->
+<div class="demo-label">1 &middot; Header and beta strip</div>
+<nav>
+  <div class="nav-inner">
+    <div class="nav-brand-group">
+      <a href="#" class="nav-brand">
+        <img src="assets/zwco-logo-full.png" alt="Zitnitski Weinstein &amp; Co." class="nav-logo" />
+        <span class="nav-title">Israel Tax Guide</span>
+      </a>
+      <span class="beta-badge">Beta</span>
+    </div>
+    <ul class="nav-links">
+      <li><a href="#">Guide</a></li>
+      <li><a href="#">Tax Treaties</a></li>
+      <li><a href="#">Contact</a></li>
+      <li><a href="#" class="nav-cta" aria-current="page">🧮 Calculator</a></li>
+    </ul>
+  </div>
+</nav>
+
+<details class="beta-bar">
+  <summary><strong>Beta version.</strong> <span class="beta-short">Under development - results are indicative estimates, not tax advice.</span></summary>
+  <p>This calculator is still under development and may contain errors. Results are indicative estimates only - not tax advice, and not a substitute for a professional calculation.</p>
+</details>
+
+<!-- ══════════ HERO + STEPS ══════════ -->
+<header class="hero">
+  <h1>Israel Tax Calculator</h1>
+  <p>Answer a few quick questions to see the tax rules that apply to your situation.</p>
+</header>
+
+<div class="steps-bar">
+  <div class="steps-inner">
+    <div class="step active"><span class="step-num">1</span> Classification</div>
+    <span class="step-sep">›</span>
+    <div class="step pending"><span class="step-num">2</span> Calculations</div>
+  </div>
+</div>
+
+<!-- ══════════ STEP 1 CARD ══════════ -->
+<main class="page">
+  <div class="card">
+    <div class="card-header">
+      <h2>Entity &amp; Property Classification</h2>
+      <p>All visible fields are required before you can proceed.</p>
+    </div>
+    <div class="fields">
+      <div class="field">
+        <label for="d1">Entity Type</label>
+        <select id="d1"><option>Individual</option><option>Company (LTD)</option></select>
+      </div>
+      <div class="field">
+        <label for="d2">Tax Residency</label>
+        <select id="d2"><option>Israeli Resident</option><option>Foreign Resident</option></select>
+      </div>
+      <div class="field">
+        <label for="d3">Asset Type</label>
+        <select id="d3"><option>Real Estate</option><option>Shares</option></select>
+      </div>
+      <div class="field">
+        <label for="d4">Purpose</label>
+        <select id="d4"><option>Rental Income</option><option>Capital Gain</option></select>
+      </div>
+    </div>
+    <div class="btn-row"><button class="btn-next">Next →</button></div>
+  </div>
+
+  <!-- ══════════ RESULTS - the comparison, real classes ══════════ -->
+  <div class="demo-label">2 &middot; Results and track comparison</div>
+  <div class="card">
+    <div class="card-header">
+      <h2>Individual - Rental Income</h2>
+      <p>Three routes compared on an annual gross rent of ₪96,000.</p>
+    </div>
+
+    <div class="metrics">
+      <div class="metric">
+        <div class="metric-label">Gross annual rent</div>
+        <div class="metric-val">₪96,000</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Deductible expenses</div>
+        <div class="metric-val">₪8,000</div>
+      </div>
+      <div class="metric">
+        <div class="metric-label">Lowest tax</div>
+        <div class="metric-val accent">₪9,600</div>
+      </div>
+    </div>
+
+    <div class="track-section">
+      <div class="track-cards">
+        <div class="track-card track-recommended">
+          <div class="track-card-name"><span class="track-letter">B</span>Flat Rate</div>
+          <div class="track-card-rate">10%</div>
+          <div class="track-result-row"><span class="track-result-label">Annual tax</span><span class="track-result-val">₪9,600</span></div>
+          <div class="track-result-row"><span class="track-result-label">Monthly equivalent</span><span class="track-result-val">₪800</span></div>
+          <div class="track-result-row"><span class="track-result-label">Effective rate</span><span class="track-result-val">10.00%</span></div>
+          <div class="track-badge-area"><span class="track-badge">Lowest</span></div>
+        </div>
+        <div class="track-card">
+          <div class="track-card-name"><span class="track-letter">A</span>Standard Exemption</div>
+          <div class="track-card-rate">Marginal</div>
+          <div class="track-result-row"><span class="track-result-label">Annual tax</span><span class="track-result-val">₪14,880</span></div>
+          <div class="track-result-row"><span class="track-result-label">Monthly equivalent</span><span class="track-result-val">₪1,240</span></div>
+          <div class="track-result-row"><span class="track-result-label">Effective rate</span><span class="track-result-val">15.50%</span></div>
+          <div class="track-badge-area"></div>
+        </div>
+        <div class="track-card">
+          <div class="track-card-name"><span class="track-letter">C</span>Progressive</div>
+          <div class="track-card-rate">Ladder</div>
+          <div class="track-result-row"><span class="track-result-label">Annual tax</span><span class="track-result-val">₪28,160</span></div>
+          <div class="track-result-row"><span class="track-result-label">Monthly equivalent</span><span class="track-result-val">₪2,347</span></div>
+          <div class="track-result-row"><span class="track-result-label">Effective rate</span><span class="track-result-val">29.33%</span></div>
+          <div class="track-badge-area"></div>
+        </div>
+      </div>
+      <div class="track-verdict">Track B is cheapest at ₪9,600/year - saving ₪5,280 against the next best option.</div>
+    </div>
+
+    <div class="input-hint" style="margin-top:1rem">
+      Tax already withheld abroad is credited against the Israeli tax. The credit is capped at the rate the applicable treaty permits - look up that country's ceiling in our <a href="treaty-rates.html">tax treaties table</a>.
+    </div>
+  </div>
+
+  <!-- ══════════ BRACKET TABLE ══════════ -->
+  <div class="demo-label">3 &middot; Rate table (2026 brackets)</div>
+  <div class="card">
+    <div class="card-header"><h2>2026 Monthly Brackets</h2></div>
+    <div class="bracket-table-wrap">
+      <table>
+        <thead><tr><th>Monthly income</th><th>Rate</th></tr></thead>
+        <tbody>
+          <tr><td>₪0 – ₪7,010</td><td>10%</td></tr>
+          <tr><td>₪7,011 – ₪10,060</td><td>14%</td></tr>
+          <tr><td>₪10,061 – ₪19,000</td><td>20%</td></tr>
+          <tr><td>₪19,001 – ₪25,100</td><td>31%</td></tr>
+          <tr><td>₪25,101 – ₪46,690</td><td>35%</td></tr>
+          <tr><td>Above ₪46,690</td><td>47%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════ TREATY TABLE ══════════ -->
+  <div class="demo-label">4 &middot; Treaty withholding table</div>
+  <div class="card">
+    <div class="card-header"><h2>Withholding Ceilings</h2></div>
+    <div class="t-wrap">
+      <table>
+        <thead>
+          <tr><th>Country</th><th>Dividends</th><th>Parent co.</th><th>Interest</th><th>Royalties</th></tr>
+        </thead>
+        <tbody>
+          <tr><td class="country">United States</td><td>25%</td><td>12.5%<span class="cond">≥10% voting</span></td><td>17.5%</td><td>15%</td></tr>
+          <tr><td class="country">United Kingdom</td><td>15%</td><td>5%<span class="cond">≥10%, 365 days</span></td><td>10%</td><td>0%</td></tr>
+          <tr><td class="country">Germany</td><td>10%</td><td>5%<span class="cond">≥10% direct</span></td><td>5%</td><td>0%</td></tr>
+          <tr><td class="country">Canada</td><td>15%</td><td>5%<span class="cond">≥25% capital</span></td><td>10%</td><td>10%</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <!-- ══════════ CTA ══════════ -->
+  <div class="demo-label">5 &middot; Consultation prompt</div>
+  <div class="contact-cta">
+    <p>Cross-border situations are rarely standard. If this raised a question about your own position, our international tax team is a message away.</p>
+    <a href="contact.html" class="cta-btn">Request a consultation →</a>
+  </div>
+</main>
+
+<!-- ══════════ FOOTER ══════════ -->
+<div class="demo-label">6 &middot; Footer</div>
+<footer>
+  <a href="#" class="footer-logo-full-link" style="margin-top:0">
+    <img src="assets/zwco-logo-full.png" alt="Zitnitski Weinstein &amp; Co." class="footer-logo-full" />
+  </a>
+  <nav class="footer-links" aria-label="Footer">
+    <a href="#">Zitnitski Weinstein &amp; Co.</a>
+    <a href="#">LinkedIn</a>
+    <a href="#">Disclaimer</a>
+    <a href="#">Accessibility Statement</a>
+    <a href="#">Privacy Notice</a>
+  </nav>
+  <p class="footer-legal"><strong>Israel International Tax Guide</strong> - General information only. Not legal or tax advice.</p>
+  <p class="footer-copy">© 2026 Zitnitski Weinstein &amp; Co. All rights reserved.</p>
+</footer>
+
+<script>
+  // Toggling one attribute on <html> swaps every colour and the typeface,
+  // because the proposed skin only redefines the same custom properties the
+  // shipping stylesheet already reads. Nothing else is touched - which is the
+  // point the demo is making.
+  (function () {
+    var html = document.documentElement;
+    var btn = document.getElementById('skinToggle');
+    var name = document.getElementById('skinName');
+    btn.addEventListener('click', function () {
+      var proposed = html.getAttribute('data-skin') !== 'proposed';
+      html.setAttribute('data-skin', proposed ? 'proposed' : 'current');
+      name.textContent = proposed ? 'PROPOSED (logo colours)' : 'CURRENT';
+      btn.textContent = proposed ? 'Back to current palette' : 'Switch to proposed palette';
+      btn.setAttribute('aria-pressed', String(proposed));
+    });
+  })();
+</script>
+</body>
+</html>
