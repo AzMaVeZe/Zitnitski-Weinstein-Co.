@@ -1447,7 +1447,11 @@
   if (location.hash) {
     const revealTarget = () => {
       const target = openSectionAccordion(location.hash);
-      if (target) target.scrollIntoView({ block: 'center' });
+      // Instant, not smooth. html{scroll-behavior:smooth} would otherwise
+      // animate the ~1,800px down to the footer notices, which is disorienting
+      // for a deep link and, in a page that is not being painted (background
+      // tab), does not move at all - measured stalling at scrollY 0.
+      if (target) target.scrollIntoView({ block: 'center', behavior: 'instant' });
     };
     // Run now: this script sits after the footer, so the target already exists.
     revealTarget();
