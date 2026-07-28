@@ -486,13 +486,18 @@
     function countUp(el) {
       var end = parseInt(el.getAttribute('data-count'), 10);
       var prefix = el.getAttribute('data-prefix') || '';
-      if (reduced) { el.textContent = prefix + end.toLocaleString('en-IL'); return; }
+      var final = prefix + end.toLocaleString('en-IL');
+      if (reduced) { el.textContent = final; return; }
       var t0 = performance.now(), DUR = 300;
       (function tick(t) {
         var p = Math.min(1, (t - t0) / DUR);
         el.textContent = prefix + Math.round(end * (1 - Math.pow(1 - p, 3))).toLocaleString('en-IL');
         if (p < 1) requestAnimationFrame(tick);
       })(t0);
+      // rAF does not fire while a page is not being painted (background tab,
+      // non-compositing embeds). Whatever happens to the animation, the final
+      // figure must land - same lesson as the deep-link opener.
+      setTimeout(function () { el.textContent = final; }, DUR + 80);
     }
 
     btn.addEventListener('click', function () {
