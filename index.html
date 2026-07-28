@@ -598,6 +598,45 @@
       .hero-cta:hover { transform: none; }
     }
 
+    /* ── NOTICES ────────────────────────────────────────────────────────
+       Ranked below the guide, not alongside it: a rule and a quiet label
+       separate the apparatus from the content, and the panels themselves are
+       smaller and flatter so they stop competing with the sections. */
+    .notices-head {
+      max-width: 1100px; margin: 3.5rem auto 0; padding: 0 1.5rem;
+    }
+    .notices-head h2 {
+      font-size: .75rem; font-weight: 700; letter-spacing: .14em;
+      text-transform: uppercase; color: var(--muted);
+      border-top: 1px solid var(--border); padding-top: 1rem;
+    }
+    .section--notice { padding-block: .5rem; background: transparent; }
+    .section--notice .section-acc { box-shadow: none; border-color: var(--border); }
+    .section--notice .summary-title { font-size: 1.02rem; color: var(--text); }
+    .section--notice .section-summary { padding: .85rem 1.15rem; }
+    .section--notice:last-of-type { padding-bottom: 3.5rem; }
+    /* The oversized amber panel inside the disclaimer was sized to carry a
+       whole section; inside a collapsed notice it only needs to be readable. */
+    .section--notice .disclaimer { padding: 1.1rem 1.2rem; font-size: .92rem; }
+    .section--notice .disclaimer-icon { font-size: 1.4rem; }
+    .section--notice .disclaimer h3 { font-size: 1rem; }
+
+    /* ── PHONE ──────────────────────────────────────────────────────────
+       The hero alone filled the first screen, so the guide opened with no
+       guide in view. */
+    @media (max-width: 700px) {
+      .beta-bar { font-size: .78rem; padding: .5rem 1rem; text-align: start; }
+      .hero { padding: 2rem 1.2rem 1.8rem; }
+      .hero h1 { font-size: 1.85rem; line-height: 1.18; }
+      .hero-sub { font-size: .95rem; }
+      .hero-badge { font-size: .68rem; padding: .25rem .7rem; margin-bottom: .7rem; }
+      .hero-ctas { gap: .6rem; }
+      .section { padding-block: 1.75rem; }
+      .section-summary { padding: .9rem 1.1rem; }
+      .summary-title { font-size: 1.1rem; }
+      .notices-head { margin-top: 2rem; }
+    }
+
     /* ── MICRO-POLISH ── */
     ::selection { background: var(--blue-mid); color: var(--white); }
   </style>
@@ -1150,13 +1189,24 @@
 </section>
 
 
-<!-- ── DISCLAIMER ── -->
-<section class="section" id="disclaimer">
+<!-- ── NOTICES ──────────────────────────────────────────────────────────
+     Disclaimer, accessibility and privacy are apparatus, not content. Left in
+     the main run they carried the same weight as the 10-Year Exemption and
+     read as entries in the guide's index. They now sit below a rule, in a
+     quieter group, each collapsed. No wording is removed or softened - the
+     full text of every notice is one tap away. -->
+<div class="notices-head">
+  <div class="container"><h2>Notices</h2></div>
+</div>
+
+<section class="section section--notice" id="disclaimer">
   <div class="container">
-    <div class="section-header reveal">
-      <span class="section-tag">Important Notice</span>
-      <h2>Legal Disclaimer</h2>
-    </div>
+    <details class="section-acc">
+      <summary class="section-summary">
+        <h2 class="summary-title">Legal Disclaimer</h2>
+        <span class="summary-chevron" aria-hidden="true"></span>
+      </summary>
+      <div class="section-acc-body">
     <div class="disclaimer reveal">
       <div class="disclaimer-icon">⚖️</div>
       <div>
@@ -1170,16 +1220,17 @@
         </p>
       </div>
     </div>
+      </div>
+    </details>
   </div>
 </section>
 
 
 <!-- ── ACCESSIBILITY STATEMENT ── -->
-<section class="section" id="accessibility">
+<section class="section section--notice" id="accessibility">
   <div class="container">
     <details class="section-acc">
       <summary class="section-summary">
-        <span class="section-tag">Accessibility</span>
         <h2 class="summary-title">Accessibility Statement</h2>
         <span class="summary-chevron" aria-hidden="true"></span>
       </summary>
@@ -1221,11 +1272,10 @@
      collects nothing itself, because the host (Cloudflare) processes
      visitor IPs/logs. Keep every claim here in sync with the code - the
      "nothing leaves the device" statement is load-bearing. -->
-<section class="section" id="privacy">
+<section class="section section--notice" id="privacy">
   <div class="container">
     <details class="section-acc">
       <summary class="section-summary">
-        <span class="section-tag">Privacy</span>
         <h2 class="summary-title">Privacy Notice</h2>
         <span class="summary-chevron" aria-hidden="true"></span>
       </summary>

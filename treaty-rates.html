@@ -235,12 +235,24 @@
   .hero p  { font-size: .95rem; opacity: .85; max-width: 52rem; margin: 0 auto; }
 
   /* ── Disclaimer banners ── */
-  .disclaimer-banner {
-    background: var(--amber-light); border: 1px solid #fcd34d; color: var(--amber);
-    font-size: .85rem; padding: .8rem 1.2rem; border-radius: 8px;
-    max-width: 72rem; margin: 1.2rem auto 0; text-align: start;
+  /* Notices, collapsed, at the foot of the page. Quiet by default so the
+     rates lead; one tap opens the full text. */
+  .notices {
+    border: 1px solid #fcd34d; background: var(--amber-light);
+    border-radius: 8px; margin-top: 1.5rem; color: #7a4a08;
   }
-  .disclaimer-banner strong { display: block; margin-bottom: .15rem; }
+  .notices summary {
+    cursor: pointer; padding: .7rem 1rem; font-size: .85rem;
+    display: flex; flex-wrap: wrap; align-items: baseline; gap: .5rem;
+  }
+  .notices summary strong { font-weight: 700; }
+  .notices-hint { font-size: .78rem; opacity: .8; }
+  .notices[open] .notices-hint { display: none; }
+  .notices p {
+    font-size: .84rem; line-height: 1.6; padding: 0 1rem 1rem;
+    margin: 0; text-align: start;
+  }
+  .notices p + p { padding-top: .6rem; border-top: 1px solid #fcd34d; }
 
   main { max-width: 72rem; margin: 0 auto; padding: 1.5rem 1.5rem 3rem; }
 
@@ -319,6 +331,58 @@
   .table-wrap::-webkit-scrollbar-thumb { background: #b9c8e0; border-radius: 4px; }
   tbody td { transition: background .15s; }
 
+  /* ── PHONE ─────────────────────────────────────────────────────────────
+     The rates were unreachable here: the table forced min-width 56rem, so on
+     a 390px screen it scrolled sideways and the Country, Dividends and
+     Interest columns sat off-screen entirely. Since the page only ever shows
+     ONE country, the row is a record, not a comparison - so it stacks into
+     label/value pairs instead of scrolling. */
+  @media (max-width: 700px) {
+    .table-wrap { border: 0; background: none; overflow-x: visible; }
+    #ratesTable { min-width: 0; display: block; }
+    #ratesTable thead { position: absolute; width: 1px; height: 1px;
+      overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    #ratesTable tbody, #ratesTable tr { display: block; }
+    #ratesTable tr {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: 10px; overflow: hidden;
+    }
+    #ratesTable td {
+      display: grid; grid-template-columns: 8.5rem 1fr; gap: .75rem;
+      align-items: baseline; padding: .6rem .9rem; border-top: 1px solid var(--border);
+    }
+    #ratesTable td:first-child { border-top: 0; }
+    /* The heading travels with the cell, so every figure stays labelled. */
+    #ratesTable td::before {
+      content: attr(data-label); font-size: .74rem; font-weight: 600;
+      color: var(--muted); line-height: 1.35;
+    }
+    #ratesTable td.country {
+      display: block; background: var(--blue); color: var(--white);
+      font-size: 1.05rem; font-weight: 700; padding: .7rem .9rem;
+    }
+    #ratesTable td.country::before { display: none; }
+    #ratesTable td[colspan] { display: block; }
+    #ratesTable td[colspan]::before { display: none; }
+    .rate { font-size: 1rem; font-weight: 700; }
+    .cond { margin-top: .15rem; }
+
+    /* Chrome was eating the whole first screen: a five-line beta strip, a
+       gradient hero and a disclaimer panel, all before the country selector. */
+    .beta-bar { font-size: .78rem; padding: .5rem 1rem; text-align: start; }
+    header.hero { padding: 1.3rem 1.2rem 1.2rem; text-align: start; }
+    header.hero h1 { font-size: 1.35rem; line-height: 1.25; }
+    header.hero p { font-size: .88rem; margin-top: .4rem; }
+    main { padding: 1rem 1rem 2.5rem; }
+    .controls { gap: .6rem; }
+  }
+  /* Very small screens: the subtitle restates the h1 and the page title
+     already sits in the tab bar, so it earns no room here. */
+  @media (max-width: 430px) {
+    header.hero p { display: none; }
+    #ratesTable td { grid-template-columns: 7rem 1fr; gap: .6rem; }
+  }
+
   /* ── Motion preferences ── */
   @media (prefers-reduced-motion: reduce) {
     html { scroll-behavior: auto; }
@@ -370,13 +434,13 @@
   <span data-i18n="betaBar">This page is still under development and may contain errors. It is a general overview only - not tax advice - and treaty rates are subject to conditions, protocols, and legislative change. Please verify against the binding treaty text before relying on any figure.</span>
 </div>
 
+<!-- The disclaimer that used to sit here has moved to the foot of the page.
+     On a phone it pushed the actual rates more than 1,100px down: the visitor
+     scrolled through three stacked warnings before reaching a single figure.
+     The text is unchanged and still on the page, per the disclaimer rule. -->
 <header class="hero">
   <h1 data-i18n="title">Israel Tax Treaty Withholding Rates</h1>
   <p data-i18n="subtitle">Maximum withholding rates on dividends, interest, and royalties under Israel's income tax treaties - a quick-reference table published by Zitnitski Weinstein &amp; Co.</p>
-  <div class="disclaimer-banner">
-    <strong data-i18n="dTopTitle">⚠️ General overview only - not advice</strong>
-    <span data-i18n="dTopBody">This table presents a general overview of withholding rates. It does not constitute tax advice, a professional opinion, or a substitute for the binding treaty text. It may contain material errors. Treaty rates are subject to conditions, exceptions, protocols, and legislative change. Do not rely on this table without specific professional advice.</span>
-  </div>
 </header>
 
 <main id="main-content">
@@ -402,9 +466,17 @@
     </table>
   </div>
 
-  <p class="under-table-note" data-i18n="dUnderTable">
-    The rates shown are the treaty ceilings as summarized from firm source material; the domestic rate applies where it is lower, and treaty relief is never automatic - a valid certificate from the Israel Tax Authority is generally required. This is a general overview only, may contain material errors, and does not constitute advice or an opinion of any kind. Verify every rate against the official treaty text and current guidance before acting.
-  </p>
+  <!-- Both disclaimers now live here, below the rates, collapsed by default.
+       Nothing has been removed or softened - the full text of each is inside
+       the disclosure, which is open to anyone who taps the summary. -->
+  <details class="notices">
+    <summary>
+      <strong data-i18n="dTopTitle">⚠️ General overview only - not advice</strong>
+      <span class="notices-hint" data-i18n="noticesHint">Tap to read the full notice</span>
+    </summary>
+    <p data-i18n="dTopBody">This table presents a general overview of withholding rates. It does not constitute tax advice, a professional opinion, or a substitute for the binding treaty text. It may contain material errors. Treaty rates are subject to conditions, exceptions, protocols, and legislative change. Do not rely on this table without specific professional advice.</p>
+    <p data-i18n="dUnderTable">The rates shown are the treaty ceilings as summarized from firm source material; the domestic rate applies where it is lower, and treaty relief is never automatic - a valid certificate from the Israel Tax Authority is generally required. This is a general overview only, may contain material errors, and does not constitute advice or an opinion of any kind. Verify every rate against the official treaty text and current guidance before acting.</p>
+  </details>
 </main>
 
 <nav class="app-tabbar" aria-label="App sections">
@@ -435,6 +507,7 @@ const I18N = {
     ariaLinkedIn: 'LinkedIn (opens in a new tab)',
     ariaFacebook: 'Facebook (opens in a new tab)',
     navTreaties: 'Tax Treaties',
+    noticesHint: 'Tap to read the full notice',
     title: 'Israel Tax Treaty Withholding Rates',
     subtitle: "Maximum withholding rates on dividends, interest, and royalties under Israel's income tax treaties - a quick-reference table published by Zitnitski Weinstein & Co.",
     dTopTitle: '⚠️ General overview only - not advice',
@@ -466,6 +539,7 @@ const I18N = {
     ariaLinkedIn: 'לינקדאין (נפתח בלשונית חדשה)',
     ariaFacebook: 'פייסבוק (נפתח בלשונית חדשה)',
     navTreaties: 'אמנות מס',
+    noticesHint: 'הקישו לקריאת ההודעה המלאה',
     title: 'שיעורי ניכוי במקור באמנות המס של ישראל',
     subtitle: 'שיעורי הניכוי במקור המרביים על דיבידנד, ריבית ותמלוגים לפי אמנות המס של ישראל - טבלת עיון מהירה מבית ז\'יטניצקי וינשטין ושות\'.',
     dTopTitle: '⚠️ סקירה כללית בלבד - אין לראות בכך ייעוץ',
@@ -632,14 +706,18 @@ function renderSelected() {
   const c = selectedKey ? COUNTRIES.find(x => x.en === selectedKey) : null;
 
   if (c) {
+    // data-label carries the column heading into each cell so that on a phone
+    // the row can stack into label/value pairs. Only ever one country is
+    // shown, so this is a record rather than a comparison - stacking is the
+    // right call here, where it would be wrong for a multi-row table.
     body.innerHTML = `
       <tr>
-        <td class="country">${c[lang]}</td>
-        <td>${cell(c.divGen)}</td>
-        <td>${cell(c.divParent, c.divCond)}</td>
-        <td>${cell(c.interest, c.intNote)}</td>
-        <td>${cell(c.royalties, c.royNote)}</td>
-        <td>${c.notes && c.notes[lang] ? c.notes[lang] : '—'}</td>
+        <td class="country" data-label="${t('thCountry')}">${c[lang]}</td>
+        <td data-label="${t('thDivGen')}">${cell(c.divGen)}</td>
+        <td data-label="${t('thDivParent')}">${cell(c.divParent, c.divCond)}</td>
+        <td data-label="${t('thInterest')}">${cell(c.interest, c.intNote)}</td>
+        <td data-label="${t('thRoyalties')}">${cell(c.royalties, c.royNote)}</td>
+        <td data-label="${t('thNotes')}">${c.notes && c.notes[lang] ? c.notes[lang] : '—'}</td>
       </tr>`;
   } else if (typed) {
     body.innerHTML = `<tr><td colspan="6" class="no-results">${t('noResults')}</td></tr>`;

@@ -221,6 +221,28 @@
       .nav-logo { height: 28px; }
     }
 
+    /* ── PHONE ─────────────────────────────────────────────────────────
+       On a 390px screen the beta strip, the gradient hero and the steps bar
+       together pushed the first form field below the fold - the visitor
+       reached the calculator without seeing a single input. These trim the
+       chrome rather than the content. */
+    @media (max-width: 700px) {
+      .beta-bar { font-size: .78rem; padding: .5rem 1rem; text-align: start; }
+      .hero { padding: 1.4rem 1.2rem 1.2rem; text-align: start; }
+      .hero h1 { font-size: 1.45rem; line-height: 1.2; }
+      .hero p { font-size: .9rem; margin-top: .35rem; }
+      .steps-bar { padding: .5rem 1rem; }
+      .steps-inner { font-size: .78rem; }
+      .page { padding: 1rem; }
+      .card { padding: 1.1rem 1rem; }
+      .card-header h2 { font-size: 1.15rem; }
+      .card-header p { font-size: .86rem; }
+    }
+    @media (max-width: 430px) {
+      /* The subtitle restates the heading; the tab bar already names the page. */
+      .hero p { display: none; }
+    }
+
     /* BETA NOTICE BAR */
     .beta-bar {
       background: var(--amber-light); border-bottom: 1px solid #fcd34d;
