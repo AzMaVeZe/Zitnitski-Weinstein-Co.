@@ -30,12 +30,16 @@
 <link rel="stylesheet" href="calculator.css" />
 
 <style>
-  /* ── PROPOSED SKIN ───────────────────────────────────────────────────────
+  /* ── PROPOSED PALETTE ────────────────────────────────────────────────────
      Same token NAMES as the live stylesheet, so nothing structural has to
      change - only their values. --blue is no longer navy but the logo's own
      slate; --blue-light is literally the logo's ice; --gold becomes the ink,
-     since the brief was no blue and no gold. */
-  html[data-skin="proposed"] {
+     since the brief was no blue and no gold.
+
+     Applied in BOTH proposed states, so "colours only" and "colours + type"
+     share exactly one palette definition and cannot drift apart. */
+  html[data-skin="colours"],
+  html[data-skin="colours-type"] {
     --blue:        #44586F;   /* the logo's "certified public accountants" line */
     --blue-mid:    #35485C;   /* darker for hover - 9.40:1 with white text     */
     --blue-deep:   #1B2630;   /* graphite, the hero gradient's far end          */
@@ -57,29 +61,28 @@
     --shadow-lg:   0 4px 8px rgba(16,20,26,.06), 0 16px 48px rgba(16,20,26,.12);
   }
 
-  /* Typography. A serif for headings only - it gives the pages a voice without
-     turning them into an essay; everything functional stays sans. Figures get
-     tabular numerals so rate and shekel columns line up, which the current
+  /* ── TYPOGRAPHY - the third state only ───────────────────────────────────
+     Deliberately NOT applied to [data-skin="colours"]. In that state the type
+     is byte-for-byte what ships today, including the numerals, so the palette
+     can be judged on its own without a second variable in play.
+
+     A serif for headings only - it gives the pages a voice without turning
+     them into an essay; everything functional stays sans. Figures get tabular
+     lining numerals so rate and shekel columns align, which the current
      single-sans setup never did. */
-  html[data-skin="proposed"] body {
-    font-family: system-ui, "Segoe UI Variable Text", "Segoe UI", Roboto,
-                 "Helvetica Neue", Arial, sans-serif;
-  }
-  html[data-skin="proposed"] h1,
-  html[data-skin="proposed"] h2,
-  html[data-skin="proposed"] .track-card-name,
-  html[data-skin="proposed"] .demo-h2 {
+  html[data-skin="colours-type"] h1,
+  html[data-skin="colours-type"] h2,
+  html[data-skin="colours-type"] .track-card-name {
     font-family: ui-serif, "Iowan Old Style", Charter, "Palatino Linotype",
                  Cambria, Georgia, serif;
     font-weight: 600; letter-spacing: -.01em;
   }
-  html[data-skin="proposed"] h1 { letter-spacing: -.018em; }
-  html[data-skin="proposed"] .metric-val,
-  html[data-skin="proposed"] .track-result-val,
-  html[data-skin="proposed"] .track-card-rate,
-  html[data-skin="proposed"] .fig,
-  html[data-skin="proposed"] .rate,
-  html[data-skin="proposed"] .bracket-table-wrap td {
+  html[data-skin="colours-type"] h1 { letter-spacing: -.018em; }
+  html[data-skin="colours-type"] .metric-val,
+  html[data-skin="colours-type"] .track-result-val,
+  html[data-skin="colours-type"] .track-card-rate,
+  html[data-skin="colours-type"] .rate,
+  html[data-skin="colours-type"] .bracket-table-wrap td {
     font-variant-numeric: tabular-nums lining-nums;
     font-feature-settings: "tnum" 1, "lnum" 1;
   }
@@ -92,13 +95,18 @@
     font-size: .82rem;
   }
   .demo-bar strong { color: #C9A227; }
-  html[data-skin="proposed"] .demo-bar strong { color: #9FD8C8; }
-  .demo-bar button {
-    margin-left: auto; cursor: pointer; font: inherit; font-weight: 700;
-    background: #fff; color: #10141A; border: 0; border-radius: 6px;
-    padding: .45rem .9rem; min-height: 38px;
+  html[data-skin="colours"] .demo-bar strong,
+  html[data-skin="colours-type"] .demo-bar strong { color: #9FD8C8; }
+  .demo-switch { margin-left: auto; display: flex; gap: .3rem; }
+  .demo-switch button {
+    cursor: pointer; font: inherit; font-size: .78rem; font-weight: 600;
+    background: transparent; color: #fff; border: 1px solid rgba(255,255,255,.35);
+    border-radius: 6px; padding: .4rem .7rem; min-height: 38px;
   }
-  .demo-bar button:focus-visible { outline: 3px solid #9FD8C8; outline-offset: 2px; }
+  .demo-switch button[aria-pressed="true"] {
+    background: #fff; color: #10141A; border-color: #fff; font-weight: 700;
+  }
+  .demo-switch button:focus-visible { outline: 3px solid #9FD8C8; outline-offset: 2px; }
   .demo-note {
     max-width: 900px; margin: 0 auto; padding: 1.5rem 1rem 0;
     font-size: .9rem; color: var(--muted);
@@ -135,13 +143,21 @@
 
 <div class="demo-bar">
   <span>Recolour demo &mdash; structure untouched. Showing: <strong id="skinName">CURRENT</strong></span>
-  <button type="button" id="skinToggle" aria-pressed="false">Switch to proposed palette</button>
+  <div class="demo-switch" role="group" aria-label="Which skin to show">
+    <button type="button" data-set="current" aria-pressed="true">Current</button>
+    <button type="button" data-set="colours" aria-pressed="false">Colours only</button>
+    <button type="button" data-set="colours-type" aria-pressed="false">Colours + type</button>
+  </div>
 </div>
 
 <p class="demo-note">
-  Press the button to swap the palette and typeface. The markup, the layout and
-  <em>calculator.css</em> itself are identical in both states &mdash; only the
-  <code>:root</code> variables and three font-family lines differ. The proposed
+  Three states, switched above. <strong>Colours only</strong> changes nothing
+  but the palette &mdash; the typeface, including the numerals, is exactly what
+  ships today, so the colour can be judged on its own.
+  <strong>Colours + type</strong> additionally sets headings in a serif and
+  gives figures tabular numerals. In all three, the markup, the layout and
+  <em>calculator.css</em> itself are identical &mdash; only the
+  <code>:root</code> variables differ. The proposed
   values are taken from the firm's own logo: <strong>#10141A</strong> (the brush
   monogram), <strong>#44586F</strong> (the CERTIFIED PUBLIC ACCOUNTANTS line)
   and <strong>#EBF3F5</strong> (the pale square behind the monogram). Neither
@@ -343,20 +359,30 @@
 </footer>
 
 <script>
-  // Toggling one attribute on <html> swaps every colour and the typeface,
-  // because the proposed skin only redefines the same custom properties the
-  // shipping stylesheet already reads. Nothing else is touched - which is the
-  // point the demo is making.
+  // One attribute on <html> selects the skin. The proposed states only
+  // redefine custom properties the shipping stylesheet already reads, so
+  // nothing else is touched - which is the point the demo is making.
+  //
+  // Three states on purpose: "colours only" isolates the palette so it can be
+  // judged without the typeface changing at the same time.
   (function () {
     var html = document.documentElement;
-    var btn = document.getElementById('skinToggle');
     var name = document.getElementById('skinName');
-    btn.addEventListener('click', function () {
-      var proposed = html.getAttribute('data-skin') !== 'proposed';
-      html.setAttribute('data-skin', proposed ? 'proposed' : 'current');
-      name.textContent = proposed ? 'PROPOSED (logo colours)' : 'CURRENT';
-      btn.textContent = proposed ? 'Back to current palette' : 'Switch to proposed palette';
-      btn.setAttribute('aria-pressed', String(proposed));
+    var buttons = [].slice.call(document.querySelectorAll('.demo-switch button'));
+    var LABELS = {
+      'current':      'CURRENT',
+      'colours':      'LOGO COLOURS ONLY (type unchanged)',
+      'colours-type': 'LOGO COLOURS + SERIF HEADINGS'
+    };
+    buttons.forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        var set = btn.getAttribute('data-set');
+        html.setAttribute('data-skin', set);
+        name.textContent = LABELS[set];
+        buttons.forEach(function (b) {
+          b.setAttribute('aria-pressed', String(b === btn));
+        });
+      });
     });
   })();
 </script>
