@@ -1,0 +1,512 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="robots" content="noindex, nofollow" />
+<title>Design Demo - Double Rule | Zitnitski Weinstein &amp; Co.</title>
+
+<!--
+  DESIGN DEMO - "DOUBLE RULE". Not the live site; nothing in index.html,
+  calculator*.html, treaty-rates.html or calculator.css is modified.
+
+  The idea: accountants already own a notation for a number they stand behind.
+  In an audited statement a subtotal takes a single rule and the bottom line
+  takes a double rule. This demo restyles the product in that grammar - plates
+  instead of soft cards, working-paper codes instead of icon tiles, leader-dot
+  statement rows, a single rule above the subtotal, a double rule under the
+  answer, and red used only for what red means in this profession: a negative
+  number.
+
+  How it differs from the two earlier proposals:
+  - design-concept.html (rejected) dissolved the app into a reading document.
+    Here every surface keeps its structure - index, steps, field grid, track
+    comparison, filterable table - and gains MORE instrument apparatus.
+  - design-recolor.html swaps :root values on the same skin. This changes the
+    surface system itself: radii, shadows, badges, hero, table ruling, and
+    markup-level devices no variable swap can produce.
+
+  Vanilla everything, zero network requests, system fonts, works from file://.
+-->
+
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --ink:      #14181F;
+    --paper:    #FAFAF7;
+    --plate:    #FFFFFF;
+    --ledger:   #1E5C46;   /* the one accent - links, actions, recommended */
+    --wash:     #EAF2EE;   /* hover tint only, never behind long text      */
+    --debit:    #A6231C;   /* negative figures and cautions ONLY           */
+    --muted:    #565E68;
+    --hairline: #DAD9D2;
+    --ctrl:     #71787F;   /* input borders - 4.28:1, passes 1.4.11        */
+    --radius: 2px;
+    --edge: 0 1px 0 var(--hairline);
+    --f-ui: system-ui, "Segoe UI Variable Text", "Segoe UI", Roboto,
+            "Helvetica Neue", Arial, sans-serif;
+    --f-mono: ui-monospace, "Cascadia Mono", Consolas, "Segoe UI Mono",
+              Menlo, monospace;
+  }
+
+  body {
+    font-family: var(--f-ui); background: var(--paper); color: var(--ink);
+    line-height: 1.6; font-size: 16px;
+  }
+  a { color: var(--ledger); }
+  a:focus-visible, button:focus-visible, summary:focus-visible {
+    outline: 2px solid var(--ledger); outline-offset: 2px;
+  }
+
+  /* Figures: large, heavy, tabular - the voice of the answer. */
+  .fig {
+    font-variant-numeric: tabular-nums lining-nums;
+    font-feature-settings: "tnum" 1, "lnum" 1;
+    font-weight: 750; unicode-bidi: isolate; direction: ltr;
+  }
+  /* Labels: the form-label voice, promoted to the heading grammar. */
+  .lbl {
+    font-size: .72rem; font-weight: 700; letter-spacing: .09em;
+    text-transform: uppercase; color: var(--muted);
+  }
+  .mono { font-family: var(--f-mono); }
+
+  /* Working-paper code chip - an ID plate, not a citation margin. */
+  .doc-code {
+    font: 600 .68rem var(--f-mono); color: var(--muted);
+    border: 1px solid var(--hairline); border-radius: var(--radius);
+    padding: .15rem .45rem; white-space: nowrap;
+  }
+
+  /* Plates: crisp, printed, zero blur. */
+  .plate {
+    background: var(--plate); border: 1px solid var(--hairline);
+    border-radius: var(--radius); box-shadow: var(--edge);
+  }
+
+  /* The motif itself. */
+  .rule-sub   { border-top: 1px solid var(--ink); }
+  .rule-total { border-top: 3px double var(--ink); }
+
+  /* ── Demo chrome ── */
+  .demo-bar {
+    position: sticky; top: 0; z-index: 300;
+    background: var(--ink); color: #fff; padding: .6rem 1rem;
+    font-size: .82rem; display: flex; flex-wrap: wrap; gap: .6rem; align-items: center;
+  }
+  .demo-bar b { color: #9FD8C8; }
+  .demo-label {
+    max-width: 960px; margin: 2.6rem auto .6rem; padding: 0 1rem;
+    display: flex; align-items: baseline; gap: .8rem;
+  }
+  .demo-label .lbl { color: var(--muted); }
+  .demo-label::after { content: ""; flex: 1; border-top: 3px double var(--hairline); align-self: center; }
+  .wrap { max-width: 960px; margin: 0 auto; padding: 0 1rem; }
+
+  /* ── Header: logo native on white, hairline under ── */
+  .site-head {
+    background: var(--plate); border-bottom: 1px solid var(--hairline);
+    padding: .7rem 1rem;
+  }
+  .site-head-inner {
+    max-width: 960px; margin: 0 auto; display: flex; align-items: center; gap: 1rem;
+  }
+  .site-head img { height: 44px; width: auto; display: block; }
+  .site-head nav { margin-left: auto; display: flex; gap: .2rem; align-items: center; }
+  .site-head nav a {
+    text-decoration: none; color: var(--ink); font-size: .875rem;
+    padding: .4rem .7rem; border-radius: var(--radius);
+  }
+  .site-head nav a:hover { background: var(--wash); }
+  .site-head nav a.cta {
+    background: var(--ledger); color: #fff; font-weight: 600; margin-left: .4rem;
+  }
+  .beta-chip {
+    font: 700 .62rem var(--f-mono); letter-spacing: .1em; color: var(--muted);
+    border: 1px solid var(--hairline); padding: .18rem .4rem; border-radius: var(--radius);
+  }
+
+  /* ── Ink hero: ledger-column hairlines, double rule under the title ── */
+  .hero {
+    background: var(--ink) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='8'%3E%3Cpath d='M24 0v8M48 0v8M72 0v8M96 0v8' stroke='%23ffffff' stroke-opacity='.05'/%3E%3C/svg%3E");
+    color: #fff; padding: 3.2rem 1rem 2.6rem;
+  }
+  .hero-inner { max-width: 960px; margin: 0 auto; }
+  .hero .lbl { color: #9FB3AC; }
+  .hero h1 {
+    font-size: clamp(1.7rem, 1.2rem + 2.4vw, 2.6rem); line-height: 1.15;
+    font-weight: 750; letter-spacing: -.015em; max-width: 22ch;
+    padding-bottom: .55rem; margin-top: .4rem;
+    border-bottom: 3px double rgba(255,255,255,.85); width: fit-content;
+  }
+  .hero p { color: #C9D2CE; max-width: 52ch; margin-top: .8rem; font-size: .95rem; }
+  .hero .go {
+    display: inline-block; margin-top: 1.2rem; background: var(--ledger); color: #fff;
+    text-decoration: none; font-weight: 600; font-size: .9rem;
+    padding: .6rem 1.2rem; border-radius: var(--radius);
+  }
+
+  /* ── Guide: index of schedules ── */
+  .index { border-block: 1px solid var(--hairline); }
+  .index details { border-bottom: 1px solid var(--hairline); }
+  .index details:last-child { border-bottom: 0; }
+  .index summary {
+    list-style: none; cursor: pointer; display: flex; align-items: center;
+    gap: 1rem; padding: .95rem .2rem; background: var(--plate);
+  }
+  .index summary::-webkit-details-marker { display: none; }
+  .index summary:hover { background: var(--wash); }
+  .index .t { font-weight: 600; font-size: 1.02rem; }
+  .index .chev { margin-left: auto; color: var(--muted); transition: transform .18s; }
+  .index details[open] .chev { transform: rotate(180deg); }
+  .index .body { padding: .4rem .2rem 1.2rem; color: var(--muted); font-size: .93rem; max-width: 68ch; }
+
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 1rem; margin-top: 1rem; }
+  .card { padding: 1.25rem 1.25rem 1.1rem; border-top: 2px solid var(--ledger); }
+  .card .doc-code { float: inline-end; }
+  .card h3 { font-size: 1rem; margin-bottom: .4rem; }
+  .card p { font-size: .9rem; color: var(--muted); }
+
+  /* ── Form W-1 ── */
+  .form-head { display: flex; align-items: baseline; gap: 1rem; padding: 1.1rem 1.4rem;
+               border-bottom: 1px solid var(--hairline); }
+  .form-head h2 { font-size: 1.1rem; font-weight: 700; }
+  .form-head .doc-code { margin-left: auto; }
+  .fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.1rem 1.4rem; padding: 1.3rem 1.4rem; }
+  .field label { display: flex; gap: .5rem; align-items: baseline; margin-bottom: .35rem; }
+  .field .no { font: 600 .68rem var(--f-mono); color: var(--muted); }
+  .field select {
+    width: 100%; font: inherit; font-size: .92rem; padding: .55rem .6rem;
+    border: 1px solid var(--ctrl); border-radius: var(--radius); background: var(--plate);
+    color: var(--ink);
+  }
+  .field.filled select { border-inline-start: 3px solid var(--ledger); }
+  .field .ok { font: 700 .68rem var(--f-mono); color: var(--ledger); visibility: hidden; }
+  .field.filled .ok { visibility: visible; }
+  .btn-row { display: flex; gap: .7rem; padding: 0 1.4rem 1.3rem; }
+  .btn {
+    font: 600 .92rem var(--f-ui); padding: .6rem 1.4rem; min-height: 44px;
+    border-radius: var(--radius); cursor: pointer;
+  }
+  .btn-go { background: var(--ledger); color: #fff; border: 1px solid var(--ledger); }
+  .btn-ghost { background: none; color: var(--ink); border: 1px solid var(--hairline); }
+
+  /* Steps: mono-numbered, joined by a filling hairline. */
+  .steps { display: flex; align-items: center; gap: .8rem; padding: .9rem 1.4rem;
+           border-bottom: 1px solid var(--hairline); font-size: .82rem; }
+  .steps .s { display: flex; gap: .45rem; align-items: baseline; }
+  .steps .n { font: 700 .72rem var(--f-mono); }
+  .steps .s.done .n, .steps .s.done { color: var(--ledger); font-weight: 600; }
+  .steps .join { flex: 0 1 90px; border-top: 1px solid var(--hairline); }
+  .steps .join.fill { border-top-color: var(--ledger); }
+
+  /* ── Results: figure strip + statements ── */
+  .figure-strip { display: flex; flex-wrap: wrap; padding: 1.1rem 0; }
+  .figure-strip .cell { padding: 0 1.4rem; }
+  .figure-strip .cell + .cell { border-inline-start: 1px solid var(--hairline); }
+  .figure-strip .fig { font-size: 2rem; display: block; margin-top: .2rem; }
+
+  .tracks { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem; margin-top: 1rem; }
+  .stmt { padding: 1.1rem 1.2rem 1rem; }
+  .stmt-head { display: flex; align-items: baseline; gap: .7rem; margin-bottom: .3rem; }
+  .stmt-head .doc-code { margin-left: auto; }
+  .stmt-rate { font-size: 2.1rem; margin: .1rem 0 .7rem; }
+  .row { display: flex; align-items: baseline; gap: .5rem; padding: .34rem 0; font-size: .9rem; }
+  .row .k { color: var(--muted); }
+  .row .lead { flex: 1; border-bottom: 1px dotted var(--ctrl); transform: translateY(-4px); }
+  .row .v { font-variant-numeric: tabular-nums lining-nums; font-weight: 600; }
+  .row.rule-sub   { padding-top: .5rem; }
+  .row.rule-total { padding-top: .55rem; }
+  .row.rule-total .v { font-weight: 750; font-size: 1.05rem; }
+  .v.neg { color: var(--debit); }
+  .v.neg::before { content: "("; } .v.neg::after { content: ")"; }
+
+  .stmt--win { border-color: var(--ledger); box-shadow: 0 1px 0 var(--ledger); }
+  .stamp {
+    display: inline-block; margin-top: .8rem;
+    border: 3px double var(--ledger); color: var(--ledger); border-radius: var(--radius);
+    font-size: .7rem; font-weight: 700; letter-spacing: .12em; text-transform: uppercase;
+    padding: .3rem .7rem;
+  }
+
+  .bottom-line { margin-top: 1.4rem; padding-top: .8rem; }
+  .bottom-line p { font-size: .95rem; }
+
+  /* modeled:false - deliberately NO rules, NO leaders. */
+  .not-modeled {
+    border-inline-start: 3px solid var(--debit);
+    padding: .8rem 1rem; margin-top: 1.2rem; font-size: .9rem; color: var(--muted);
+    background: var(--plate);
+  }
+  .not-modeled b { color: var(--debit); }
+
+  /* ── Treaty schedule ── */
+  .sched { overflow-x: auto; }
+  .sched table { width: 100%; border-collapse: collapse; font-size: .9rem; }
+  .sched caption { text-align: start; padding: 1rem 1.2rem .6rem; display: flex; gap: .8rem; align-items: baseline; }
+  .sched caption .doc-code { margin-left: auto; }
+  .sched thead th {
+    text-align: start; padding: .55rem 1.2rem;
+    font-size: .72rem; font-weight: 700; letter-spacing: .09em; text-transform: uppercase;
+    color: var(--muted); border-bottom: 3px double var(--ink); white-space: nowrap;
+  }
+  .sched td { padding: .6rem 1.2rem; border-bottom: 1px solid var(--hairline); }
+  .sched tbody tr:hover { background: var(--wash); box-shadow: inset 3px 0 0 var(--ledger); }
+  .sched .country { font-weight: 700; white-space: nowrap; }
+  .sched .rate { font-family: var(--f-mono); font-weight: 600;
+                 unicode-bidi: isolate; direction: ltr; }
+  .sched .cond { display: block; font-size: .76rem; color: var(--muted); font-weight: 400; }
+  [dir="rtl"] .sched thead th, [dir="rtl"] .sched td { text-align: start; }
+  [dir="rtl"] .sched tbody tr:hover { box-shadow: inset -3px 0 0 var(--ledger); }
+  .lang-note { padding: .5rem 1.2rem 1rem; font-size: .8rem; color: var(--muted); }
+
+  /* ── Signature footer ── */
+  .sig-foot {
+    margin-top: 3rem; background: var(--ink); color: #C9D2CE;
+    border-top: 3px double var(--ledger); padding: 2.2rem 1rem 2rem; font-size: .85rem;
+  }
+  .sig-inner { max-width: 960px; margin: 0 auto; }
+  .sig-foot .logo-plate { background: #fff; display: inline-block; padding: .5rem .9rem;
+                          border-radius: var(--radius); }
+  .sig-foot .logo-plate img { height: 52px; width: auto; display: block; }
+  .sig-line { margin-top: 1.2rem; padding-top: .8rem; border-top: 1px solid rgba(255,255,255,.25);
+              max-width: 30rem; }
+  .sig-line b { color: #fff; }
+  .sig-foot .fine { margin-top: 1rem; font-size: .78rem; color: #97A29D; }
+
+  /* ── Posting animation (the only motion) ── */
+  .post .row .lead, .post .rule-sub, .post .rule-total { transform-origin: 0 50%; }
+  [dir="rtl"] .post .row .lead { transform-origin: 100% 50%; }
+  .post.arm .drawable { transform: scaleX(0); }
+  .post.run .drawable { transform: scaleX(1); transition: transform .24s ease-out; }
+  @media (prefers-reduced-motion: reduce) {
+    .post.arm .drawable { transform: none; }
+    .post.run .drawable { transition: none; }
+    * { transition-duration: .01ms !important; animation-duration: .01ms !important; }
+  }
+  .run-btn { margin: 1rem 1.4rem 1.2rem; }
+
+  @media (max-width: 700px) {
+    .site-head nav a:not(.cta) { display: none; }
+    .figure-strip .cell { padding: .5rem 1rem; }
+    .hero { padding: 2rem 1rem 1.6rem; }
+  }
+</style>
+</head>
+<body>
+
+<div class="demo-bar">
+  <span><b>Design demo - "Double Rule".</b> A proposal only; the live site is unchanged. The grammar: single rule above a subtotal, double rule under the bottom line - the notation of an audited statement, applied to the whole product.</span>
+</div>
+
+<!-- ══════════ 1 · HEADER ══════════ -->
+<div class="demo-label"><span class="lbl">1 · Header - logo native on white, no card needed</span></div>
+<header class="site-head">
+  <div class="site-head-inner">
+    <img src="assets/zwco-logo-full.png" alt="Zitnitski Weinstein &amp; Co." />
+    <span class="beta-chip">BETA</span>
+    <nav>
+      <a href="#">Guide</a><a href="#">Tax Treaties</a><a href="#">Contact</a>
+      <a href="#" class="cta">Calculator</a>
+    </nav>
+  </div>
+</header>
+
+<!-- ══════════ 2 · HERO ══════════ -->
+<section class="hero">
+  <div class="hero-inner">
+    <span class="lbl">Israel · International Taxation · 2026</span>
+    <h1>Relocating to Israel: the tax picture, ruled and totalled</h1>
+    <p>Residency, the US treaty, aliyah relief and withholding - a guide, a calculator and a treaty schedule prepared the way this profession prepares a number it signs.</p>
+    <a class="go" href="#">Open the calculator</a>
+  </div>
+</section>
+
+<!-- ══════════ 3 · GUIDE INDEX ══════════ -->
+<div class="demo-label"><span class="lbl">2 · Guide - an index of schedules</span></div>
+<div class="wrap">
+  <div class="index">
+    <details open>
+      <summary><span class="doc-code">§ 01</span><span class="t">Tax Residency in Israel</span><span class="chev">▾</span></summary>
+      <div class="body">Israel taxes residents on worldwide income. Whether you are one turns on the centre-of-life test - home, family and economic ties, not merely day counts.</div>
+    </details>
+    <details>
+      <summary><span class="doc-code">§ 02</span><span class="t">The US-Israel Tax Treaty</span><span class="chev">▾</span></summary>
+    </details>
+    <details>
+      <summary><span class="doc-code">§ 03</span><span class="t">Aliyah Tax Benefits</span><span class="chev">▾</span></summary>
+    </details>
+  </div>
+
+  <div class="cards">
+    <div class="card plate"><span class="doc-code">§ 01·A</span><h3>Permanent home</h3><p>Where a home is continuously available to you, owned or rented.</p></div>
+    <div class="card plate"><span class="doc-code">§ 01·B</span><h3>Family &amp; social ties</h3><p>Where a spouse and dependent children live, and community life runs.</p></div>
+    <div class="card plate"><span class="doc-code">§ 01·C</span><h3>Economic centre</h3><p>Where work is performed, business is managed, assets are held.</p></div>
+  </div>
+</div>
+
+<!-- ══════════ 4 · FORM W-1 ══════════ -->
+<div class="demo-label"><span class="lbl">3 · Calculator step 1 - intake form</span></div>
+<div class="wrap">
+  <div class="plate">
+    <div class="steps">
+      <span class="s done"><span class="n">01</span> Classification</span>
+      <span class="join fill"></span>
+      <span class="s"><span class="n">02</span> Calculations</span>
+    </div>
+    <div class="form-head"><h2>Entity &amp; Property Classification</h2><span class="doc-code">FORM W-1</span></div>
+    <div class="fields">
+      <div class="field filled">
+        <label><span class="no">01</span><span class="lbl">Entity type</span><span class="ok">✓</span></label>
+        <select><option>Individual</option></select>
+      </div>
+      <div class="field filled">
+        <label><span class="no">02</span><span class="lbl">Tax residency</span><span class="ok">✓</span></label>
+        <select><option>Israeli Resident</option></select>
+      </div>
+      <div class="field">
+        <label><span class="no">03</span><span class="lbl">Asset type</span><span class="ok">✓</span></label>
+        <select><option>- Select asset type -</option></select>
+      </div>
+    </div>
+    <div class="btn-row">
+      <button class="btn btn-ghost" type="button">Reset</button>
+      <button class="btn btn-go" type="button">Next →</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════ 5 · RESULTS ══════════ -->
+<div class="demo-label"><span class="lbl">4 · Results - statements that post</span></div>
+<div class="wrap">
+  <div class="plate">
+    <div class="figure-strip">
+      <div class="cell"><span class="lbl">Gross annual rent</span><span class="fig">₪96,000</span></div>
+      <div class="cell"><span class="lbl">Deductible expenses</span><span class="fig neg" style="color:var(--debit)">(₪8,000)</span></div>
+      <div class="cell"><span class="lbl">Lowest tax</span><span class="fig" style="color:var(--ledger)">₪9,600</span></div>
+    </div>
+  </div>
+
+  <div class="tracks post" id="postDemo">
+    <div class="stmt plate stmt--win">
+      <div class="stmt-head"><span class="lbl">Flat rate</span><span class="doc-code">SCH B</span></div>
+      <div class="fig stmt-rate">10%</div>
+      <div class="row"><span class="k">Gross rent</span><span class="lead drawable"></span><span class="v fig" data-count="96000" data-prefix="₪">₪96,000</span></div>
+      <div class="row"><span class="k">Deductions</span><span class="lead drawable"></span><span class="v">none</span></div>
+      <div class="row rule-sub drawable"><span class="k">Annual tax</span><span class="lead drawable"></span><span class="v fig" data-count="9600" data-prefix="₪">₪9,600</span></div>
+      <div class="row rule-total drawable"><span class="k">Effective rate</span><span class="lead drawable"></span><span class="v fig">10.00%</span></div>
+      <span class="stamp">Lowest tax</span>
+    </div>
+
+    <div class="stmt plate">
+      <div class="stmt-head"><span class="lbl">Exemption</span><span class="doc-code">SCH A</span></div>
+      <div class="fig stmt-rate">Marginal</div>
+      <div class="row"><span class="k">Gross rent</span><span class="lead drawable"></span><span class="v fig">₪96,000</span></div>
+      <div class="row"><span class="k">Exempt portion</span><span class="lead drawable"></span><span class="v neg fig">₪28,800</span></div>
+      <div class="row rule-sub drawable"><span class="k">Annual tax</span><span class="lead drawable"></span><span class="v fig" data-count="14880" data-prefix="₪">₪14,880</span></div>
+      <div class="row rule-total drawable"><span class="k">Effective rate</span><span class="lead drawable"></span><span class="v fig">15.50%</span></div>
+    </div>
+
+    <div class="stmt plate">
+      <div class="stmt-head"><span class="lbl">Progressive</span><span class="doc-code">SCH C</span></div>
+      <div class="fig stmt-rate">Ladder</div>
+      <div class="row"><span class="k">Taxable base</span><span class="lead drawable"></span><span class="v fig">₪88,000</span></div>
+      <div class="row"><span class="k">Bracket tax</span><span class="lead drawable"></span><span class="v fig">₪28,160</span></div>
+      <div class="row rule-sub drawable"><span class="k">Annual tax</span><span class="lead drawable"></span><span class="v fig" data-count="28160" data-prefix="₪">₪28,160</span></div>
+      <div class="row rule-total drawable"><span class="k">Effective rate</span><span class="lead drawable"></span><span class="v fig">29.33%</span></div>
+    </div>
+  </div>
+
+  <button class="btn btn-ghost run-btn" type="button" id="runPost">▶ Run the posting moment</button>
+
+  <div class="bottom-line rule-total">
+    <p><b>Bottom line:</b> the flat route is cheapest at <span class="fig">₪9,600</span>/year - a saving of <span class="fig">₪5,280</span> against the next best option.</p>
+  </div>
+
+  <div class="not-modeled">
+    <b>Not modeled.</b> Interest connected to an Israeli permanent establishment is taxed as business profits and is outside this tool - no figure is shown by design. Note: no rules, no leaders; "not computed" must look different from "computed".
+  </div>
+</div>
+
+<!-- ══════════ 6 · TREATY SCHEDULE ══════════ -->
+<div class="demo-label"><span class="lbl">5 · Treaty table - a published schedule</span></div>
+<div class="wrap">
+  <div class="plate sched">
+    <table>
+      <caption><span class="lbl">Withholding ceilings</span><span class="doc-code">TR-2026</span></caption>
+      <thead>
+        <tr><th>Country</th><th>Dividends</th><th>Parent co.</th><th>Interest</th><th>Royalties</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="country">United States</td><td class="rate">25%</td><td class="rate">12.5%<span class="cond">≥10% voting</span></td><td class="rate">17.5%</td><td class="rate">15%</td></tr>
+        <tr><td class="country">United Kingdom</td><td class="rate">15%</td><td class="rate">5%<span class="cond">≥10%, 365 days</span></td><td class="rate">10%</td><td class="rate">0%</td></tr>
+        <tr><td class="country">Germany</td><td class="rate">10%</td><td class="rate">5%<span class="cond">≥10% direct</span></td><td class="rate">5%</td><td class="rate">0%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="plate sched" dir="rtl" lang="he" style="margin-top:1rem">
+    <table>
+      <caption><span class="lbl">תקרות ניכוי במקור</span><span class="doc-code">TR-2026</span></caption>
+      <thead>
+        <tr><th>מדינה</th><th>דיבידנד</th><th>חברת אם</th><th>ריבית</th><th>תמלוגים</th></tr>
+      </thead>
+      <tbody>
+        <tr><td class="country">ארצות הברית</td><td class="rate">25%</td><td class="rate">12.5%<span class="cond">‏≥10% מכוח ההצבעה</span></td><td class="rate">17.5%</td><td class="rate">15%</td></tr>
+        <tr><td class="country">גרמניה</td><td class="rate">10%</td><td class="rate">5%<span class="cond">החזקה ישירה ≥10%</span></td><td class="rate">5%</td><td class="rate">0%</td></tr>
+      </tbody>
+    </table>
+    <p class="lang-note">אותה סכימה ב-RTL: הסמן בריחוף עובר לצד ימין באמצעות מאפיינים לוגיים; הספרות נשארות LTR מבודדות.</p>
+  </div>
+</div>
+
+<!-- ══════════ 7 · SIGNATURE FOOTER ══════════ -->
+<footer class="sig-foot">
+  <div class="sig-inner">
+    <span class="logo-plate"><img src="assets/zwco-logo-full.png" alt="Zitnitski Weinstein &amp; Co." /></span>
+    <div class="sig-line">
+      <p>Prepared by <b>Zitnitski Weinstein &amp; Co.</b> - Certified Public Accountants, Tel Aviv</p>
+    </div>
+    <p class="fine">General information only - not legal or tax advice. © 2026 Zitnitski Weinstein &amp; Co. All rights reserved.</p>
+  </div>
+</footer>
+
+<script>
+  // The posting moment - the demo's ONLY motion. Rules draw in, then the
+  // figures count up on tabular digits so nothing reflows. Reduced motion
+  // renders the final state instantly.
+  (function () {
+    var wrap = document.getElementById('postDemo');
+    var btn = document.getElementById('runPost');
+    var reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    function countUp(el) {
+      var end = parseInt(el.getAttribute('data-count'), 10);
+      var prefix = el.getAttribute('data-prefix') || '';
+      if (reduced) { el.textContent = prefix + end.toLocaleString('en-IL'); return; }
+      var t0 = performance.now(), DUR = 300;
+      (function tick(t) {
+        var p = Math.min(1, (t - t0) / DUR);
+        el.textContent = prefix + Math.round(end * (1 - Math.pow(1 - p, 3))).toLocaleString('en-IL');
+        if (p < 1) requestAnimationFrame(tick);
+      })(t0);
+    }
+
+    btn.addEventListener('click', function () {
+      wrap.classList.remove('run');
+      wrap.classList.add('arm');
+      // Force a style flush so the arm state paints before the run state.
+      void wrap.offsetWidth;
+      wrap.classList.add('run');
+      wrap.querySelectorAll('[data-count]').forEach(function (el) {
+        el.textContent = (el.getAttribute('data-prefix') || '') + '0';
+        setTimeout(function () { countUp(el); }, reduced ? 0 : 180);
+      });
+    });
+  })();
+</script>
+</body>
+</html>
