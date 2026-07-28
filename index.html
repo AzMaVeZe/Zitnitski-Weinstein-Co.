@@ -1443,12 +1443,19 @@
 
   // Arrived with a fragment from somewhere else - the head script only strips
   // it on a reload, so anything still here came from a real link. Open it and
-  // bring it into view once layout has settled.
+  // bring it into view.
   if (location.hash) {
-    requestAnimationFrame(() => requestAnimationFrame(() => {
+    const revealTarget = () => {
       const target = openSectionAccordion(location.hash);
       if (target) target.scrollIntoView({ block: 'center' });
-    }));
+    };
+    // Run now: this script sits after the footer, so the target already exists.
+    revealTarget();
+    // Then again once images and fonts have settled, since they shift layout.
+    // Deliberately NOT requestAnimationFrame - it does not fire while the tab
+    // is in the background, so a link opened in a new tab would land on an
+    // unopened notice and never scroll.
+    window.addEventListener('load', revealTarget, { once: true });
   }
 
   // ── Accordion ──
