@@ -180,9 +180,14 @@
     .nav-social { display: none; }
   }
   @media (max-width: 600px) {
+    /* The site name drops out, which frees the width the logo needs. At 28px
+       the Hebrew line and the "CERTIFIED PUBLIC ACCOUNTANTS" line rendered
+       about 4px tall - below legibility. */
     .nav-title { display: none; }
-    .nav-logo { height: 28px; }
+    .nav-logo { height: 44px; }
+    .nav-inner { padding: .6rem 1rem; }
   }
+  @media (max-width: 360px) { .nav-logo { height: 38px; } }
 
   /* Beta notice bar */
   .beta-bar {
@@ -191,6 +196,21 @@
     text-align: center; padding: .65rem 1.5rem;
   }
   .beta-bar strong { font-weight: 800; }
+  /* BETA NOTICE BAR - a one-line disclosure.
+     It used to print its full paragraph inline, which ran to five lines on
+     a phone and took a large share of the first screen. Same wording, one
+     tap away. */
+  .beta-bar > summary {
+    padding: .55rem 1.5rem; cursor: pointer; text-align: center;
+    list-style: none; display: block;
+  }
+  .beta-bar > summary::-webkit-details-marker { display: none; }
+  .beta-bar > summary::after { content: " ▾"; font-size: .9em; opacity: .75; }
+  .beta-bar[open] > summary::after { content: " ▴"; }
+  .beta-bar > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+  .beta-bar > p {
+    margin: 0 auto; padding: 0 1.5rem .7rem; max-width: 60rem; text-align: start;
+  }
   .nav-actions { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
   .nav-link {
     text-decoration: none; color: var(--muted); font-size: .875rem;
@@ -429,10 +449,13 @@
   </div>
 </nav>
 
-<div class="beta-bar" role="note">
-  <strong data-i18n="betaBarLead">Beta version.</strong>
-  <span data-i18n="betaBar">This page is still under development and may contain errors. It is a general overview only - not tax advice - and treaty rates are subject to conditions, protocols, and legislative change. Please verify against the binding treaty text before relying on any figure.</span>
-</div>
+<details class="beta-bar">
+  <summary>
+    <strong data-i18n="betaBarLead">Beta version.</strong>
+    <span class="beta-short" data-i18n="betaShort">Under development - a general overview, not tax advice.</span>
+  </summary>
+  <p data-i18n="betaBar">This page is still under development and may contain errors. It is a general overview only - not tax advice - and treaty rates are subject to conditions, protocols, and legislative change. Please verify against the binding treaty text before relying on any figure.</p>
+</details>
 
 <!-- The disclaimer that used to sit here has moved to the foot of the page.
      On a phone it pushed the actual rates more than 1,100px down: the visitor
@@ -508,6 +531,7 @@ const I18N = {
     ariaFacebook: 'Facebook (opens in a new tab)',
     navTreaties: 'Tax Treaties',
     noticesHint: 'Tap to read the full notice',
+    betaShort: 'Under development - a general overview, not tax advice.',
     title: 'Israel Tax Treaty Withholding Rates',
     subtitle: "Maximum withholding rates on dividends, interest, and royalties under Israel's income tax treaties - a quick-reference table published by Zitnitski Weinstein & Co.",
     dTopTitle: '⚠️ General overview only - not advice',
@@ -540,6 +564,7 @@ const I18N = {
     ariaFacebook: 'פייסבוק (נפתח בלשונית חדשה)',
     navTreaties: 'אמנות מס',
     noticesHint: 'הקישו לקריאת ההודעה המלאה',
+    betaShort: 'בפיתוח - סקירה כללית, לא ייעוץ מס.',
     title: 'שיעורי ניכוי במקור באמנות המס של ישראל',
     subtitle: 'שיעורי הניכוי במקור המרביים על דיבידנד, ריבית ותמלוגים לפי אמנות המס של ישראל - טבלת עיון מהירה מבית ז\'יטניצקי וינשטין ושות\'.',
     dTopTitle: '⚠️ סקירה כללית בלבד - אין לראות בכך ייעוץ',

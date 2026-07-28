@@ -187,6 +187,21 @@
       text-align: center; padding: .65rem 1.5rem;
     }
     .beta-bar strong { font-weight: 800; }
+    /* BETA NOTICE BAR - a one-line disclosure.
+       It used to print its full paragraph inline, which ran to five lines on
+       a phone and took a large share of the first screen. Same wording, one
+       tap away. */
+    .beta-bar > summary {
+      padding: .55rem 1.5rem; cursor: pointer; text-align: center;
+      list-style: none; display: block;
+    }
+    .beta-bar > summary::-webkit-details-marker { display: none; }
+    .beta-bar > summary::after { content: " ▾"; font-size: .9em; opacity: .75; }
+    .beta-bar[open] > summary::after { content: " ▴"; }
+    .beta-bar > summary:focus-visible { outline: 2px solid var(--blue); outline-offset: -2px; }
+    .beta-bar > p {
+      margin: 0 auto; padding: 0 1.5rem .7rem; max-width: 60rem; text-align: start;
+    }
     .nav-links {
       display: flex; align-items: center;
       gap: .25rem; list-style: none;
@@ -541,9 +556,14 @@
     footer strong { color: var(--white); }
     footer a { color: var(--white); text-decoration: none; text-underline-offset: 3px; }
     footer a:hover { text-decoration: underline; }
+    /* The footer link row is a <nav>, so it was inheriting the sticky white
+       header rule above - a white bar across the dark footer with white text
+       on it, effectively invisible. Reset every property that rule sets. */
     .footer-links {
       display: flex; flex-wrap: wrap; justify-content: center;
       gap: .35rem 1.5rem; margin: 1.25rem 0 1rem; font-weight: 600;
+      background: none; position: static; top: auto; z-index: auto;
+      box-shadow: none; border: 0;
     }
     .footer-legal { color: rgba(255,255,255,.7); font-size: .8rem; max-width: 620px; margin: 0 auto .35rem; }
     .footer-copy  { color: rgba(255,255,255,.55); font-size: .75rem; margin-top: 1rem; }
@@ -573,9 +593,14 @@
       .nav-social { display: none; }
     }
     @media (max-width: 600px) {
+      /* The site name drops out, which frees the width the logo needs. At 28px
+         the Hebrew line and the "CERTIFIED PUBLIC ACCOUNTANTS" line rendered
+         about 4px tall - below legibility. */
       .nav-title { display: none; }
-      .nav-logo { height: 28px; }
+      .nav-logo { height: 44px; }
+      .nav-inner { padding: .6rem 1rem; }
     }
+    @media (max-width: 360px) { .nav-logo { height: 38px; } }
 
     /* ── SCROLL REVEAL ── */
     .reveal { opacity: 0; transform: translateY(24px); transition: opacity .5s, transform .5s; }
@@ -704,14 +729,14 @@
 
 <main id="main-content">
 
-<div class="beta-bar" role="note">
-  <strong>Beta version.</strong> This guide is still under development and may contain errors or incomplete information. It is general information only - not tax or legal advice. Please verify anything you intend to rely on with a qualified professional.
-</div>
+<details class="beta-bar">
+  <summary><strong>Beta version.</strong> <span class="beta-short">Under development - may contain errors. General information, not tax advice.</span></summary>
+  <p>This guide is still under development and may contain errors or incomplete information. It is general information only - not tax or legal advice. Please verify anything you intend to rely on with a qualified professional.</p>
+</details>
 
 <!-- HERO -->
 <header class="hero">
   <div class="hero-content">
-    <div class="hero-badge">🔍 International Tax Law Overview</div>
     <h1>Relocating to Israel:<br>Your International Tax Guide</h1>
     <p>A structured overview of tax residency rules, treaty benefits, aliyah incentives, and cross-border reporting obligations for individuals making aliyah or relocating to Israel.</p>
     <div class="hero-ctas">

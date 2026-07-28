@@ -217,9 +217,15 @@
       .nav-social { display: none; }
     }
     @media (max-width: 600px) {
+      /* The site name drops out, which frees the width the logo needs. At 28px
+         the Hebrew line and "CERTIFIED PUBLIC ACCOUNTANTS" rendered around 4px
+         tall - below legibility. 44px is the largest that still leaves room
+         for the Beta chip and the menu. */
       .nav-title { display: none; }
-      .nav-logo { height: 28px; }
+      .nav-logo { height: 44px; }
+      .nav-inner { padding: .6rem 1rem; }
     }
+    @media (max-width: 360px) { .nav-logo { height: 38px; } }
 
     /* ── PHONE ─────────────────────────────────────────────────────────
        On a 390px screen the beta strip, the gradient hero and the steps bar
@@ -243,13 +249,32 @@
       .hero p { display: none; }
     }
 
-    /* BETA NOTICE BAR */
+    /* BETA NOTICE BAR - a one-line disclosure.
+       It used to print its full paragraph inline, which ran to five lines on a
+       phone and took a large share of the first screen. Same wording, one tap
+       away. */
     .beta-bar {
       background: var(--amber-light); border-bottom: 1px solid #fcd34d;
       color: #7a4a08; font-size: .85rem; line-height: 1.5;
-      text-align: center; padding: .65rem 1.5rem;
+    }
+    .beta-bar > summary {
+      padding: .55rem 1.5rem; cursor: pointer; text-align: center;
+      list-style: none; display: block;
+    }
+    .beta-bar > summary::-webkit-details-marker { display: none; }
+    /* A caret rather than the native triangle, so it centres with the text. */
+    .beta-bar > summary::after {
+      content: " ▾"; font-size: .9em; opacity: .75;
+    }
+    .beta-bar[open] > summary::after { content: " ▴"; }
+    .beta-bar > summary:focus-visible {
+      outline: 2px solid var(--blue); outline-offset: -2px;
     }
     .beta-bar strong { font-weight: 800; }
+    .beta-bar > p {
+      margin: 0; padding: 0 1.5rem .7rem; max-width: 60rem;
+      margin-inline: auto; text-align: start;
+    }
 
     /* Shared four-item primary nav (Guide · Treaty Rates · Contact · Calculator) */
     .nav-links {
@@ -616,9 +641,14 @@
     footer strong { color: var(--white); }
     footer a { color: var(--white); text-decoration: none; text-underline-offset: 3px; }
     footer a:hover { text-decoration: underline; }
+    /* The footer link row is a <nav>, so it was inheriting the sticky white
+       header rule above - a white bar across the dark footer with white text
+       on it, effectively invisible. Reset every property that rule sets. */
     .footer-links {
       display: flex; flex-wrap: wrap; justify-content: center;
       gap: .35rem 1.5rem; margin: 1.25rem 0 1rem; font-weight: 600;
+      background: none; position: static; top: auto; z-index: auto;
+      box-shadow: none; border: 0;
     }
     .footer-legal { color: rgba(255,255,255,.7); font-size: .8rem; max-width: 620px; margin: 0 auto .35rem; }
     .footer-copy  { color: rgba(255,255,255,.55); font-size: .75rem; margin-top: 1rem; }
