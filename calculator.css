@@ -90,6 +90,21 @@
       margin-top: 1rem; line-height: 1.55 !important;
     }
 
+    /* SURTAX NOTICE - deliberately prominent.
+       The engine never computes mas yesef (disclosure only, per the project
+       rule), and the disclosure used to live in the small grey footnote at the
+       bottom of each section - invisible in practice. On amounts like a
+       ₪900k+ dividend distribution the surtax is close to certain, so the
+       notice sits right under the results, styled to be read. */
+    .surtax-note {
+      max-width: 900px; margin: 1rem auto 0;
+      background: var(--amber-light); border: 1px solid #fcd34d;
+      border-inline-start: 4px solid var(--amber);
+      border-radius: 8px; padding: .7rem 1rem;
+      font-size: .875rem; line-height: 1.55; color: #7a4a08; text-align: start;
+    }
+    .surtax-note strong { font-weight: 800; }
+
     /* CONTACT CTA (shown after calculator results) */
     .contact-cta {
       max-width: 900px; margin: 2rem auto 0;
