@@ -104,6 +104,11 @@
       font-size: .875rem; line-height: 1.55; color: #7a4a08; text-align: start;
     }
     .surtax-note strong { font-weight: 800; }
+    /* The escalation sentence stays hidden until the watched figure crosses
+       the threshold (see the watcher script in calculator2.html). */
+    .surtax-note .surtax-hot { display: none; }
+    .surtax-note--hot { border-color: var(--amber); }
+    .surtax-note--hot .surtax-hot { display: inline; font-weight: 800; }
 
     /* CONTACT CTA (shown after calculator results) */
     .contact-cta {
