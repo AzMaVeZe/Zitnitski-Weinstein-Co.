@@ -694,7 +694,10 @@
     "ftcActive": false,
     "effective": 0,
     "modeled": true,
-    "branch": "foreign_resident_foreign_source"
+    "branch": "foreign_resident_foreign_source",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0
   },
   "sharesIndividualCG :: foreign | israeli-source | not REA (exempt)": {
     "proceeds": 150000,
@@ -708,7 +711,10 @@
     "ftcActive": false,
     "effective": 0,
     "modeled": true,
-    "branch": "foreign_resident_israeli_shares_exempt"
+    "branch": "foreign_resident_israeli_shares_exempt",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0
   },
   "sharesIndividualCG :: foreign | israeli-source | REA | 25%": {
     "proceeds": 150000,
@@ -722,7 +728,10 @@
     "ftcActive": false,
     "effective": 0.166667,
     "modeled": true,
-    "branch": "foreign_resident_israeli_real_estate_assoc"
+    "branch": "foreign_resident_israeli_real_estate_assoc",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0.25
   },
   "sharesIndividualCG :: foreign | israeli-source | REA | substantial 30%": {
     "proceeds": 150000,
@@ -736,7 +745,10 @@
     "ftcActive": false,
     "effective": 0.2,
     "modeled": true,
-    "branch": "foreign_resident_israeli_real_estate_assoc"
+    "branch": "foreign_resident_israeli_real_estate_assoc",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0.3
   },
   "sharesIndividualCG :: oleh | foreign-source (exempt)": {
     "proceeds": 150000,
@@ -750,7 +762,10 @@
     "ftcActive": false,
     "effective": 0,
     "modeled": true,
-    "branch": "oleh_foreign_source_exempt"
+    "branch": "oleh_foreign_source_exempt",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0
   },
   "sharesIndividualCG :: oleh | israeli-source | 25%": {
     "proceeds": 150000,
@@ -764,7 +779,10 @@
     "ftcActive": false,
     "effective": 0.166667,
     "modeled": true,
-    "branch": "oleh_israeli_source"
+    "branch": "oleh_israeli_source",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0.25
   },
   "sharesIndividualCG :: israeli | israeli-source | 25% (no FTC)": {
     "proceeds": 150000,
@@ -778,7 +796,10 @@
     "ftcActive": false,
     "effective": 0.166667,
     "modeled": true,
-    "branch": "israeli_resident_shares"
+    "branch": "israeli_resident_shares",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0.25
   },
   "sharesIndividualCG :: israeli | israeli-source | substantial 30%": {
     "proceeds": 150000,
@@ -792,7 +813,10 @@
     "ftcActive": false,
     "effective": 0.2,
     "modeled": true,
-    "branch": "israeli_resident_shares"
+    "branch": "israeli_resident_shares",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0.3
   },
   "sharesIndividualCG :: israeli | foreign-source | fw 0 (no FTC active)": {
     "proceeds": 150000,
@@ -806,7 +830,10 @@
     "ftcActive": false,
     "effective": 0.166667,
     "modeled": true,
-    "branch": "israeli_resident_shares"
+    "branch": "israeli_resident_shares",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0.25
   },
   "sharesIndividualCG :: israeli | foreign-source | fw 15k (< israeli, tops up)": {
     "proceeds": 150000,
@@ -820,7 +847,10 @@
     "ftcActive": true,
     "effective": 0.066667,
     "modeled": true,
-    "branch": "israeli_resident_shares"
+    "branch": "israeli_resident_shares",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0.25
   },
   "sharesIndividualCG :: israeli | foreign-source | fw 30k (> israeli, israeliTax 0)": {
     "proceeds": 150000,
@@ -834,7 +864,10 @@
     "ftcActive": true,
     "effective": 0,
     "modeled": true,
-    "branch": "israeli_resident_shares"
+    "branch": "israeli_resident_shares",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0.25
   },
   "sharesIndividualCG :: gain 0 (proceeds <= basis)": {
     "proceeds": 40000,
@@ -848,7 +881,230 @@
     "ftcActive": false,
     "effective": 0,
     "modeled": true,
-    "branch": "israeli_resident_shares"
+    "branch": "israeli_resident_shares",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0
+  },
+  "sharesIndividualCG :: split | purchase 2015 (all post-2012) → single post period, split false": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 25000,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.166667,
+    "modeled": true,
+    "branch": "israeli_resident_shares",
+    "periods": [
+      {
+        "key": "post",
+        "gain": 100000,
+        "rate": 0.25,
+        "tax": 25000
+      }
+    ],
+    "split": false,
+    "blendedRate": 0.25
+  },
+  "sharesIndividualCG :: split | purchase 2008 → mid 20% / post 25%": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 23333.333333,
+    "israeliTax": 23333.333333,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.155556,
+    "modeled": true,
+    "branch": "israeli_resident_shares",
+    "periods": [
+      {
+        "key": "mid",
+        "gain": 33333.333333,
+        "rate": 0.2,
+        "tax": 6666.666667
+      },
+      {
+        "key": "post",
+        "gain": 66666.666667,
+        "rate": 0.25,
+        "tax": 16666.666667
+      }
+    ],
+    "split": true,
+    "blendedRate": 0.233333
+  },
+  "sharesIndividualCG :: split | purchase 1995 → pre 47% / mid 20% / post 25%": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 30240.280364,
+    "israeliTax": 30240.280364,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.201602,
+    "modeled": true,
+    "branch": "israeli_resident_shares",
+    "periods": [
+      {
+        "key": "pre",
+        "gain": 32000.876136,
+        "rate": 0.47,
+        "tax": 15040.411784
+      },
+      {
+        "key": "mid",
+        "gain": 35998.247728,
+        "rate": 0.2,
+        "tax": 7199.649546
+      },
+      {
+        "key": "post",
+        "gain": 32000.876136,
+        "rate": 0.25,
+        "tax": 8000.219034
+      }
+    ],
+    "split": true,
+    "blendedRate": 0.302403
+  },
+  "sharesIndividualCG :: split | purchase 1995 | marginalRate 0.35 override": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 26400.175227,
+    "israeliTax": 26400.175227,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.176001,
+    "modeled": true,
+    "branch": "israeli_resident_shares",
+    "periods": [
+      {
+        "key": "pre",
+        "gain": 32000.876136,
+        "rate": 0.35,
+        "tax": 11200.306648
+      },
+      {
+        "key": "mid",
+        "gain": 35998.247728,
+        "rate": 0.2,
+        "tax": 7199.649546
+      },
+      {
+        "key": "post",
+        "gain": 32000.876136,
+        "rate": 0.25,
+        "tax": 8000.219034
+      }
+    ],
+    "split": true,
+    "blendedRate": 0.264002
+  },
+  "sharesIndividualCG :: split | purchase 2008 | substantial → mid 25% / post 30%": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.3,
+    "exempt": false,
+    "statutoryTax": 28333.333333,
+    "israeliTax": 28333.333333,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.188889,
+    "modeled": true,
+    "branch": "israeli_resident_shares",
+    "periods": [
+      {
+        "key": "mid",
+        "gain": 33333.333333,
+        "rate": 0.25,
+        "tax": 8333.333333
+      },
+      {
+        "key": "post",
+        "gain": 66666.666667,
+        "rate": 0.3,
+        "tax": 20000
+      }
+    ],
+    "split": true,
+    "blendedRate": 0.283333
+  },
+  "sharesIndividualCG :: split | purchase 2008 | foreign-source fw 10k → FTC against blended tax": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 23333.333333,
+    "israeliTax": 13333.333333,
+    "foreignWithheld": 10000,
+    "ftcActive": true,
+    "effective": 0.088889,
+    "modeled": true,
+    "branch": "israeli_resident_shares",
+    "periods": [
+      {
+        "key": "mid",
+        "gain": 33333.333333,
+        "rate": 0.2,
+        "tax": 6666.666667
+      },
+      {
+        "key": "post",
+        "gain": 66666.666667,
+        "rate": 0.25,
+        "tax": 16666.666667
+      }
+    ],
+    "split": true,
+    "blendedRate": 0.233333
+  },
+  "sharesIndividualCG :: split | exempt branch ignores dates (oleh foreign-source)": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0,
+    "exempt": true,
+    "statutoryTax": 0,
+    "israeliTax": 0,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0,
+    "modeled": true,
+    "branch": "oleh_foreign_source_exempt",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0
+  },
+  "sharesIndividualCG :: split | reversed dates → no split, flat rate": {
+    "proceeds": 150000,
+    "costBasis": 50000,
+    "gain": 100000,
+    "rate": 0.25,
+    "exempt": false,
+    "statutoryTax": 25000,
+    "israeliTax": 25000,
+    "foreignWithheld": 0,
+    "ftcActive": false,
+    "effective": 0.166667,
+    "modeled": true,
+    "branch": "israeli_resident_shares",
+    "periods": null,
+    "split": false,
+    "blendedRate": 0.25
   },
   "parseDMY :: '15/06/2020' valid": "15/06/2020",
   "parseDMY :: '31/02/2020' invalid": null,

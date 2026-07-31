@@ -321,14 +321,20 @@
   }
 
   // ── Individual capital gain on shares (§91/§121B; §97(b) reliefs) ─
-  // INDIVIDUALS ONLY. A share disposal is an ordinary capital gain. The §91/§121B
-  // rate is 25%, raised to 30% for a "substantial shareholder" (10%+ of the means
-  // of control now or in the prior 12 months). Computed on the NOMINAL gain only
-  // (no inflation indexing - see CLAUDE.md): share CG is legally assessed on the
-  // REAL (CPI-adjusted) gain, so the UI collects an already-indexed cost basis and
-  // passes it as costBasis; the engine treats (proceeds − costBasis) as the taxable
-  // gain exactly as cryptoIndividual does - the "real gain" lives in the input, not
-  // in engine machinery. Branch reliefs: a foreign resident is exempt on ordinary
+  // INDIVIDUALS ONLY. A share disposal is an ordinary capital gain assessed on the
+  // REAL (CPI-adjusted) gain: the UI collects an already-indexed cost basis and
+  // passes it as costBasis, so (proceeds − costBasis) is the real gain - no CPI
+  // table lives in the engine (see CLAUDE.md). The §91/§121B rate is 25%, raised
+  // to 30% for a "substantial shareholder" (10%+ of the means of control now or in
+  // the prior 12 months). When purchase and sale dates are supplied, the gain is
+  // allocated linearly by holding days across the §91(b1)-(b3) rate periods (the
+  // form-1399 mechanics): the slice accrued before the determining date (המועד
+  // הקובע, 1.1.2003) is taxed at the individual's marginal rate (user-set,
+  // default the top 47%); 1.1.2003-31.12.2011 at 20% (25% substantial); from
+  // 1.1.2012 at the current 25% (30%). Without dates the whole gain is treated as
+  // accrued post-2012 and taxed flat - the UI discloses that assumption. The
+  // pre-1994 10%-inflationary-amount rule is not modeled (disclosure only).
+  // Branch reliefs: a foreign resident is exempt on ordinary
   // Israeli shares (domestic §97(b2)/(b3); treaties generally give the residence
   // country exclusive rights) but NOT on shares of a real-estate association
   // (איגוד מקרקעין), which stay taxable; an oleh's foreign-source gain is exempt in
@@ -345,6 +351,9 @@
     substantialHolder = false,      // 10%+ of means of control (now / prior 12mo) → 30%
     foreignWithheld = 0,            // foreign tax paid (NIS) - FTC input
     realEstateAssoc = false,        // Israeli real-estate association (איגוד מקרקעין)
+    purchaseDate = null,            // Date | null - with saleDate, enables the §91 linear split
+    saleDate = null,                // Date | null
+    marginalRate = 0.47,            // rate on the pre-1.1.2003 slice (user-set; default top rate)
   }) {
     const gain  = Math.max(0, proceeds - costBasis);
     const rate0 = substantialHolder ? 0.30 : 0.25;
@@ -386,19 +395,48 @@
       if (source === 'foreign' && foreignWithheld > 0) ftcActive = true;
     }
 
-    const statutoryTax = exempt ? 0 : rate * gain;
+    // §91 linear allocation of the real gain by holding days (form-1399
+    // mechanics), aggregated into the three rate buckets. Runs only on taxable
+    // branches with a valid date window; otherwise `periods` stays null and the
+    // flat post-2012 rate applies to the whole gain (the UI discloses that).
+    const CUTOFF_2003 = new Date(2003, 0, 1);   // המועד הקובע - local midnight, matches parseDMY
+    const CUTOFF_2012 = new Date(2012, 0, 1);
+    const midRate = substantialHolder ? 0.25 : 0.20;
+    let periods = null;
+    let split   = false;
+    if (!exempt && gain > 0 && purchaseDate && saleDate && saleDate > purchaseDate) {
+      const buckets = { pre: 0, mid: 0, post: 0 };
+      for (const p of linearSplit(gain, purchaseDate, saleDate, [CUTOFF_2003, CUTOFF_2012])) {
+        if (p.from < CUTOFF_2003)      buckets.pre  += p.gain;
+        else if (p.from < CUTOFF_2012) buckets.mid  += p.gain;
+        else                           buckets.post += p.gain;
+      }
+      const rateOf = { pre: Math.max(0, marginalRate), mid: midRate, post: rate0 };
+      periods = ['pre', 'mid', 'post']
+        .filter(k => buckets[k] > 0)
+        .map(k => ({ key: k, gain: buckets[k], rate: rateOf[k], tax: rateOf[k] * buckets[k] }));
+      split = periods.length > 1;
+    }
+
+    const statutoryTax = exempt ? 0
+      : periods ? periods.reduce((s, p) => s + p.tax, 0)
+      : rate * gain;
     let israeliTax = statutoryTax;
     if (ftcActive) {
       fw         = Math.max(0, foreignWithheld);
       israeliTax = Math.max(0, statutoryTax - fw);
     }
 
+    // Blended statutory rate over the (real) gain - equals `rate` when no split ran.
+    const blendedRate = (!exempt && gain > 0) ? statutoryTax / gain : 0;
+
     // Effective rate is the net Israeli tax over PROCEEDS (per spec; this section
     // divides by proceeds, unlike the gain-based crypto section).
     const effective = proceeds > 0 ? israeliTax / proceeds : 0;
 
     return { proceeds, costBasis, gain, rate, exempt, statutoryTax, israeliTax,
-             foreignWithheld: fw, ftcActive, effective, modeled, branch };
+             foreignWithheld: fw, ftcActive, effective, modeled, branch,
+             periods, split, blendedRate };
   }
 
   // ── Employee equity: §102 options / RSUs + §3(i) ─────────────────

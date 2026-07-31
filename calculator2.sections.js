@@ -526,7 +526,12 @@
         return;
       }
 
-      const basis = adjustedBasis(purchPrice, depreciation, improvements);
+      // Optional user-entered indexed (CPI-adjusted) basis replaces the nominal
+      // adjusted basis - the gain becomes the REAL gain. No CPI table here; the
+      // user brings the indexation (see CLAUDE.md).
+      const idxBasis = pn('cg_res_indexedBasis');
+      const realMode = idxBasis > 0;
+      const basis = realMode ? idxBasis : adjustedBasis(purchPrice, depreciation, improvements);
       const gain  = nominalGain(salePrice, saleExp, acqExp, basis);
 
       if (gain <= 0) {
@@ -601,7 +606,8 @@
       document.getElementById('cg_res_noDateWarn').style.display = noPurchase ? '' : 'none';
 
       document.getElementById('cg_res_gainDisplay').textContent =
-        fmt(gain) + ' (nominal - inflation indexing not applied)';
+        fmt(gain) + (realMode ? ' (real - based on your indexed basis)'
+                              : ' (nominal - inflation indexing not applied)');
 
       // Track A display
       if (ineligible) {
@@ -686,7 +692,8 @@
       })
     );
     ['cg_res_salePrice','cg_res_purchasePrice','cg_res_acqExpenses',
-     'cg_res_saleExpenses','cg_res_improvements','cg_res_depreciation'].forEach(id =>
+     'cg_res_saleExpenses','cg_res_improvements','cg_res_depreciation',
+     'cg_res_indexedBasis'].forEach(id =>
       document.getElementById(id).addEventListener('input', runCGResCalc)
     );
     ['cg_res_onlyApt','cg_res_foreignCert'].forEach(id =>
@@ -776,7 +783,12 @@
       }
       document.getElementById('cg_com_noDateWarn').style.display = noPurchase ? '' : 'none';
 
-      const basis = adjustedBasis(purchPrice, depreciation, improvements);
+      // Optional user-entered indexed (CPI-adjusted) basis replaces the nominal
+      // adjusted basis - the gain becomes the REAL gain. No CPI table here; the
+      // user brings the indexation (see CLAUDE.md).
+      const idxBasis = pn('cg_com_indexedBasis');
+      const realMode = idxBasis > 0;
+      const basis = realMode ? idxBasis : adjustedBasis(purchPrice, depreciation, improvements);
       const gain  = nominalGain(salePrice, saleExp, acqExp, basis);
 
       if (gain <= 0) {
@@ -796,7 +808,8 @@
       }
 
       document.getElementById('cg_com_gainDisplay').textContent =
-        fmt(gain) + ' (nominal - inflation indexing not applied)';
+        fmt(gain) + (realMode ? ' (real - based on your indexed basis)'
+                              : ' (nominal - inflation indexing not applied)');
 
       // §48A linear split - or worst-case (full gain at PRE_RATE) if no purchase date
       let pre2001 = 0, mid = 0, post = 0;
@@ -849,7 +862,8 @@
     }
 
     ['cg_com_salePrice','cg_com_purchasePrice','cg_com_acqExpenses',
-     'cg_com_saleExpenses','cg_com_improvements','cg_com_depreciation'].forEach(id =>
+     'cg_com_saleExpenses','cg_com_improvements','cg_com_depreciation',
+     'cg_com_indexedBasis'].forEach(id =>
       document.getElementById(id).addEventListener('input', runCGComCalc)
     );
     ['cg_com_purchaseDate','cg_com_saleDate'].forEach(id =>
@@ -1261,16 +1275,23 @@
       israeli_resident_shares: "The real gain is taxed at the capital-gains rate.",
     };
 
+    // Determining date (המועד הקובע) - mirror of the engine constant, used only
+    // to decide whether the marginal-rate field is relevant.
+    const SHCG_CUTOFF_2003 = new Date(2003, 0, 1);   // local midnight, matches parseDMY
+
     const OUTPUT_IDS = [
       'shcg_baseDisplay', 'shcg_proceedsDisplay', 'shcg_costDisplay', 'shcg_gainDisplay',
       'shcg_rate', 'shcg_taxDisplay', 'shcg_effectiveDisplay',
       'shcg_statutoryOut', 'shcg_foreignOut', 'shcg_netOut', 'shcg_totalBurdenOut',
+      'shcg_preOut', 'shcg_midOut', 'shcg_postOut',
     ];
 
     function resetCard() {
       blank(OUTPUT_IDS);
-      $('shcg_ftcRow').style.display = 'none';
-      $('shcg_note').style.display = 'none';
+      $('shcg_ftcRow').style.display     = 'none';
+      $('shcg_note').style.display       = 'none';
+      $('shcg_splitRows').style.display  = 'none';
+      $('shcg_dateNote').style.display   = 'none';
       const v = $('shcg_verdict');
       v.style.display = '';
       v.textContent   = 'Enter your sale proceeds above to see estimates.';
@@ -1310,7 +1331,47 @@
 
     function runCalc() {
       const proceeds = pn('shcg_proceeds');
+      const pDate = dateFieldState('shcg_purchaseDate');
+      const sDate = dateFieldState('shcg_saleDate');
+
+      // Marginal-rate field is only relevant when part of the holding period
+      // precedes the determining date. Display-only toggle - the value is kept
+      // (never cleared) because the engine ignores it without a pre-2003 slice.
+      $('shcg_marginalField').style.display =
+        (pDate.state === 'ok' && pDate.date < SHCG_CUTOFF_2003) ? '' : 'none';
+
+      const warn = $('shcg_dateWarn');
+      warn.style.display = 'none';
+
       if (proceeds <= 0) { resetCard(); return; }
+
+      // Typed-but-invalid dates block calculation instead of silently misparsing.
+      if (pDate.state === 'invalid' || sDate.state === 'invalid') {
+        resetCard();
+        warn.textContent   = 'Check the dates - each must be a real DD/MM/YYYY date (year 1900 or later).';
+        warn.style.display = '';
+        return;
+      }
+      // Reversed or same-day dates block computation (the linear split would be
+      // empty and silently fall back to the flat rate).
+      if (pDate.date && sDate.date && sDate.date <= pDate.date) {
+        resetCard();
+        warn.textContent   = 'The sale date must be after the purchase date.';
+        warn.style.display = '';
+        return;
+      }
+      // The sale date prefills to today, so it is only empty if the user actively
+      // cleared it; with a purchase date present the split needs both ends.
+      if (pDate.date && !sDate.date) {
+        resetCard();
+        warn.textContent   = 'Enter the sale date as well, so the gain can be allocated across the rate periods.';
+        warn.style.display = '';
+        return;
+      }
+
+      // Marginal rate for the pre-determining-date slice: user %, clamped to
+      // 0-50, defaulting to the top 47% when the field is blank.
+      const marginalRate = Math.min(Math.max(pnOr('shcg_marginalPct', 47), 0), 50) / 100;
 
       const r = sharesIndividualCG({
         proceeds,
@@ -1320,10 +1381,32 @@
         substantialHolder: $('shcg_substantial').checked,
         foreignWithheld: pn('shcg_foreignWithheld'),
         realEstateAssoc: $('shcg_realEstateAssoc').checked,
+        purchaseDate: pDate.date,
+        saleDate: sDate.date,
+        marginalRate,
       });
 
       $('shcg_verdict').style.display = 'none';
       $('shcg_ftcRow').style.display  = 'none';
+
+      // §91 linear-split breakdown - one row per non-empty rate slice.
+      const SPLIT_ROWS = { pre: 'shcg_preRow', mid: 'shcg_midRow', post: 'shcg_postRow' };
+      const SPLIT_OUTS = { pre: 'shcg_preOut', mid: 'shcg_midOut', post: 'shcg_postOut' };
+      Object.keys(SPLIT_ROWS).forEach(k => { $(SPLIT_ROWS[k]).style.display = 'none'; });
+      $('shcg_splitRows').style.display = r.split ? '' : 'none';
+      if (r.split) {
+        r.periods.forEach(p => {
+          $(SPLIT_ROWS[p.key]).style.display = '';
+          $(SPLIT_OUTS[p.key]).textContent =
+            fmt(p.gain) + ' @ ' + (Math.round(p.rate * 1000) / 10) + '% = ' + fmt(p.tax);
+        });
+      }
+
+      // Flat-rate assumption disclosure: taxable gain computed without a
+      // purchase date is treated as entirely post-2012.
+      $('shcg_dateNote').style.display =
+        (!pDate.date && !r.exempt && r.gain > 0) ? '' : 'none';
+
       $('shcg_baseDisplay').textContent     = fmt(r.proceeds);
       $('shcg_proceedsDisplay').textContent = fmt(r.proceeds);
       $('shcg_costDisplay').textContent     = fmt(r.costBasis);
@@ -1341,9 +1424,11 @@
       }
 
       // Tax Rate (prominent): the statutory rate on taxable branches, "Exempt"
-      // otherwise. Tax Owed is the net Israeli tax; Effective Rate is the engine's
-      // net-tax-over-proceeds figure.
-      $('shcg_rate').textContent             = r.exempt ? 'Exempt' : (r.rate * 100).toFixed(0) + '%';
+      // otherwise; when the §91 split spans several periods, the blended rate
+      // over the real gain (marked "blended" so a flat figure is never implied).
+      $('shcg_rate').textContent = r.exempt ? 'Exempt'
+        : r.split ? (r.blendedRate * 100).toFixed(1) + '% blended'
+        : (r.rate * 100).toFixed(0) + '%';
       $('shcg_taxDisplay').textContent       = fmt(r.israeliTax);
       $('shcg_effectiveDisplay').textContent = (r.effective * 100).toFixed(1) + '%';
 
@@ -1361,13 +1446,18 @@
       showNote(r);
     }
 
+    // Sale date prefills to today (like the real-estate CG sections).
+    $('shcg_saleDate').value = formatDMY(new Date());
+
     // Visibility-affecting controls re-sync then recalc; the rest just recalc.
     ['shcg_residency', 'shcg_source'].forEach(id =>
       $(id).addEventListener('change', function () { syncVisibility(); runCalc(); }));
-    ['shcg_proceeds', 'shcg_costBasis', 'shcg_foreignWithheld'].forEach(id =>
+    ['shcg_proceeds', 'shcg_costBasis', 'shcg_foreignWithheld', 'shcg_marginalPct'].forEach(id =>
       $(id).addEventListener('input', runCalc));
     ['shcg_substantial', 'shcg_realEstateAssoc'].forEach(id =>
       $(id).addEventListener('change', runCalc));
+    attachDateMask($('shcg_purchaseDate'), runCalc);
+    attachDateMask($('shcg_saleDate'), runCalc);
 
     syncVisibility();
     runCalc();

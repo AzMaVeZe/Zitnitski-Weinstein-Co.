@@ -286,6 +286,13 @@
               <div class="input-hint">Subtracted from your purchase price, which raises the taxable gain</div>
             </td>
           </tr>
+          <tr>
+            <td class="input-row-label"><label for="cg_res_indexedBasis">Indexed Cost Basis (optional)</label></td>
+            <td>
+              <input type="text" inputmode="decimal" id="cg_res_indexedBasis" placeholder="0" />
+              <div class="input-hint">Optional - your acquisition value adjusted for inflation (Israeli CPI), including improvements and net of depreciation. When entered, it replaces the purchase-price / improvements / depreciation fields above and the tax is computed on the real gain (acquisition and sale expenses are still deducted). Left empty, the gain is nominal, which can overstate the tax on long-held property. Consult a tax advisor or the tax authority's indexing tables.</div>
+            </td>
+          </tr>
         </tbody>
       </table>
 
@@ -389,7 +396,7 @@
 
       <p class="track-verdict" id="cg_res_verdict"></p>
       <div class="surtax-note" role="note" data-watch="cg_res_salePrice" data-threshold="5390000"><strong>⚠ Surtax (מס יסף) - not included above.</strong> On a sale price above roughly ₪5.39M the capital gain can carry a surtax of <strong>up to 5%</strong> (3% applies to other income above ₪721,560). Whether it applies depends on the sale price and your total income from all sources. <span class="surtax-hot">The sale price entered exceeds roughly ₪5.39M - the 5% capital component is likely to apply.</span></div>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי). They exclude the betterment levy and VAT, and the gain shown is the nominal gain - inflation indexing of the cost basis is not applied. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:1rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי). They exclude the betterment levy and VAT. Unless an indexed cost basis was entered above, the gain shown is the nominal gain (inflation indexing not applied), which can overstate the tax on long-held property. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div><!-- /Ind_RE_CG_Res -->
@@ -450,6 +457,13 @@
             <td>
               <input type="text" inputmode="decimal" id="cg_com_depreciation" placeholder="0" />
               <div class="input-hint">Subtracted from your purchase price, which raises the taxable gain</div>
+            </td>
+          </tr>
+          <tr>
+            <td class="input-row-label"><label for="cg_com_indexedBasis">Indexed Cost Basis (optional)</label></td>
+            <td>
+              <input type="text" inputmode="decimal" id="cg_com_indexedBasis" placeholder="0" />
+              <div class="input-hint">Optional - your acquisition value adjusted for inflation (Israeli CPI), including improvements and net of depreciation. When entered, it replaces the purchase-price / improvements / depreciation fields above and the tax is computed on the real gain (acquisition and sale expenses are still deducted). Left empty, the gain is nominal, which can overstate the tax on long-held property. Consult a tax advisor or the tax authority's indexing tables.</div>
             </td>
           </tr>
         </tbody>
@@ -533,7 +547,7 @@
       <p class="input-hint" style="margin-top:.75rem">The pre-07/11/2001 slice is legally taxed at your marginal rate (and very old acquisitions may qualify for reduced historical rates); this estimate conservatively assumes the top 47% rate for that slice.</p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;">Casual sales to a registered dealer may also trigger VAT - verify separately.</p>
       <div class="surtax-note" role="note" data-watch="cg_com_gainDisplay"><strong>⚠ Surtax (מס יסף) - not included above.</strong> On total annual income above ₪721,560 (2026) an additional surtax of <strong>3%-5%</strong> may apply - 3% generally, and up to 5% on capital-source income such as dividends, interest and capital gains. Whether it applies depends on your total income from all sources. <span class="surtax-hot">The figure shown here already exceeds the ₪721,560 threshold on its own - the surtax is likely to apply.</span></div>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי). They exclude the betterment levy and VAT, and the gain shown is the nominal gain - inflation indexing of the cost basis is not applied. Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">Results shown are before personal tax credit points (נקודות זיכוי). They exclude the betterment levy and VAT. Unless an indexed cost basis was entered above, the gain shown is the nominal gain (inflation indexing not applied), which can overstate the tax on long-held property. Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div><!-- /Ind_RE_CG_Com -->
@@ -949,14 +963,17 @@
   <!-- ═══ Ind_Shares_CG: Individual · Share Capital Gain ════════════════════════ -->
   <!-- Progressive disclosure (like Ind_Crypto): the real-estate-association flag
        shows only for a foreign resident selling Israeli shares; the foreign-tax
-       field only for an Israeli resident with a foreign-source gain. All math is
-       delegated to sharesIndividualCG(); see initIndSharesCG. NOMINAL gain only -
-       the user supplies an already-CPI-indexed cost basis (no engine indexing). -->
+       field only for an Israeli resident with a foreign-source gain; the marginal-
+       rate field only when the purchase date precedes the determining date
+       (1.1.2003). REAL gain: the user supplies an already-CPI-indexed cost basis
+       (no engine CPI table), and with dates the engine allocates the gain linearly
+       across the §91 rate periods (form-1399 mechanics). All math is delegated to
+       sharesIndividualCG(); see initIndSharesCG. -->
   <div class="calc-section" id="Ind_Shares_CG" style="display:none">
     <div class="card">
       <div class="card-header">
         <h2>Share Capital Gain</h2>
-        <p>Enter your share-sale proceeds and indexed cost basis below.</p>
+        <p>Enter your share-sale proceeds, indexed cost basis and holding dates below.</p>
       </div>
 
       <div class="fields">
@@ -975,6 +992,24 @@
             <input type="text" id="shcg_costBasis" inputmode="decimal" placeholder="e.g. 50,000" />
           </div>
           <div class="input-hint">Enter your cost basis adjusted for inflation (Israeli CPI) from the purchase date. Share gains are taxed on the real (inflation-adjusted) gain - the inflationary portion since 1994 is exempt. If you enter the raw purchase price instead, the tax shown will be higher than your actual liability. Consult a tax advisor or use the tax authority's indexing tables to compute the adjusted basis.</div>
+        </div>
+
+        <div class="field">
+          <label for="shcg_purchaseDate">Purchase Date</label>
+          <input type="text" id="shcg_purchaseDate" inputmode="numeric" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" style="padding:.65rem .9rem;" />
+          <div class="input-hint">Used to allocate the gain across the statutory rate periods (see the breakdown below). Left empty, the whole gain is treated as accrued from 1.1.2012 onward.</div>
+        </div>
+
+        <div class="field">
+          <label for="shcg_saleDate">Sale Date</label>
+          <input type="text" id="shcg_saleDate" inputmode="numeric" maxlength="10" placeholder="DD/MM/YYYY" autocomplete="off" style="padding:.65rem .9rem;" />
+        </div>
+
+        <!-- Shown only when the purchase date precedes the determining date (1.1.2003) -->
+        <div class="field" id="shcg_marginalField" style="display:none">
+          <label for="shcg_marginalPct">Your Marginal Tax Rate (%)</label>
+          <input type="number" id="shcg_marginalPct" min="0" max="50" value="47" style="padding:.65rem .9rem;" />
+          <div class="input-hint">Applied to the slice of the gain accrued before the determining date (1.1.2003), which is taxed at your marginal income-tax rate rather than the capital-gains rate. Defaults to the top 47% rate - lower it if your marginal rate is lower.</div>
         </div>
 
         <div class="field">
@@ -1004,6 +1039,9 @@
           <div class="input-hint">Tax already paid abroad - credited against the Israeli tax (foreign tax credit). The credit is capped at the rate the applicable tax treaty permits that country to withhold - any excess above the treaty ceiling is generally not creditable here. Look up that country's ceiling in our <a href="treaty-rates.html" target="_blank" rel="noopener noreferrer">tax treaties table</a>.</div>
         </div>
       </div>
+
+      <!-- Date-validation warning: text set by initIndSharesCG -->
+      <p id="shcg_dateWarn" style="display:none; font-size:.84rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin:.75rem 0 0;"></p>
 
       <!-- Substantial holder (always shown) -->
       <div class="cg-extras">
@@ -1045,8 +1083,24 @@
             <span class="track-result-val" id="shcg_costDisplay">—</span>
           </div>
           <div class="track-result-row">
-            <span class="track-result-label">Capital gain</span>
+            <span class="track-result-label">Capital gain (real)</span>
             <span class="track-result-val" id="shcg_gainDisplay">—</span>
+          </div>
+          <!-- §91 linear-split breakdown (form 1399) - shown when the holding
+               period spans more than one rate period -->
+          <div id="shcg_splitRows" style="display:none">
+            <div class="track-result-row" id="shcg_preRow" style="display:none">
+              <span class="track-result-label">Slice before 1.1.2003 (המועד הקובע)</span>
+              <span class="track-result-val" id="shcg_preOut">—</span>
+            </div>
+            <div class="track-result-row" id="shcg_midRow" style="display:none">
+              <span class="track-result-label">Slice 1.1.2003 - 31.12.2011</span>
+              <span class="track-result-val" id="shcg_midOut">—</span>
+            </div>
+            <div class="track-result-row" id="shcg_postRow" style="display:none">
+              <span class="track-result-label">Slice from 1.1.2012</span>
+              <span class="track-result-val" id="shcg_postOut">—</span>
+            </div>
           </div>
           <div class="track-result-row" style="border-top:1px solid var(--border); padding-top:.4rem; margin-top:.1rem;">
             <span class="track-result-label">Tax owed</span>
@@ -1081,9 +1135,10 @@
 
       <p class="track-verdict" id="shcg_verdict">Enter your sale proceeds above to see estimates.</p>
       <p id="shcg_note" style="display:none; font-size:.81rem; color:var(--text); background:var(--blue-light); border:1px solid #bfcfe8; border-radius:6px; padding:.5rem .85rem; margin-top:1rem;"></p>
+      <p id="shcg_dateNote" style="display:none; font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;"><strong>No purchase date entered.</strong> The result assumes the entire gain accrued on or after 1.1.2012 (flat capital-gains rate). If the shares were acquired before that - and especially before the determining date, 1.1.2003 - the actual tax is computed by allocating the gain linearly across the statutory rate periods and can be materially different. Enter the purchase date above for the allocated estimate.</p>
       <p style="font-size:.81rem; color:var(--amber); background:var(--amber-light); border:1px solid #fcd34d; border-radius:6px; padding:.5rem .85rem; margin-top:.75rem;">Foreign residents and treaty positions: exemptions for foreign residents depend on your country's treaty with Israel and the nature of the company. This tool shows the general domestic position only. Consult a tax advisor.</p>
       <div class="surtax-note" role="note" data-watch="shcg_gainDisplay"><strong>⚠ Surtax (מס יסף) - not included above.</strong> On total annual income above ₪721,560 (2026) an additional surtax of <strong>3%-5%</strong> may apply - 3% generally, and up to 5% on capital-source income such as dividends, interest and capital gains. Whether it applies depends on your total income from all sources. <span class="surtax-hot">The figure shown here already exceeds the ₪721,560 threshold on its own - the surtax is likely to apply.</span></div>
-      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">The capital gain is computed from the indexed cost basis you entered; results are before personal tax credit points (נקודות זיכוי). Consult a tax advisor for your exact liability.</p>
+      <p style="font-size:.78rem; color:var(--muted); margin-top:.75rem; text-align:center;">The real capital gain is computed from the indexed cost basis you entered and, when dates are given, allocated linearly across the statutory rate periods - the same mechanics as ITA form 1399 (נספח רווח הון). The pre-1994 10% inflationary-amount rule is not modeled. Results are before personal tax credit points (נקודות זיכוי). Consult a tax advisor for your exact liability.</p>
     </div>
 
   </div>
